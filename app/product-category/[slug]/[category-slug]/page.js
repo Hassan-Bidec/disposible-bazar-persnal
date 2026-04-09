@@ -326,9 +326,9 @@ console.log("Category Slugs:", categories.map(c => normalizeSlug(c.slug)));
                         <div className="py-4 w-full flex flex-col gap2 text-white rounded-lg">
                             <div className="flex flex-col gap-2">
                                 <div className="flex justify-between">
-                                    <h2 className="text-4xl font-bazaar">
+                                    <p className="text-4xl font-bazaar">
                                         {Category ? `${Category?.name}` : "Shop All"}
-                                    </h2>
+                                    </p>
                                     <div className="">
                                         <button onClick={() => setIsFilter(true)}>
                                             <RiFilter3Line className="lg:hidden block text-4xl rounded-full p-2 bg-[#1E7773]" />

@@ -21,7 +21,7 @@ export default function BundleDetail() {
   // 🔥 FIX: slug fetch correctly
   const params = useParams();
   const {slug }= params;   // <-- FIX (NOT params.id)
-console.log("idddd" , slug);
+  console.log("idddd" , slug);
 
   const [productDetail, setProductDetail] = useState(null);
   const [productImages, setProductImages] = useState([]);
@@ -74,22 +74,24 @@ useEffect(() => {
       product.id,
       product.name,
       subQuantity,
-      null,
-      subQuantity,
+      1, // pack_size (default for bundles)
+      subQuantity, // total_pieces
       Number(product.payable_amount),
       selectedImage,
       total,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      true
+      null, // product_variants
+      null, // printing_price
+      null, // product_color
+      null, // product_size
+      null, // logo
+      null, // product_options
+      null, // product_lids
+      null, // lid
+      null, // lid_Price
+      null, // customizeDetail
+      0, // option_Price
+      true, // bundle_status
+      1000 // order_limit
     );
 
     setIsCartModalOpen(true);

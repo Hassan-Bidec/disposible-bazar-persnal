@@ -216,7 +216,7 @@ const PriceRangeMob = ({ isFilter, setIsFilter, onFilter, isCategoryShown }) => 
                                         type="text"
                                         value={searchTerm}
                                         onChange={handleSearch}
-                                        className="w-full p-1.5 text-black rounded my-2"
+                                        className="w-full p-1.5 text-white rounded my-2"
                                         placeholder="Product name"
                                     />
                                     <button type="button">

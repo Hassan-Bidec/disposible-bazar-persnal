@@ -1,30 +1,40 @@
 // 🟩 Dynamic Metadata Function for Cart Page
 export async function generateMetadata() {
-  const res = await fetch(
-    "https://ecommerce-inventory.thegallerygen.com/api/page/detail/5", // API page ID for Cart
-    { cache: "no-store" }
-  );
+  try {
+    const res = await fetch(
+      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/5", // API page ID for Cart
+      { cache: "no-store" }
+    );
 
-  const data = await res.json();
+    if (!res.ok) throw new Error("Fetch failed");
 
-  return {
-    title: data?.data?.meta_title || "Your Cart",
-    description: data?.data?.meta_description || "View and manage your cart items",
+    const data = await res.json();
 
-    alternates: {
-      canonical: data?.data?.canonical_url || "",
-    },
+    return {
+      title: data?.data?.meta_title || "Your Cart",
+      description: data?.data?.meta_description || "View and manage your cart items",
 
-    robots: {
-      index: data?.data?.robots_index !== "noindex",
-      follow: data?.data?.robots_follow !== "nofollow",
+      alternates: {
+        canonical: data?.data?.canonical_url || "",
+      },
 
-      googleBot: {
+      robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
+
+        googleBot: {
+          index: data?.data?.robots_index !== "noindex",
+          follow: data?.data?.robots_follow !== "nofollow",
+        },
       },
-    },
-  };
+    };
+  } catch (error) {
+    console.error("Cart metadata fetch failed:", error);
+    return {
+      title: "Your Cart | Shop",
+      description: "View and manage your cart items",
+    };
+  }
 }
 
 

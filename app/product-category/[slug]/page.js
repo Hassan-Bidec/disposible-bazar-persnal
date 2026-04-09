@@ -37,7 +37,8 @@ const CustomizationCategory = ({ params }) => {
   const [grid, setGrid] = useState(3);
   const [loading, setLoading] = useState(true);
   const [isCategoriesLoaded, setIsCategoriesLoaded] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const pageFromURL = queryParams.get("page");
+  const [currentPage, setCurrentPage] = useState(pageFromURL ? parseInt(pageFromURL) : 1);
   const itemsPerPage = 12;
   const [filteredProduct, setFilteredProduct] = useState([]);
   const [categoryDetail, setCategoryDetail] = useState([]);
@@ -50,6 +51,37 @@ const CustomizationCategory = ({ params }) => {
   const [categories, setCategories] = useState([]);
   const [expanded, setExpanded] = useState(false);
   const [disabledButtons, setDisabledButtons] = useState({});
+  const isFirstMount = React.useRef(true);
+
+  // Helper to update URL with new page
+  const updatePageQuery = (newPage) => {
+    // 1. Update state instantly for UI snappy feel
+    setCurrentPage(newPage);
+
+    // 2. Update URL instantly without triggering Next.js router overhead
+    const params = new URLSearchParams(window.location.search);
+    if (newPage <= 1) {
+      params.delete("page");
+    } else {
+      params.set("page", newPage);
+    }
+
+    const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    window.history.pushState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
+  };
+
+  useEffect(() => {
+    const page = queryParams.get("page");
+    if (page) {
+      setCurrentPage(parseInt(page));
+    } else {
+      setCurrentPage(1);
+    }
+  }, [queryParams]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 400, behavior: "smooth" });
+  }, [currentPage]);
 
   const [filter, setFilter] = useState({
     price_from: 0,
@@ -99,7 +131,7 @@ const CustomizationCategory = ({ params }) => {
     const fetchData = async () => {
         if (!isCategoriesLoaded) return;
         setLoading(true);
-        setCurrentPage(1);
+
         try {
             const normalize = (s) => {
                 if (!s) return "";
@@ -159,11 +191,21 @@ const CustomizationCategory = ({ params }) => {
     };
 
   useEffect(() => {
-    setSearchTerm(searchTermFromURL || "");
+    const newSearch = searchTermFromURL || "";
+    if (newSearch !== searchTerm) {
+      setSearchTerm(newSearch);
+      if (!isFirstMount.current) {
+        updatePageQuery(1);
+      }
+    }
   }, [searchTermFromURL]);
 
   useEffect(() => {
     setFilter((prev) => ({ ...prev, slug: category }));
+    if (!isFirstMount.current) {
+      updatePageQuery(1);
+    }
+    isFirstMount.current = false;
   }, [category]);
 
   useEffect(() => {
@@ -179,6 +221,7 @@ const CustomizationCategory = ({ params }) => {
       sort_by: filters.selected || 1,
       slug: category,
     });
+    updatePageQuery(1);
   };
 
   // --------------------------------------------------
@@ -257,7 +300,7 @@ const CustomizationCategory = ({ params }) => {
 
             <div className="flex flex-col gap-2">
               <div className="flex justify-between">
-                <h2 className="text-4xl font-bazaar">{Category?.name || ""}</h2>
+                <p className="text-4xl font-bazaar">{Category?.name || ""}</p>
                 <button onClick={() => setIsFilter(true)}>
                   <RiFilter3Line className="lg:hidden text-4xl p-2 bg-[#1E7773] rounded-full" />
                 </button>
@@ -311,7 +354,7 @@ const CustomizationCategory = ({ params }) => {
                           />
                         </Link>
 
-                        <h4 className="font-semibold xl:text-lg">{product.name}</h4>
+                        <p className="font-semibold xl:text-lg">{product.name}</p>
 
                         <div className="text-md py-3 font-semibold">
                           {product.product_variants?.length > 0
@@ -365,8 +408,7 @@ cursor-pointer rounded-lg"
                           key={index}
                           onClick={() => {
                             if (page !== '...') {
-                              setCurrentPage(page);
-                              window.scrollTo({ top: 400, behavior: "smooth" });
+                              updatePageQuery(page);
                             }
                           }}
                           className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${page === '...'
@@ -385,8 +427,7 @@ cursor-pointer rounded-lg"
                     <button
                       onClick={() => {
                         const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
-                        setCurrentPage(prev => Math.min(totalPages, prev + 1));
-                        window.scrollTo({ top: 400, behavior: "smooth" });
+                        updatePageQuery(Math.min(totalPages, currentPage + 1));
                       }}
                       disabled={currentPage === Math.ceil(filteredProduct.length / itemsPerPage)}
                       className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === Math.ceil(filteredProduct.length / itemsPerPage) ? 'opacity-30 cursor-not-allowed' : 'hover:text-white text-gray-400'}`}
@@ -453,9 +494,9 @@ cursor-pointer rounded-lg"
 
 
           <div className="mt-25 w-full md:w-1/2">
-            <h2 className="text-5xl text-white font-semibold font-poppins">
+            <p className="text-5xl text-white font-semibold font-poppins">
               {Category?.name || ""}
-            </h2>
+            </p>
             {/* < body={blog?.body} /> */}
             <div
               className={`text-white mt-6 transition-all duration-300 ${expanded ? "max-h-full overflow-visible" : "max-h-23 overflow-hidden"

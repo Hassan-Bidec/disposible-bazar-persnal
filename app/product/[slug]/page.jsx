@@ -264,12 +264,12 @@ const [selectedSize, setSelectedSize] = useState(null);
 
         }
     };
-    const handleCategoryLink = (item) => {
-        // console.log('id', item.subCategories);
-        // setCategory(item);
-        // console.log('id', category);
-
-        navigate(`/product-category/${item.slug}`, { state: item.id })
+    const handleCategoryLink = (item, parentSlug = null) => {
+        if (parentSlug) {
+            navigate(`/product-category/${parentSlug}/${item.slug}/`);
+        } else {
+            navigate(`/product-category/${item.slug}/`);
+        }
     }
 
 
@@ -461,17 +461,18 @@ const [selectedSize, setSelectedSize] = useState(null);
             product_img,
             product_total,
             selectedProductVariants,
-            null,
-            null,
-            null,
-            null,
-            productLids,
-            lid,
-            lid_Price,
-            null,
-            0,
-            false,
-            product?.order_limit ?? 1000
+            null, // printing_price
+            null, // product_color
+            selectedSize, // product_size
+            null, // logo
+            null, // product_options
+            productLids, // product_lids
+            lid, // lid
+            lid_Price, // lid_Price
+            null, // customizeDetail
+            0, // option_Price
+            false, // bundle_status
+            product?.order_limit ?? 1000 // order_limit
         );
 
         setShowQtyModal(false);
@@ -512,13 +513,18 @@ const [selectedSize, setSelectedSize] = useState(null);
                     <Link href="/shop/">Shop</Link> /{" "}
                     <span
                         onClick={() => handleCategoryLink(productDetail?.product?.category)}
-                        className="inline cursor-pointer"
+                        className="inline cursor-pointer hover:text-[#1E7773]"
                     >
                         {productDetail?.product?.category?.name || ""}
                     </span>
 
                     {productDetail?.product?.subCategory?.name && (
-                        <> / <Link href="/shop/">{productDetail.product?.subCategory.name || ''}</Link></>
+                        <> / <span 
+                            onClick={() => handleCategoryLink(productDetail?.product?.subCategory, productDetail?.product?.category?.slug)}
+                            className="inline cursor-pointer hover:text-[#1E7773]"
+                        >
+                            {productDetail.product?.subCategory.name || ''}
+                        </span></>
                     )}{" "}
                     / {productDetail?.product?.name || "Product Name"}
 
@@ -612,8 +618,8 @@ const [selectedSize, setSelectedSize] = useState(null);
                             <p className='text-sm text-gray-300'>
                                 {productDetail?.product?.stock_status === 1 ? "In Stock" : "Out Of Stock"}
                             </p>                         <h1 className='md:text-5xl text-3xl font-semibold'>
-                                {productDetail?.product?.name + '111' || 'Product Name'}
-                                {console.log(productDetail)}
+                                {productDetail?.product?.name  || 'Product Name'}
+                                {/* {console.log(productDetail)} */}
                             </h1>
 
                         </div>
@@ -683,7 +689,7 @@ const [selectedSize, setSelectedSize] = useState(null);
                                 }
                             }}
                         />
-                        <label htmlFor={`variant-${variant.id}`}>{variant.pack_size} Pcs</label>
+                        <label htmlFor={`variant-${variant.id}`}>{variant.pack_size}  {variant.name}</label>
                     </div>
                 ))
             ) : (

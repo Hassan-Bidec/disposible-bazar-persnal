@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import CustomHeroSection from "../components/CustomHeroSection";
 import { Assets_Url, Image_Not_Found, Image_Url } from "../const";
 import axios from "../Utils/axios";
@@ -10,11 +10,41 @@ import Link from "next/link";
 
 function BundleShop() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const pageFromURL = searchParams.get("page");
+
   const [grid, setGrid] = useState(3);
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(pageFromURL ? parseInt(pageFromURL) : 1);
   const itemsPerPage = 12;
   const [filteredProduct, setFilteredProduct] = useState([]);
+
+  // Helper to update URL with new page
+  const updatePageQuery = (newPage) => {
+    // 1. Update state instantly for UI snappy feel
+    setCurrentPage(newPage);
+
+    // 2. Update URL instantly without triggering Next.js router overhead
+    const params = new URLSearchParams(window.location.search);
+    if (newPage <= 1) {
+      params.delete("page");
+    } else {
+      params.set("page", newPage);
+    }
+
+    const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    window.history.pushState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
+  };
+
+  useEffect(() => {
+    const page = searchParams.get("page");
+    if (page) {
+      setCurrentPage(parseInt(page));
+    } else {
+      setCurrentPage(1);
+    }
+  }, [searchParams]);
 
   const handleResize = () => {
     const screenWidth = window.innerWidth;
@@ -32,7 +62,7 @@ function BundleShop() {
 
   const fetchData = async () => {
     setLoading(true);
-    setCurrentPage(1);
+
     try {
       const response = await axios.public.get(`bundles`);
       setFilteredProduct(response.data.data);
@@ -46,6 +76,10 @@ function BundleShop() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 450, behavior: "smooth" });
+  }, [currentPage]);
 
   const handleLoadMore = () => {
     // setCurrentPage((prev) => prev + 1);
@@ -173,8 +207,7 @@ function BundleShop() {
                           key={index}
                           onClick={() => {
                             if (page !== '...') {
-                              setCurrentPage(page);
-                              window.scrollTo({ top: 450, behavior: "smooth" });
+                              updatePageQuery(page);
                             }
                           }}
                           className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${page === '...'
@@ -193,8 +226,7 @@ function BundleShop() {
                     <button
                       onClick={() => {
                         const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
-                        setCurrentPage(prev => Math.min(totalPages, prev + 1));
-                        window.scrollTo({ top: 450, behavior: "smooth" });
+                        updatePageQuery(Math.min(totalPages, currentPage + 1));
                       }}
                       disabled={currentPage === Math.ceil(filteredProduct.length / itemsPerPage)}
                       className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === Math.ceil(filteredProduct.length / itemsPerPage) ? 'opacity-30 cursor-not-allowed' : 'hover:text-white text-gray-400'}`}

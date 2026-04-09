@@ -27,7 +27,6 @@ export const CartProvider = ({ children }) => {
   const addToCart = (
     product_id,
     product_name,
-    printing_price,
     product_quantity,
     pack_size,
     total_pieces,
@@ -35,6 +34,7 @@ export const CartProvider = ({ children }) => {
     product_img,
     product_total,
     product_variants,
+    printing_price,
     product_color,
     product_size,
     logo,

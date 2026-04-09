@@ -181,7 +181,7 @@ const PriceRange = ({ onFilter, isCategoryShown }) => {
                         <div>
                             <h3 className="text-[#9F9F9F] text-xl font-bazaar mt-4">Product Categories</h3>
                             <div className="relative">
-                                <input type="text" value={searchTerm} onChange={handleSearch} className="w-full p-1.5 text-black rounded my-2" placeholder="Product name" />
+                                <input type="text" value={searchTerm} onChange={handleSearch} className="w-full p-1.5 text-white rounded my-2" placeholder="Product name" />
                                 <button type="button">
                                     <CiSearch className="absolute text-xl text-[#606060] top-4 right-2" />
                                 </button>
@@ -190,13 +190,13 @@ const PriceRange = ({ onFilter, isCategoryShown }) => {
                                 {filteredCategories.length > 0 ? (
                                     filteredCategories.map((cate) => (
                                         <React.Fragment key={cate.id}>
-                                            <h2 className="hover:text-gray-400 cursor-pointer py-1" onClick={() => handleFilterCategory(cate)}>
+                                            <p className="hover:text-gray-400 cursor-pointer py-1" onClick={() => handleFilterCategory(cate)}>
                                                 {cate.name}
-                                            </h2>
+                                            </p>
                                             {cate.subCategories.length !== 0 && cate.subCategories.map((cat) => (
-                                                <h2 key={cat.id} className="hover:text-gray-400 cursor-pointer flex flex-row gap-2 items-center py-1" onClick={() => handleFilterCategory(cat)}>
+                                                <p key={cat.id} className="hover:text-gray-400 cursor-pointer flex flex-row gap-2 items-center py-1" onClick={() => handleFilterCategory(cat)}>
                                                     <FiCornerDownRight />{cat.name}
-                                                </h2>
+                                                </p>
                                             ))}
                                         </React.Fragment>
                                     ))

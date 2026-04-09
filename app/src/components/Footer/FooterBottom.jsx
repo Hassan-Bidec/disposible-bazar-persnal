@@ -16,7 +16,7 @@ export default function FooterBottom() {
     const router = useRouter();
 
     const handleSearch = (category) => () => {
-        router.push(`/product-category/${category.slug}?id=${category.id}`);
+        router.push(`/product-category/${category.slug}/`);
     };
 
     useEffect(() => {
@@ -103,7 +103,7 @@ export default function FooterBottom() {
                             <li className="text-2xl font-light py-2 font-bazaar">Policy</li>
 
                             <li className="font-[400]"><Link href="/privacypolicy/">Privacy Policy</Link></li>
-                            <li className="font-[400]"><Link href="/termsconditions/">Terms & Condition</Link></li>
+                            <li className="font-[400]"><Link href="/termsandconditions/">Terms & Condition</Link></li>
                             <li className="font-[400]"><Link href="/returnpolicy/">Return Policy</Link></li>
 
                         </ul>

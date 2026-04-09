@@ -37,7 +37,7 @@ const Products = () => {
   }, []);
 
   const handleCategoryLink = (product) => {
-    router.push(`/product-category/${product.slug}?id=${product.id}`);
+    router.push(`/product-category/${product.slug}/`);
   };
 
   return (

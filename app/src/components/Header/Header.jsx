@@ -96,10 +96,14 @@ function Header() {
         setMobMenu(!mobMenu);
     };
 
-    const handleCategoryLink = (item) => {
+    const handleCategoryLink = (item, parentSlug = null) => {
         if (!item) return;
         setCategory(item);
-        router.push(`/product-category/${item.slug}/`);
+        if (parentSlug) {
+            router.push(`/product-category/${parentSlug}/${item.slug}/`);
+        } else {
+            router.push(`/product-category/${item.slug}/`);
+        }
     };
 
     const toggleSubcategories = (categoryId) => {
@@ -196,11 +200,17 @@ function Header() {
                     <ul className="lg:flex  flex flex-row md:gap-1 text-md cursor-pointer">
                         <li className="p-2 flex items-center text-white gap-2 md:text-[12px] text-[8px] duration-300">
                             <MdEmail className="text-white " />
-                            info@disposablebazaar.com
+                            <Link href="mailto:info@disposablebazaar.com">
+                                info@disposablebazaar.com
+                            </Link>
+                         
+
                         </li>
                         <li className="p-2 flex items-center text-white gap-2 md:text-[12px] text-[8px] duration-300">
                             <MdPhone className="text-white " />
-                            0321-3850002
+                            <Link href="tel:+923001234567" className="hover:underline">
+                                0321-3850002
+                            </Link>
                         </li>
                         <li className="p-2 md:text-[12px] text-[8px] duration-300">
                             <button
@@ -355,8 +365,8 @@ function Header() {
                                                             {cat.subCategories.map((subCat) => (
                                                                 <div
                                                                     key={subCat.id}
-                                                                    className="text-gray-700 p-2 px-4 cursor-pointer hover:bg-gray-200 text-xs"
-                                                                    onClick={() => handleCategoryLink(subCat)}
+                                                                    className="text-zinc-900 p-2 px-4 cursor-pointer hover:bg-gray-200 text-xs"
+                                                                    onClick={() => handleCategoryLink(subCat, cat.slug)}
                                                                 >
                                                                     {subCat.name}
                                                                 </div>
@@ -450,7 +460,7 @@ function Header() {
                                                 {kraftCategory.subCategories.map((sub) => (
                                                     <li
                                                         key={sub.id}
-                                                        onClick={() => handleCategoryLink(sub)}
+                                                        onClick={() => handleCategoryLink(sub, kraftCategory.slug)}
                                                         className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
                                                     >
                                                         {sub.name}
@@ -710,7 +720,7 @@ function Header() {
                                         <li key={sub.id}>
                                             <button
                                                 onClick={() => {
-                                                    handleCategoryLink(sub);
+                                                    handleCategoryLink(sub, kraftCategory.slug);
                                                     setMobMenu(false);
                                                 }}
                                                 className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
