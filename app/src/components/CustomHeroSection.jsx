@@ -42,7 +42,7 @@ function CustomHeroSection({
             style={{
                 backgroundImage: `url('${backgroundImageUrl}')`,
                 backgroundRepeat: "no-repeat",
-                backgroundPosition: "right top 90px",
+                // backgroundPosition: "right top 90px",
                 backgroundSize: "100% ",
 
             }}
