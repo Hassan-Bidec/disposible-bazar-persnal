@@ -102,9 +102,9 @@ export default function FooterBottom() {
                         <ul className="flex flex-col gap-3 md:items-start items-center text-sm">
                             <li className="text-2xl font-light py-2 font-bazaar">Policy</li>
 
-                            <li className="font-[400]"><Link href="/privacypolicy/">Privacy Policy</Link></li>
-                            <li className="font-[400]"><Link href="/termsandconditions/">Terms & Condition</Link></li>
-                            <li className="font-[400]"><Link href="/returnpolicy/">Return Policy</Link></li>
+                            <li className="font-[400]"><Link href="/privacy-policy">Privacy Policy</Link></li>
+                            <li className="font-[400]"><Link href="/termsand-conditions/">Terms & Condition</Link></li>
+                            <li className="font-[400]"><Link href="/return-policy/">Return Policy</Link></li>
 
                         </ul>
 
@@ -133,10 +133,16 @@ export default function FooterBottom() {
                     <ul className="flex flex-col gap-3 md:items-start items-center text-sm">
                         <li className="text-2xl font-light py-2 font-bazaar">Contact</li>
                         <li className="flex flex-row gap-2 items-center font-[400]">
-                            <MdEmail className="text-xl " /> info@disposablebazaar.com
+                            <MdEmail className="text-xl " /> 
+                           <a href="mailto:info@disposablebazaar.com" className="hover:underline">
+  info@disposablebazaar.com
+</a>
                         </li>
                         <li className="flex flex-row gap-2 items-center font-[400]">
-                            <MdPhone className="text-xl" /> 0321-3850002
+                            <MdPhone className="text-xl" /> 
+                            <a href="tel:+923001234567" className="hover:underline">
+                                0321-3850002
+                            </a>
                         </li>
                     </ul>
 

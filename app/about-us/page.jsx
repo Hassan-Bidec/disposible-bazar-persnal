@@ -1,30 +1,47 @@
 // 🟩 Dynamic Metadata Function for About Us Page
 export async function generateMetadata() {
-  const res = await fetch(
-    "https://ecommerce-inventory.thegallerygen.com/api/page/detail/8", // API page ID for About Us
-    { cache: "no-store" }
-  );
+  try {
+    const res = await fetch(
+      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/8", // API page ID for About Us
+      { cache: "no-store" }
+    );
 
-  const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status}`);
+    }
 
-  return {
-    title: data?.data?.meta_title || "About Us",
-    description: data?.data?.meta_description || "About Us page",
+    const data = await res.json();
+    console.log("About Us Metadata Fetched:", data);
+    return {
+      title: data?.data?.meta_title || "About Us",
+      description: data?.data?.meta_description || "About Us page",
 
-    alternates: {
-      canonical: data?.data?.canonical_url || "",
-    },
+      alternates: {
+        canonical: data?.data?.canonical_url || "",
+      },
 
-    robots: {
-      index: data?.data?.robots_index !== "noindex",
-      follow: data?.data?.robots_follow !== "nofollow",
-
-      googleBot: {
+      robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
+
+        googleBot: {
+          index: data?.data?.robots_index !== "noindex",
+          follow: data?.data?.robots_follow !== "nofollow",
+        },
       },
-    },
-  };
+    };
+  } catch (error) {
+    console.error("About Us metadata fetch failed:", error);
+
+    return {
+      title: "About Us",
+      description: "About Us page",
+      robots: {
+        index: true,
+        follow: true,
+      },
+    };
+  }
 }
 
 

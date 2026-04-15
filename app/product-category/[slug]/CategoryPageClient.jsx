@@ -1,0 +1,429 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import CustomHeroSection from "../../src/components/CustomHeroSection";
+import PriceRange from "../../src/components/Shop/PriceRange";
+import PriceRangeMob from "../../src/components/Shop/PriceRangeMob";
+import { Assets_Url, Image_Not_Found } from "../../src/const";
+import { RiFilter3Line } from "react-icons/ri";
+import { useSearchParams, useParams } from "next/navigation";
+import axios from "../../src/Utils/axios";
+import { Loader } from "../../src/components/Loader";
+import { useCart } from "../../src/Context/CartContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CartModal from "../../src/components/cart/CartModal";
+import { FiX } from "react-icons/fi";
+import Link from "next/link";
+import DecodeTextEditor from "../../src/components/DecodeTextEditor";
+
+// initialData is passed from the Server Component (SSR pre-fetch)
+export default function CategoryPageClient({ initialData }) {
+  const queryParams = useSearchParams();
+  const { slug } = useParams();
+  const category = slug || "";
+  const categoryIdFromURL = queryParams.get("id");
+  const searchTermFromURL = queryParams.get("q") || "";
+
+  const [showQtyModal, setShowQtyModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+
+  const [grid, setGrid] = useState(3);
+  const [loading, setLoading] = useState(!initialData); // no loading if SSR data exists
+  const [isCategoriesLoaded, setIsCategoriesLoaded] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+
+  // Pre-populate from SSR data
+  const [filteredProduct, setFilteredProduct] = useState(initialData?.products || []);
+  const [Category, setCategory] = useState(initialData?.category || null);
+
+  const [isFilter, setIsFilter] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(searchTermFromURL);
+  const { addToCart } = useCart();
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [expanded, setExpanded] = useState(false);
+  const isFirstMount = React.useRef(true);
+
+  const [filter, setFilter] = useState({
+    price_from: 0,
+    price_to: 0,
+    sort_by: 1,
+    slug: category,
+  });
+
+  // ─── URL update — ?product-page=2 format, no remount ────────────────────
+  const goToPage = (newPage) => {
+    setCurrentPage(newPage);
+    const params = new URLSearchParams(window.location.search);
+    if (newPage <= 1) {
+      params.delete("product-page");
+    } else {
+      params.set("product-page", String(newPage));
+    }
+    const newUrl = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}`;
+    window.history.pushState({ ...window.history.state, as: newUrl, url: newUrl }, "", newUrl);
+    window.scrollTo({ top: 400, behavior: "smooth" });
+  };
+
+  // ─── Resize ───────────────────────────────────────────────────────────────
+  const handleResize = () => {
+    const w = window.innerWidth;
+    if (w < 400) setGrid(1);
+    else if (w < 768) setGrid(2);
+    else setGrid(3);
+  };
+
+  useEffect(() => {
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // ─── Scroll on slug change ────────────────────────────────────────────────
+  useEffect(() => {
+    window.scrollTo(0, 400);
+  }, [category]);
+
+  // ─── Fetch categories list (needed for filter re-fetches) ─────────────────
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.public.get("product/category");
+        setCategories(response.data.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsCategoriesLoaded(true);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // ─── Fetch products (client-side, triggered by filter/search changes) ─────
+  const fetchData = async () => {
+    if (!isCategoriesLoaded) return;
+    setLoading(true);
+
+    try {
+      const normalize = (s) =>
+        decodeURIComponent(s || "").toLowerCase().replace(/\/+$/, "");
+
+      const findCategory = (cats, currentSlug, currentId) => {
+        for (const c of cats) {
+          if (
+            normalize(c.slug) === normalize(currentSlug) ||
+            (currentId && c.id == currentId)
+          )
+            return c;
+          if (c.subCategories?.length) {
+            const found = findCategory(c.subCategories, currentSlug, currentId);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+
+      const cat = findCategory(categories, category, categoryIdFromURL);
+      if (!cat) {
+        setFilteredProduct([]);
+        setLoading(false);
+        return;
+      }
+
+      const response = await axios.public.get("search/product", {
+        params: {
+          price_from: filter.price_from,
+          price_to: filter.price_to,
+          sort_by: filter.sort_by,
+          category_id: cat.id,
+          name: searchTerm,
+        },
+      });
+
+      setCategory(response.data?.category);
+      setFilteredProduct(response.data?.data || []);
+    } catch (err) {
+      console.error("API Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const newSearch = searchTermFromURL || "";
+    if (newSearch !== searchTerm) {
+      setSearchTerm(newSearch);
+      if (!isFirstMount.current) goToPage(1);
+    }
+  }, [searchTermFromURL]);
+
+  useEffect(() => {
+    setFilter((prev) => ({ ...prev, slug: category }));
+    if (!isFirstMount.current) goToPage(1);
+    isFirstMount.current = false;
+  }, [category]);
+
+  // Only re-fetch when filter/search actually changes (not on first mount if SSR data exists)
+  useEffect(() => {
+    if (!isCategoriesLoaded) return;
+    const d = setTimeout(fetchData, 300);
+    return () => clearTimeout(d);
+  }, [filter, searchTerm, isCategoriesLoaded]);
+
+  const handleFilter = (filters) => {
+    setFilter({
+      ...filter,
+      price_from: filters.price_from || 0,
+      price_to: filters.price_to || 0,
+      sort_by: filters.selected || 1,
+      slug: category,
+    });
+    goToPage(1);
+  };
+
+  const handleAddCart = (product) => {
+    setSelectedProduct(product);
+    setQuantity(1);
+    setShowQtyModal(true);
+  };
+
+  const confirmAddToCart = () => {
+    if (!selectedProduct) return;
+    const variant = selectedProduct.product_variants?.[0];
+    if (!variant) return;
+    const pack_size = Number(variant.pack_size || 1);
+    const total_pieces = pack_size * quantity;
+    addToCart(
+      selectedProduct.id,
+      selectedProduct.name,
+      quantity,
+      pack_size,
+      total_pieces,
+      Number(variant.price_per_piece),
+      selectedProduct.product_image?.[0]?.image,
+      (variant.price_per_piece * total_pieces).toFixed(2),
+      selectedProduct.product_variants
+    );
+    setShowQtyModal(false);
+    setIsCartModalOpen(true);
+  };
+
+  // ─── Pagination ───────────────────────────────────────────────────────────
+  const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
+
+  const getPaginationPages = () => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (currentPage <= 4) return [1, 2, 3, 4, 5, "...", totalPages];
+    if (currentPage > totalPages - 4)
+      return [1, "...", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    return [1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages];
+  };
+
+  if (loading) return <Loader />;
+
+  return (
+    <div className="py-2">
+      <ToastContainer autoClose={500} />
+
+      <CustomHeroSection
+        heading={Category?.name || "Discover Our Product Range"}
+        heroImage={Category?.hero_banner_image || Category?.image || ""}
+        path="Shop"
+        path2={Category?.name}
+        hideContent={true}
+      />
+
+      <div className="lg:px-10 px-0 flex">
+        {/* Desktop filter sidebar */}
+        <section className="hidden lg:block lg:w-1/5 p-5 text-white">
+          <PriceRange onFilter={handleFilter} isCategoryShown={false} />
+        </section>
+
+        {/* Mobile filter drawer */}
+        <PriceRangeMob
+          onFilter={handleFilter}
+          isFilter={isFilter}
+          setIsFilter={setIsFilter}
+          isCategoryShown={false}
+        />
+
+        {/* Main content */}
+        <section className="flex p-5 lg:w-4/5 w-full">
+          <div className="w-full flex flex-col gap-2 text-white">
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between">
+                <h1 className="text-4xl font-bazaar">{Category?.name || ""}</h1>
+                <button onClick={() => setIsFilter(true)}>
+                  <RiFilter3Line className="lg:hidden text-4xl p-2 bg-[#1E7773] rounded-full" />
+                </button>
+              </div>
+              <p className="text-sm text-gray-400">
+                <Link href="/">Home</Link> / <Link href="/shop">Shop</Link> / {Category?.name}
+              </p>
+            </div>
+
+            {filteredProduct.length === 0 ? (
+              <div className="flex justify-center h-screen items-center">
+                <h2 className="text-4xl font-bazaar">No products found</h2>
+              </div>
+            ) : (
+              <>
+                <div className={`py-10 grid ${
+                  grid === 4 ? "grid-cols-4"
+                  : grid === 3 ? "grid-cols-3"
+                  : grid === 2 ? "grid-cols-2"
+                  : "grid-cols-1"
+                } gap-4`}>
+                  {filteredProduct
+                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                    .map((product, index) => (
+                      <div key={index} className="w-full">
+                        <div className="p-2 bg-gradient-to-l from-[#403E4A] to-[#32303E] rounded-2xl border border-[#1E7773] group">
+                          <Link href={`/product/${product.slug}`} className="block p-5">
+                            <img
+                              className="w-full h-[200px] rounded-xl group-hover:hidden object-cover"
+                              src={product.product_image?.[0]?.image ? `${Assets_Url}${product.product_image[0].image}` : Image_Not_Found}
+                              alt={product.name || "Product Image"}
+                            />
+                            <img
+                              className="w-full h-[200px] hidden group-hover:block rounded-xl object-cover"
+                              src={product.product_image?.[1]?.image ? `${Assets_Url}${product.product_image[1].image}` : Image_Not_Found}
+                              alt={product.name || "Product Image"}
+                            />
+                          </Link>
+                          <p className="font-semibold xl:text-lg">{product.name}</p>
+                          <div className="text-md py-3 font-semibold">
+                            {product.product_variants?.length > 0
+                              ? `Rs ${product.product_variants[0].price} - Rs ${product.product_variants[product.product_variants.length - 1].price}`
+                              : "No variants available"}
+                          </div>
+                          <div className="flex xl:flex-row lg:flex-col justify-center xl:gap-4 gap-1">
+                            <button
+                              className="p-2 bg-[#1E7773] w-full font-bazaar cursor-pointer rounded-lg"
+                              onClick={() => handleAddCart(product)}
+                            >
+                              ADD TO CART
+                            </button>
+                            <Link
+                              className="p-2 border border-[#1E7773] text-center w-full h-fit font-bazaar rounded-lg"
+                              href={`/product/${product.slug}`}
+                            >
+                              BUY NOW
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center items-center mt-10 gap-2 text-white">
+                    <button
+                      onClick={() => goToPage(Math.max(1, currentPage - 1))}
+                      disabled={currentPage === 1}
+                      className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === 1 ? "opacity-30 cursor-not-allowed" : "hover:text-white text-gray-400"}`}
+                    >
+                      &larr;
+                    </button>
+                    {getPaginationPages().map((page, index) => (
+                      <button
+                        key={index}
+                        onClick={() => { if (page !== "...") goToPage(page); }}
+                        className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${
+                          page === "..." ? "cursor-default text-gray-500"
+                          : currentPage === page ? "bg-white text-[#2a2833] font-bold"
+                          : "cursor-pointer hover:bg-white/10 text-gray-400"
+                        }`}
+                        disabled={page === "..."}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
+                      disabled={currentPage === totalPages}
+                      className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === totalPages ? "opacity-30 cursor-not-allowed" : "hover:text-white text-gray-400"}`}
+                    >
+                      &rarr;
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </section>
+
+        {/* Cart Modal */}
+        {isCartModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-50" onClick={() => setIsCartModalOpen(false)}>
+            <div className="fixed md:top-4 md:right-4 bg-white shadow-lg p-4 rounded-lg z-50 w-[300px]">
+              <div className="flex justify-between">
+                <h4 className="text-md font-bold text-black">Added to Cart</h4>
+                <FiX size={24} className="text-black" onClick={() => setIsCartModalOpen(false)} />
+              </div>
+              <CartModal />
+              <div className="flex gap-2 mt-3">
+                <Link href="/shop" className="p-2 border border-[#1E7773] text-[#1E7773] rounded-md flex-1 text-center">CONTINUE</Link>
+                <Link href="/cart" className="p-2 bg-[#1E7773] rounded-md flex-1 text-center">CART</Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Category description section */}
+      {Category && (
+        <div className="flex flex-wrap justify-start gap-4 w-full p-5 items-start md:px-24">
+          <div>
+            <img
+              src={Category?.image ? `${Assets_Url}${Category.image}` : null}
+              alt={Category?.name || "Category Image"}
+              className="w-96 h-96 object-contain rounded-lg"
+              onError={(e) => { e.currentTarget.src = Image_Not_Found; }}
+            />
+          </div>
+          <div className="mt-25 w-full md:w-1/2">
+            <p className="text-5xl text-white font-semibold font-poppins">{Category?.name || ""}</p>
+            <div className={`text-white mt-6 transition-all duration-300 ${expanded ? "max-h-full overflow-visible" : "max-h-23 overflow-hidden"}`}>
+              <DecodeTextEditor body={Category.note} />
+            </div>
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="mt-2 text-white hover:text-[#8E2C62] cursor-pointer text-sm font-bold transition-colors py-2 px-4 bg-green-500 border border-green-600 rounded-md"
+            >
+              {expanded ? "Read Less" : "Read More"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Quantity Modal */}
+      {showQtyModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
+          <div className="bg-white p-6 rounded-xl shadow-lg w-[350px] text-center">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-800">Add to Cart</h3>
+              <FiX className="cursor-pointer text-gray-500" onClick={() => setShowQtyModal(false)} />
+            </div>
+            <div className="mb-4">
+              <p className="text-gray-600 font-medium">{selectedProduct?.name}</p>
+            </div>
+            <div className="flex items-center justify-center space-x-6 mb-6">
+              <button onClick={() => setQuantity((p) => Math.max(1, p - 1))} className="w-10 h-10 rounded-full bg-gray-200 cursor-pointer text-gray-800 text-2xl font-bold flex items-center justify-center hover:bg-gray-300 transition">-</button>
+              <span className="text-xl text-gray-900 font-semibold">{quantity}</span>
+              <button onClick={() => setQuantity((p) => p + 1)} className="w-10 h-10 rounded-full bg-gray-200 cursor-pointer text-gray-800 text-2xl font-bold flex items-center justify-center hover:bg-gray-300 transition">+</button>
+            </div>
+            <div className="flex gap-4 mt-6">
+              <button onClick={() => setShowQtyModal(false)} className="flex-1 bg-gray-300 cursor-pointer hover:bg-gray-400 text-gray-800 font-semibold py-2 rounded-lg transition">Cancel</button>
+              <button onClick={confirmAddToCart} className="flex-1 bg-[#1E7773] cursor-pointer hover:bg-[#155e5b] text-white font-semibold py-2 rounded-lg transition">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

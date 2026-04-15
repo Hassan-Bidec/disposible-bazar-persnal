@@ -7,10 +7,9 @@ import { Assets_Url, Image_Not_Found, Image_Url } from "../const";
 import { RiFilter3Line } from "react-icons/ri";
 
 import PriceRangeMob from "../components/Shop/PriceRangeMob";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import CustomPriceRange from "../components/Customizaton/CustomPriceRange";
 import CustomPriceRangeMob from "../components/Customizaton/CustomPriceRangeMob";
-// import { useCart } from "../context/CartContext";
 import axios from "../Utils/axios";
 import { Loader } from "../components/Loader";
 import CustomSeo from "../components/CustomSeo";
@@ -19,12 +18,11 @@ import { useCart } from "../Context/CartContext";
 
 export default function Customization() {
   const [grid, setGrid] = useState(3);
+  const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const pathname = usePathname();
   const searchTermFromURL = searchParams.get("q");
-  const pageFromURL = searchParams.get("page");
-  const category = searchParams.get("category"); // category as query param (Next.js)
+  const category = searchParams.get("category");
 const  addToCart  = useCart();
 
  const [disabledButtons, setDisabledButtons] = useState({});
@@ -36,7 +34,7 @@ const isFirstMount = React.useRef(true);
 
   const [isFilter, setIsFilter] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(pageFromURL ? parseInt(pageFromURL) : 1);
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
   const [filteredProduct, setFilteredProduct] = useState([]);
   const [searchTerm, setSearchTerm] = useState(searchTermFromURL || "");
@@ -52,31 +50,25 @@ const isFirstMount = React.useRef(true);
     rating: [],
   });
 
-  // Helper to update URL with new page
+  // Navigate to a new page — ?product-page=2 format, no remount
   const updatePageQuery = (newPage) => {
-    // 1. Update state instantly for UI snappy feel
     setCurrentPage(newPage);
-
-    // 2. Update URL instantly without triggering Next.js router overhead
     const params = new URLSearchParams(window.location.search);
     if (newPage <= 1) {
-      params.delete("page");
+      params.delete("product-page");
     } else {
-      params.set("page", newPage);
+      params.set("product-page", String(newPage));
     }
-
     const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
     window.history.pushState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
+    window.scrollTo({ top: 450, behavior: "smooth" });
   };
 
+  // Sync currentPage when URL changes (e.g. browser back/forward)
   useEffect(() => {
-    const page = searchParams.get("page");
-    if (page) {
-      setCurrentPage(parseInt(page));
-    } else {
-      setCurrentPage(1);
-    }
-  }, [searchParams]);
+    const page = new URLSearchParams(window.location.search).get("product-page");
+    setCurrentPage(page ? parseInt(page) : 1);
+  }, []);
 
   const handleResize = () => {
     const screenWidth = window.innerWidth;

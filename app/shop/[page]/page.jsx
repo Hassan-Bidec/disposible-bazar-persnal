@@ -1,13 +1,12 @@
-// ─── SERVER COMPONENT ─────────────────────────────────────────────────────────
+// ─── SERVER COMPONENT — paginated shop (/shop/2, /shop/3 …) ──────────────────
 import { Suspense } from "react";
-import CustomHeroSection from "../src/components/CustomHeroSection";
-import CustomSeo from "../src/components/CustomSeo";
-import ShopClient from "../src/Pages/ShopClient";
-// import ShopClient from "../src/Pages/ShopClient";
+import CustomHeroSection from "../../src/components/CustomHeroSection";
+import CustomSeo from "../../src/components/CustomSeo";
+import ShopClient from "../../src/Pages/ShopClient";
 
 export const dynamic = "force-dynamic";
 
-// ─── Shared data fetch (metadata + schema + products) ─────────────────────────
+// ─── Shared data fetch ────────────────────────────────────────────────────────
 async function getPageData() {
   try {
     const res = await fetch(
@@ -40,14 +39,20 @@ async function fetchProducts() {
 }
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
-export async function generateMetadata() {
+export async function generateMetadata({ params }) {
+  const page = params.page;
   const pageData = await getPageData();
+
+  const baseTitle = pageData?.meta_title || "Shop - Disposable Bazar";
+  const baseCanonical =
+    pageData?.canonical_url || "https://disposablebazaar.com/shop";
+
   return {
-    title: pageData?.meta_title || "Shop - Disposable Bazar",
+    title: `${baseTitle} - Page ${page}`,
     description:
       pageData?.meta_description ||
       "Browse our full collection of disposable products.",
-    alternates: { canonical: pageData?.canonical_url || "" },
+    alternates: { canonical: `${baseCanonical}/${page}` },
     robots: {
       index: pageData?.robots_index !== "noindex",
       follow: pageData?.robots_follow !== "nofollow",

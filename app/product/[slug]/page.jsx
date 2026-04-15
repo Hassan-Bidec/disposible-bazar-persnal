@@ -45,7 +45,7 @@ function ShopDetails() {
     const [selectedLid, setSelectedLid] = useState(0);
     const [subQuantity, setSubQuantity] = useState(1);
     const [productTextDetail, setProductTextDetail] = useState('Description');
-    const [isLoading, setIsLoading] = useState(false); // New state for loading
+    const [isLoading, setIsLoading] = useState(true); // New state for loading
     const [brandsOpen, setBrandsOpen] = useState(false); // New state for loading
 
     const { addToCart } = useCart();
@@ -133,8 +133,8 @@ const [selectedSize, setSelectedSize] = useState(null);
     };
 
     useEffect(() => {
-        fetchData();
-        fetchReviews();
+        // fetchData();
+        // fetchReviews();
     }, [slug]);
 
     // Check if current variant is in wishlist
@@ -274,18 +274,11 @@ const [selectedSize, setSelectedSize] = useState(null);
 
 
     const fetchReviewById = async (id) => {
-
-        setIsLoading(true);
         try {
             const response = await axios.public.get(`product_reviews/${id}`);
             setProductReview(response.data)
-            // console.log('shop', productReview);
-
-            // console.log('productReview', productReview);
         } catch (error) {
             console.log('Error fetching product review:', error);
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -484,6 +477,7 @@ const [selectedSize, setSelectedSize] = useState(null);
 
     useEffect(() => {
         setProductUrl(window.location.href);
+        console.log("productDetailproductDetail" , productDetail)
     }, []);
 
     const whatsappNumber = "+923213850002";
@@ -582,29 +576,22 @@ const [selectedSize, setSelectedSize] = useState(null);
                         {/* Large Image Display */}
                         <div className="w-4/5 rounded-lg bg-[#32303e] relative min-h-[300px]">
                             {selectedImage ? (
-                                <>
-                                    {/* DEBUG: Log the image URL construction */}
-                                    {/* {console.log("DEBUG: selectedImage raw:", selectedImage)} */}
-                                    {/* {console.log("DEBUG: Constructed URL:", `${Assets_Url.replace(/\/$/, "")}/${selectedImage.replace(/^\/+/, "")}`)} */}
-                                    <img
-                                        src={
-                                            selectedImage
-                                                ? `${Assets_Url.replace(/\/$/, "")}/${selectedImage.replace(/^\/+/, "")}`
-                                                : `${Image_Url}defaultImage.svg`
-                                        }
-                                        alt={productImages?.[0]?.image_alt || "Product Image"}
-                                        fill
-                                        className="object-cover rounded-lg"
-                                    />
-                                </>
+                                <img
+                                    src={
+                                        selectedImage
+                                            ? `${Assets_Url.replace(/\/$/, "")}/${selectedImage.replace(/^\/+/, "")}`
+                                            : `${Image_Url}defaultImage.svg`
+                                    }
+                                    alt={productImages?.[0]?.image_alt || "Product Image"}
+                                    className="w-full h-full object-cover rounded-lg absolute inset-0"
+                                />
                             ) : (
                                 <img
                                     src={productDetail?.product?.image_path
                                         ? `${Assets_Url.replace(/\/$/, "")}/${productDetail.product.image_path.replace(/^\/+/, "")}`
                                         : `${Image_Url}defaultImage.svg`}
                                     alt={productImages?.[0]?.image_alt || "Product Image"}
-                                    fill
-                                    className="object-cover rounded-lg"
+                                    className="w-full h-full object-cover rounded-lg absolute inset-0"
                                 />
                             )}
                         </div>

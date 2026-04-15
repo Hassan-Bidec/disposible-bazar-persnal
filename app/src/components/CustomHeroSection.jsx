@@ -36,7 +36,7 @@ function CustomHeroSection({
     return (
         <div
             className={`w-full  flex items-center text-black relative 
-    h-[90vh] overflow-hidden 
+    h-[95vh] overflow-hidden 
     ${custom == "customization" ? "2xl:h-[1100px]" : "2xl:h-[790px]"}`}
 
             style={{

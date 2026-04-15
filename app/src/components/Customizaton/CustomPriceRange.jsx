@@ -145,13 +145,13 @@ const CustomPriceRange = ({ onFilter }) => {
         {/* PRICE */}
         <div className="py-2">
           <p className="text-4xl">Filter</p> 
-          <p
+          <div
             onClick={() => setPrice(!price)}
-            className="flex justify-between items-center text-[#9F9F9F] text-xl font-bazaar mt-4"
+            className="flex justify-between items-center text-[#9F9F9F] text-xl font-bazaar mt-4 cursor-pointer"
           >
-            <p>Price</p>
-            <p>{price ? <PiCaretUpThin /> : <PiCaretDownThin />}</p>
-          </p>
+            <span>Price</span>
+            <span>{price ? <PiCaretUpThin /> : <PiCaretDownThin />}</span>
+          </div>
 
           {price && (
             <section>

@@ -11,6 +11,7 @@ export async function generateMetadata() {
     }
 
     const data = await res.json();
+    console.log("BundleShop Metadata Fetched:", data);
 
     return {
       title: data?.data?.meta_title || "Bundle Shop - Disposable Bazar",

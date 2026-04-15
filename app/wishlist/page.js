@@ -3,31 +3,48 @@
 
 // 🟩 Dynamic Metadata Function for Wishlist Page
 export async function generateMetadata() {
-  const res = await fetch(
-    "https://ecommerce-inventory.thegallerygen.com/api/page/detail/11", // API page ID for Wishlist
-    { cache: "no-store" }
-  );
+  try {
+    const res = await fetch(
+      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/11", // API page ID for Wishlist
+      { cache: "no-store" }
+    );
 
-  const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status}`);
+    }
 
-  return {
-    title: data?.data?.meta_title || "Wishlist",
-    description: data?.data?.meta_description || "Your Wishlist",
+    const data = await res.json();
 
-    alternates: {
-      canonical: data?.data?.canonical_url || "",
-    },
+    return {
+      title: data?.data?.meta_title || "Wishlist",
+      description: data?.data?.meta_description || "Your Wishlist",
 
-    robots: {
-      index: data?.data?.robots_index !== "noindex",
-      follow: data?.data?.robots_follow !== "nofollow",
+      alternates: {
+        canonical: data?.data?.canonical_url || "",
+      },
 
-      googleBot: {
+      robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
+
+        googleBot: {
+          index: data?.data?.robots_index !== "noindex",
+          follow: data?.data?.robots_follow !== "nofollow",
+        },
       },
-    },
-  };
+    };
+  } catch (error) {
+    console.error("Wishlist metadata fetch failed:", error);
+
+    return {
+      title: "Wishlist",
+      description: "Your Wishlist",
+      robots: {
+        index: true,
+        follow: true,
+      },
+    };
+  }
 }
 
 // 🟩 Load Wishlist Component

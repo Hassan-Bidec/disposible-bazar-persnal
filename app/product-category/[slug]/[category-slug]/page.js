@@ -7,11 +7,11 @@ import { RiFilter3Line } from "react-icons/ri";
 import PriceRangeMob from "../../../src/components/Shop/PriceRangeMob";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
 import axios from "../../../src/Utils/axios";
 import { Loader } from "../../../src/components/Loader";
 import { useCart } from "../../../src/Context/CartContext";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CartModal from "../../../src/components/cart/CartModal";
 import { FiX } from "react-icons/fi";
@@ -21,11 +21,16 @@ import DecodeTextEditor from "../../../src/components/DecodeTextEditor";
 function CategoryDetail({ params }) {
     const unwrappedParams = use(params);
     const categorySlug = unwrappedParams?.['category-slug'] || '';
-
+    const slugParam = unwrappedParams?.['slug'] || '';
 
     const router = useRouter();
+    const routeParams = useParams();
     const searchParams = useSearchParams();
     const searchTermFromURL = searchParams?.get("q") || "";
+
+    // Read initial page from searchParams
+    const pageFromURL = searchParams?.get("product-page");
+    const initialPage = pageFromURL ? parseInt(pageFromURL) : 1;
 
 
     // -----------------------------
@@ -40,8 +45,8 @@ function CategoryDetail({ params }) {
 
     const [expanded, setExpanded] = useState(false);
     const [grid, setGrid] = useState(3);
-    const [loading, setLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(initialPage);
     const itemsPerPage = 12;
     const [filteredProduct, setFilteredProduct] = useState([]);
     const [categoryDetail, setCategoryDetail] = useState([]);
@@ -78,6 +83,25 @@ function CategoryDetail({ params }) {
     useEffect(() => {
         window.scrollTo(0, 450);
     }, [categorySlug]);
+
+    // Update URL to clean path WITHOUT triggering a remount
+    const updatePageUrl = (newPage) => {
+        const params = new URLSearchParams(window.location.search);
+        if (newPage <= 1) {
+            params.delete("product-page");
+        } else {
+            params.set("product-page", newPage);
+        }
+        const newPath = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+        window.history.pushState({ ...window.history.state, as: newPath, url: newPath }, "", newPath);
+    };
+
+    // Change page: update state + URL + scroll
+    const goToPage = (newPage) => {
+        setCurrentPage(newPage);
+        updatePageUrl(newPage);
+        window.scrollTo({ top: 450, behavior: "smooth" });
+    };
 
     const handleResize = () => {
         const screenWidth = window.innerWidth;
@@ -121,18 +145,12 @@ console.log("Category Slugs:", categories.map(c => normalizeSlug(c.slug)));
   }
 
   setLoading(true);
-  setCurrentPage(1);
 
   try {
-    console.log("🔹 Slug:", categorySlug);
-    console.log("🔹 Search Term:", searchTerm);
-    console.log("🔹 Filter:", filter);
-    console.log("🔹 Total Categories:", categories);
-
+    
     // 🔍 Find category (recursive)
     const cat = findCategoryBySlug(categories, categorySlug);
 
-    console.log("✅ Matched Category:", cat);
 
     if (!cat) {
       console.log("❌ Category NOT FOUND for slug:", categorySlug);
@@ -165,7 +183,7 @@ console.log("Category Slugs:", categories.map(c => normalizeSlug(c.slug)));
     setCategorySeo(response.data?.category?.category_seo_metadata);
     setFilteredProduct(response.data?.data || []);
 
-    console.log("✅ State Updated Successfully");
+    console.log("State Updated Successfully" , response.data?.category);
 
   } catch (error) {
     console.error("❌ API ERROR:", error);
@@ -220,69 +238,44 @@ console.log("Category Slugs:", categories.map(c => normalizeSlug(c.slug)));
         });
     };
 
-    const handleAddCart = (product) => {
-        const product_id = product.id;
-        const product_name = product.name;
-        const pack_size = Number(product.product_variants[0].pack_size);
-        const product_quantity = 1;
-        const total_pieces = pack_size;
-        const price_per_piece = Number(product.product_variants[0].price_per_piece);
-        const product_total = (price_per_piece * total_pieces).toFixed(2);
-        const product_img = product.product_image[0].image;
-        const product_variants = product.product_variants;
-
+    const handleAddCartClick = (product) => {
         setSelectedProduct(product);
         setQuantity(1);
         setShowQtyModal(true);
+    };
+
+    const confirmAddToCart = () => {
+        if (!selectedProduct) return;
+        const product = selectedProduct;
+        const variant = product.product_variants?.[0];
+        if (!variant) return;
+
+        const pack_size = Number(variant.pack_size ?? 1);
+        const product_quantity = Number(quantity ?? 1);
+        const total_pieces = pack_size * product_quantity;
+        const price_per_piece = Number(variant.price_per_piece ?? variant.price ?? 0);
+        const product_total = (price_per_piece * total_pieces).toFixed(2);
+        const product_img = product.product_image?.[0]?.image ?? "";
+        const product_variants = product.product_variants;
 
         addToCart(
-            product_id,
-            product_name,
+            product.id,
+            product.name,
             product_quantity,
             pack_size,
             total_pieces,
             price_per_piece,
             product_img,
             product_total,
-            product_variants,
+            product_variants
         );
+
         setIsCartModalOpen(true);
-    };
-
-    //     // --------------------------------------------------
-    //   // UPDATED: Add to cart now opens quantity popup
-    //   // --------------------------------------------------
-    //   const handleAddCart = (product) => {
-    //     setSelectedProduct(product);
-    //     setQuantity(1);
-    //     setShowQtyModal(true);
-    //   };
-
-    // --------------------------------------------------
-    // CONFIRM ADD — real add to cart here
-    // --------------------------------------------------
-    const confirmAddToCart = () => {
-        if (!selectedProduct) return;
-
-        const variant = selectedProduct.product_variants?.[0];
-        if (!variant) return;
-
-        addToCart(
-            selectedProduct.id,
-            selectedProduct.name,
-            quantity,
-            Number(variant.pack_size),
-            Number(variant.pack_size),
-            Number(variant.price_per_piece),
-            selectedProduct.product_image?.[0]?.image,
-            (variant.price_per_piece * variant.pack_size * quantity).toFixed(2),
-            selectedProduct.product_variants
-        );
-
         setShowQtyModal(false);
-        setIsCartModalOpen(true);
     };
 
+
+    if (loading) return <Loader />;
 
     return (
         <>
@@ -363,15 +356,9 @@ console.log("Category Slugs:", categories.map(c => normalizeSlug(c.slug)));
                                     <Link href="/">Home</Link> / <Link href="/shop">Shop</Link> / {Category?.name}
                                 </p>
                             </div>
-                            {/* Show loader while loading */}
-                            {loading ? (
-                                <div className="flex justify-center py-10">
-                                    <Loader />
-                                </div>
-                            ) : filteredProduct.length === 0 ? (
+                            {filteredProduct.length === 0 ? (
                                 <div className="flex justify-center h-screen items-center py-10">
                                     <h2 className="text-4xl font-bazaar">No products found</h2>
-
                                 </div>
                             ) : (
                                 <>
@@ -469,7 +456,7 @@ console.log("Category Slugs:", categories.map(c => normalizeSlug(c.slug)));
                                                                 className={`p-2 bg-[#1E7773] w-full  font-bazaar 
 cursor-pointer rounded-lg`}
                                                                 onClick={() =>
-                                                                    handleAddCart(
+                                                                    handleAddCartClick(
                                                                         product,
                                                                     )
                                                                 }
@@ -496,6 +483,13 @@ cursor-pointer rounded-lg`}
 
                                     {filteredProduct.length > itemsPerPage && (
                                         <div className="flex justify-center items-center mt-10 gap-2 text-white">
+                                            <button
+                                                onClick={() => goToPage(Math.max(1, currentPage - 1))}
+                                                disabled={currentPage === 1}
+                                                className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:text-white text-gray-400'}`}
+                                            >
+                                                &larr;
+                                            </button>
                                             {(() => {
                                                 const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
                                                 let pages = [];
@@ -516,8 +510,7 @@ cursor-pointer rounded-lg`}
                                                         key={index}
                                                         onClick={() => {
                                                             if (page !== '...') {
-                                                                setCurrentPage(page);
-                                                                window.scrollTo({ top: 450, behavior: "smooth" });
+                                                                goToPage(page);
                                                             }
                                                         }}
                                                         className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${
@@ -537,8 +530,7 @@ cursor-pointer rounded-lg`}
                                             <button 
                                                 onClick={() => {
                                                     const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
-                                                    setCurrentPage(prev => Math.min(totalPages, prev + 1));
-                                                    window.scrollTo({ top: 450, behavior: "smooth" });
+                                                    goToPage(Math.min(totalPages, currentPage + 1));
                                                 }}
                                                 disabled={currentPage === Math.ceil(filteredProduct.length / itemsPerPage)}
                                                 className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === Math.ceil(filteredProduct.length / itemsPerPage) ? 'opacity-30 cursor-not-allowed' : 'hover:text-white text-gray-400 text-gray-400'}`}
@@ -551,39 +543,6 @@ cursor-pointer rounded-lg`}
                             )}
                         </div>
                     </section>
-                    {isCartModalOpen && (
-                        <div
-                            className="fixed inset-0 flex items-center justify-center z-50"
-                            onClick={() => setIsCartModalOpen(false)}
-                        >
-                            <div className="fixed md:top-4 md:right-4 bg-white shadow-lg p-4 rounded-lg z-50 w-[300px] transition-transform duration-500">
-                                <div className="flex justify-between">
-                                    <h4 className="text-md font-bold text-black">
-                                        Added to Cart
-                                    </h4>
-                                    <FiX
-                                        size={24} className="text-black"
-                                        onClick={() => setIsCartModalOpen(false)}
-                                    />
-                                </div>
-                                <CartModal />
-                                <div className="flex flex-row gap-2 mt-2">
-                                    <Link
-                                        href="/shop/"
-                                        className="p-1 flex justify-center items-center pt-2 border text-[#1E7773] border-[#1E7773] w-full lg:text-[15px] font-bazaar text-xs rounded-md"
-                                    >
-                                        CONTINUE
-                                    </Link>
-                                    <Link
-                                        href="/cart/"
-                                        className="p-1 flex justify-center items-center pt-2 bg-[#1E7773] w-full lg:text-[15px] font-bazaar text-xs rounded-md"
-                                    >
-                                        CART
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 {Category && (
@@ -592,7 +551,7 @@ cursor-pointer rounded-lg`}
                             <img src={
                                 Category?.image
                                     ? `${Assets_Url}${Category.image}`
-                                    : ""
+                                    : null
                             }
                                 alt={Category?.name || "Category Image"}
                                 className="w-96 h-96 object-contain rounded-lg"
@@ -631,17 +590,14 @@ cursor-pointer rounded-lg`}
 
 
 
-                {/* =======================
-    QUANTITY POPUP MODAL  
-======================= */}
+                {/* Quantity Modal — same as Shop page */}
                 {showQtyModal && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
                         <div className="bg-white p-6 rounded-xl shadow-lg w-[300px] text-center">
                             <h3 className="text-lg font-semibold mb-4 text-gray-800">
                                 Select Quantity
                             </h3>
-
-                            <div className="flex items-center justify-center   space-x-6 mb-6">
+                            <div className="flex items-center justify-center space-x-6 mb-6">
                                 <button
                                     onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
                                     className="w-10 h-10 rounded-full bg-gray-200 cursor-pointer text-gray-800 text-2xl font-bold flex items-center justify-center hover:bg-gray-300 transition"
@@ -656,9 +612,7 @@ cursor-pointer rounded-lg`}
                                     +
                                 </button>
                             </div>
-
-                            {/* Buttons */}
-                            <div className="flex gap-4 mt-6">
+                            <div className="flex justify-between gap-3">
                                 <button
                                     onClick={() => setShowQtyModal(false)}
                                     className="flex-1 bg-gray-300 cursor-pointer hover:bg-gray-400 text-gray-800 font-semibold py-2 rounded-lg transition"
@@ -671,6 +625,40 @@ cursor-pointer rounded-lg`}
                                 >
                                     Add to Cart
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Cart Modal — same as Shop page */}
+                {isCartModalOpen && (
+                    <div
+                        className="fixed inset-0 flex items-center justify-center z-50"
+                        onClick={() => setIsCartModalOpen(false)}
+                    >
+                        <div className="fixed md:top-32 md:right-4 bg-white shadow-lg p-4 rounded-lg z-50 w-[300px]">
+                            <div className="flex justify-between">
+                                <h4 className="text-md font-bold text-black">Added to Cart</h4>
+                                <FiX
+                                    size={24}
+                                    className="text-black"
+                                    onClick={() => setIsCartModalOpen(false)}
+                                />
+                            </div>
+                            <CartModal />
+                            <div className="flex gap-2 mt-2">
+                                <Link
+                                    href="/shop/"
+                                    className="p-1 flex justify-center border text-[#1E7773] border-[#1E7773] w-full rounded-md"
+                                >
+                                    CONTINUE
+                                </Link>
+                                <Link
+                                    href="/cart/"
+                                    className="p-1 flex justify-center bg-[#1E7773] text-white w-full rounded-md"
+                                >
+                                    CART
+                                </Link>
                             </div>
                         </div>
                     </div>

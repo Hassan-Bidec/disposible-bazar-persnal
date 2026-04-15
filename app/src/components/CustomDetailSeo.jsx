@@ -9,6 +9,7 @@ const CustomDetailSeo = ({ title, des, focuskey, canonicalUrl, schema, og_title,
     //     const doc = new DOMParser().parseFromString(html, 'text/html');
     //     return doc.body.textContent || "";
     // };
+    console.log("canonicalUrl" , canonicalUrl)
     const stripHtml = (html) => {
     if (!html) return "";
     return html.replace(/<[^>]*>/g, "");

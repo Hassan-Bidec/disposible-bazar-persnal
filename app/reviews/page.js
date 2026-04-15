@@ -1,30 +1,48 @@
 // 🟩 Dynamic Metadata Function for Reviews Page
 export async function generateMetadata() {
-  const res = await fetch(
-    "https://ecommerce-inventory.thegallerygen.com/api/page/detail/4 ", // API page ID for Reviews
-    { cache: "no-store" }
-  );
+  try {
+    const res = await fetch(
+      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/4 ", // API page ID for Reviews
+      { cache: "no-store" }
+    );
 
-  const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status}`);
+    }
 
-  return {
-    title: data?.data?.meta_title || "Reviews",
-    description: data?.data?.meta_description || "Reviews page",
+    const data = await res.json();
+    console.log("Reviews Metadata Fetched:", data);
 
-    alternates: {
-      canonical: data?.data?.canonical_url || "",
-    },
+    return {
+      title: data?.data?.meta_title || "Reviews",
+      description: data?.data?.meta_description || "Reviews page",
 
-    robots: {
-      index: data?.data?.robots_index !== "noindex",
-      follow: data?.data?.robots_follow !== "nofollow",
+      alternates: {
+        canonical: data?.data?.canonical_url || "",
+      },
 
-      googleBot: {
+      robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
+
+        googleBot: {
+          index: data?.data?.robots_index !== "noindex",
+          follow: data?.data?.robots_follow !== "nofollow",
+        },
       },
-    },
-  };
+    };
+  } catch (error) {
+    console.error("Reviews metadata fetch failed:", error);
+
+    return {
+      title: "Reviews",
+      description: "Reviews page",
+      robots: {
+        index: true,
+        follow: true,
+      },
+    };
+  }
 }
 
 // 🟩 Load Reviews Component

@@ -9,19 +9,39 @@ import { RiFilter3Line } from 'react-icons/ri';
 import { RxCross2 } from 'react-icons/rx';
 import { Loader } from '../components/Loader';
 import { GrNext, GrPrevious } from "react-icons/gr";
-import CustomDetailSeo from '../components/CustomDetailSeo';
 import CustomSeo from '../components/CustomSeo';
 import ErrorPage from './ErrorPage';
+import { useParams, useRouter } from 'next/navigation';
 
 function Blog() {
+    const params = useParams();
+    const router = useRouter();
+    // Read page from dynamic route segment (/blog/[page])
+    const pageFromRoute = params.page ? parseInt(params.page) : 1;
+
     const [blogs, setBlogs] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(pageFromRoute);
     const [totalPages, setTotalPages] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+
+    // Sync currentPage when route segment changes (e.g. browser back/forward)
+    useEffect(() => {
+        setCurrentPage(pageFromRoute);
+    }, [pageFromRoute]);
+
+    // Navigate to a new page using clean dynamic routes
+    const navigateToPage = (newPage) => {
+        setCurrentPage(newPage);
+        if (newPage <= 1) {
+            router.push(`/blog`);
+        } else {
+            router.push(`/blog/${newPage}`);
+        }
+    };
 
     // Fetch blogs with pagination
     const fetchData = async (page = 1, category = selectedCategory) => {
@@ -66,19 +86,19 @@ function Blog() {
 
     const handleCategoryChange = (category) => {
         setSelectedCategory(category);
-        setCurrentPage(1);
+        navigateToPage(1);
         setIsSidebarOpen(false);
     };
 
     const handleNextPage = () => {
         if (currentPage < totalPages) {
-            setCurrentPage(prev => prev + 1);
+            navigateToPage(currentPage + 1);
         }
     };
 
     const handlePreviousPage = () => {
         if (currentPage > 1) {
-            setCurrentPage(prev => prev - 1);
+            navigateToPage(currentPage - 1);
         }
     };
 
@@ -137,7 +157,7 @@ function Blog() {
                                 {[...Array(totalPages)].map((_, index) => (
                                     <button
                                         key={index}
-                                        onClick={() => setCurrentPage(index + 1)}
+                                        onClick={() => navigateToPage(index + 1)}
                                         className={`px-3 py-1 rounded-lg transition duration-300 ${currentPage === index + 1 ? 'text-white' : 'text-gray-300'}`}
                                     >
                                         {index + 1}

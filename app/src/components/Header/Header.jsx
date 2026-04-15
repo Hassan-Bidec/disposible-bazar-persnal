@@ -496,21 +496,21 @@ function Header() {
                                         className="absolute flex flex-col gap-3 bg-white rounded-lg p-2 mt-2 shadow"
                                     >
                                         <Link href="/inquiryform">
-                                            <li
+                                            <div
                                                 className={`hover:text-[#1E7773] font-bold px-2 rounded-lg duration-300 
                                     ${pathname === "/inquiryform" ? "text-[#1E7773]" : "text-black"}`}
                                             >
                                                 Inquiry Form
-                                            </li>
+                                            </div>
                                         </Link>
 
                                         <Link href="/customization">
-                                            <li
+                                            <div
                                                 className={`hover:text-[#1E7773]  font-bold px-2 rounded-lg duration-300 
                                     ${pathname === "/customization" ? "text-[#1E7773]" : "text-black"}`}
                                             >
                                                 Custom Packaging
-                                            </li>
+                                            </div>
                                         </Link>
                                     </div>
                                 )}

@@ -1,30 +1,47 @@
 // 🟩 Dynamic Metadata Function for Account Settings Page
 export async function generateMetadata() {
-  const res = await fetch(
-    "https://ecommerce-inventory.thegallerygen.com/api/page/detail/6", // API page ID for Account Settings
-    { cache: "no-store" }
-  );
+  try {
+    const res = await fetch(
+      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/6", // API page ID for Account Settings
+      { cache: "no-store" }
+    );
 
-  const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status}`);
+    }
 
-  return {
-    title: data?.data?.meta_title || "Account Settings",
-    description: data?.data?.meta_description || "Manage your account settings",
+    const data = await res.json();
 
-    alternates: {
-      canonical: data?.data?.canonical_url || "",
-    },
+    return {
+      title: data?.data?.meta_title || "Account Settings",
+      description: data?.data?.meta_description || "Manage your account settings",
 
-    robots: {
-      index: data?.data?.robots_index !== "noindex",
-      follow: data?.data?.robots_follow !== "nofollow",
+      alternates: {
+        canonical: data?.data?.canonical_url || "",
+      },
 
-      googleBot: {
+      robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
+
+        googleBot: {
+          index: data?.data?.robots_index !== "noindex",
+          follow: data?.data?.robots_follow !== "nofollow",
+        },
       },
-    },
-  };
+    };
+  } catch (error) {
+    console.error("Account Settings metadata fetch failed:", error);
+
+    return {
+      title: "Account Settings",
+      description: "Manage your account settings",
+      robots: {
+        index: true,
+        follow: true,
+      },
+    };
+  }
 }
 
 // 🟩 Load AccountSettings Component

@@ -24,7 +24,7 @@ function Shop() {
   const router = useRouter();
   const pathname = usePathname();
   const searchTermFromURL = searchParams.get("q");
-  const pageFromURL = searchParams.get("page");
+  const pageFromURL = searchParams.get("product-page");
 
   const [grid, setGrid] = useState(3);
   const [loading, setLoading] = useState(false);
@@ -49,25 +49,21 @@ function Shop() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
-  // Helper to update URL with new page
+  // Helper to update URL — ?product-page=2 format, no remount
   const updatePageQuery = (newPage) => {
-    // 1. Update state instantly for UI snappy feel
     setCurrentPage(newPage);
-
-    // 2. Update URL instantly without triggering Next.js router overhead
     const params = new URLSearchParams(window.location.search);
     if (newPage <= 1) {
-      params.delete("page");
+      params.delete("product-page");
     } else {
-      params.set("page", newPage);
+      params.set("product-page", String(newPage));
     }
-
     const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
     window.history.pushState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
   };
 
   useEffect(() => {
-    const page = searchParams.get("page");
+    const page = searchParams.get("product-page");
     if (page) {
       setCurrentPage(parseInt(page));
     } else {
