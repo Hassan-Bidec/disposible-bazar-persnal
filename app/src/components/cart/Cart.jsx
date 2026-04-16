@@ -101,7 +101,7 @@ function Cart() {
 
     {cartItems.map((product) => {
         const limitExceeded = isOrderLimitExceeded(product);
-
+         console.log("product" , product)
         return (
             <div
                 key={product.id}
@@ -129,7 +129,7 @@ function Cart() {
 
                 {/* Pack Size Column (1 span) */}
                 <div className="col-span-1 flex justify-center">
-                    {product.product_variants?.length > 0 && (
+                    {Array.isArray(product.product_variants) && product.product_variants.length > 0 && (
                         <select
                             className="bg-[#20202C] border border-[#1E7773] rounded-lg w-full p-2 outline-none text-white text-xs"
                             value={product.pack_size}
@@ -181,8 +181,8 @@ function Cart() {
                 <div className="col-span-2 flex justify-center">
                     <div className="border border-[#1E7773] rounded-lg text-center py-2 w-full bg-[#20202C]">
                         <span className="font-semibold text-white text-sm">
-                            {product.printing_price && Number(product.printing_price) > 0
-                                ? `Rs ${Number(product.printing_price).toLocaleString()}`
+                            {product?.packaging_options?.price && Number(product?.packaging_options?.price) > 0
+                                ? `Rs ${Number(product?.packaging_options?.price).toLocaleString()}`
                                 : "N/A"}
                         </span>
                     </div>
@@ -283,7 +283,7 @@ function Cart() {
 
                 {/* Cart Summary */}
                 <div className="border px-3 lg:border-none border-[#1E7773] rounded-lg flex flex-col justify-start py-5 gap-3 lg:w-1/5 md:w-1/2">
-                    <h4 className="text-3xl font-semibold">Cart Totals</h4>
+                    <h4 className="text-3xl font-semibold">Cart Total</h4>
                     <div className="flex flex-col justify-start pt-5 gap-3">
                         <div className="flex justify-between text-lg">
                             <span>Subtotal:</span>
