@@ -113,15 +113,14 @@ function Shop() {
 
       let data = response.data?.data || [];
 
-      // ❌ OLD BUG FIXED: "search" undefined tha
-      // ❌ API ka structure handle nahi ho raha tha
+    
       if (Array.isArray(data)) {
         data = data;
       } else if (data?.is_customizeable) {
         data = data.is_customizeable;
       }
 
-      // ⭐ FINAL SORTING APPLY
+    
       const sorted = sortProducts(data, filter.sort_by);
 
       setFilteredProduct(sorted);

@@ -53,7 +53,10 @@ export const dynamic = "force-dynamic";
 export default function Page() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
       <Customization   />
      </Suspense>
   );

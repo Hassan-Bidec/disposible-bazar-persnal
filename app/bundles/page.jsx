@@ -1,60 +1,75 @@
-// 🟩 Dynamic Metadata Function for BundleShop Page
-export async function generateMetadata() {
+// ─── SERVER COMPONENT ─────────────────────────────────────────────────────────
+// Bundles listing — bundles fetched server-side, names visible in initial HTML.
+// ─────────────────────────────────────────────────────────────────────────────
+
+import { Suspense } from "react";
+import BundleShop from "../src/Pages/BundleShop";
+
+export const dynamic = "force-dynamic";
+
+const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
+
+async function getPageData() {
   try {
-    const res = await fetch(
-      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/3", // API page ID for BundleShop
-      { cache: "no-store" }
-    );
-
-    if (!res.ok) {
-      throw new Error(`API returned status ${res.status}`);
-    }
-
-    const data = await res.json();
-    console.log("BundleShop Metadata Fetched:", data);
-
+    const [metaRes, bundlesRes] = await Promise.all([
+      fetch(`${API_BASE}/page/detail/3`, { cache: "no-store" }),
+      fetch(`${API_BASE}/bundles`, { cache: "no-store" }),
+    ]);
+    const meta = metaRes.ok ? await metaRes.json() : null;
+    const bundles = bundlesRes.ok ? await bundlesRes.json() : null;
     return {
-      title: data?.data?.meta_title || "Bundle Shop - Disposable Bazar",
-      description: data?.data?.meta_description || "Special bundles and deals on disposable products.",
-
-      alternates: {
-        canonical: data?.data?.canonical_url || "",
-      },
-
-      robots: {
-        index: data?.data?.robots_index !== "noindex",
-        follow: data?.data?.robots_follow !== "nofollow",
-
-        googleBot: {
-          index: data?.data?.robots_index !== "noindex",
-          follow: data?.data?.robots_follow !== "nofollow",
-        },
-      },
+      meta: meta?.data || null,
+      bundles: bundles?.data || [],
     };
-  } catch (error) {
-    console.error("BundleShop metadata fetch failed:", error);
-    return {
-      title: "Bundle Shop - Disposable Bazar",
-      description: "Our special bundles and deals.",
-      robots: {
-        index: true,
-        follow: true,
-      },
-    };
+  } catch {
+    return { meta: null, bundles: [] };
   }
 }
 
+export async function generateMetadata() {
+  const { meta } = await getPageData();
+  return {
+    title: meta?.meta_title || "Bundle Shop - Disposable Bazar",
+    description: meta?.meta_description || "Special bundles and deals on disposable products.",
+    alternates: { canonical: meta?.canonical_url || "" },
+    robots: {
+      index: meta?.robots_index !== "noindex",
+      follow: meta?.robots_follow !== "nofollow",
+      googleBot: {
+        index: meta?.robots_index !== "noindex",
+        follow: meta?.robots_follow !== "nofollow",
+      },
+    },
+  };
+}
 
-import React, { Suspense } from "react";
-import BundleShop from "../src/Pages/BundleShop";
+export default async function Page() {
+  const { meta, bundles } = await getPageData();
+  const schema = meta?.schema || null;
 
-
-export const dynamic = "force-dynamic";
-export default function Page() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      
-     <BundleShop />
-    </Suspense>
+    <>
+      {schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: schema }}
+        />
+      )}
+
+      {/* SSR: bundle names visible in initial HTML */}
+      <noscript>
+        <ul>
+          {bundles.slice(0, 12).map((b) => (
+            <li key={b.id}>
+              <a href={`/bundle/${b.slug}`}>{b.name}</a>
+            </li>
+          ))}
+        </ul>
+      </noscript>
+
+      <Suspense fallback={null}>
+        <BundleShop />
+      </Suspense>
+    </>
   );
 }

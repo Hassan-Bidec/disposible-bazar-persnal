@@ -22,6 +22,7 @@ import { FiX } from 'react-icons/fi';
 import CartModal from '../../src/components/cart/CartModal';
 import CustomDetailSeo from '../../src/components/CustomDetailSeo';
 import { useCart } from '../../src/Context/CartContext';
+import { Loader } from '../../src/components/Loader';
 
 export default function CustomDetails() {
     const [productDetail, setProductDetail] = useState([]);
@@ -58,7 +59,8 @@ export default function CustomDetails() {
     const [logoImage, setLogoImage] = useState(null);
     const [customizeDetail, setCustomizeDetail] = useState('');
     const [isCartModalOpen, setIsCartModalOpen] = useState(false);
-    const [printingPrice , setPrintingPrice] = useState(0)
+    const [printingPrice , setPrintingPrice] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
     const dropdownRef = useRef(null);
 
     const { addToWishlist } = useWishlist();
@@ -78,6 +80,7 @@ export default function CustomDetails() {
     const id = pathParts.length > 1 ? pathParts[1].replace(/\/$/, '/') : null;
     useEffect(() => {
         const fetchData = async () => {
+            setIsLoading(true);
             try {
                 const response = await axios.public.post(`product/customize/s/details`, { slug: id });
                 const resData = response.data.data;
@@ -99,9 +102,10 @@ export default function CustomDetails() {
                 setProductLid(resData.product?.product_lid_options);
                 setRecomendedProducts(resData.recommended_products);
                 setSelectedImage(resData?.product.product_image[0].image || '');
-
             } catch (error) {
                 console.log(error);
+            } finally {
+                setIsLoading(false);
             }
         };
         if (id) fetchData();
@@ -343,6 +347,8 @@ export default function CustomDetails() {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
+    if (isLoading) return <Loader />;
 
     return (
         <div className="relative py-32 px-10 text-white overflow-hidden">

@@ -142,7 +142,7 @@ function Blog() {
                         )}
                     </div>
                     {/* Pagination Controls */}
-                    {blogs.length > 0 && (
+                    {/* {blogs.length > 0 && (
                         <div className='flex justify-center items-center space-x-2 mt-4'>
                             <button
                                 onClick={handlePreviousPage}
@@ -152,7 +152,7 @@ function Blog() {
                                 <GrPrevious />
                             </button>
 
-                            {/* Page numbers */}
+                            
                             <div className='flex space-x-1'>
                                 {[...Array(totalPages)].map((_, index) => (
                                     <button
@@ -173,7 +173,7 @@ function Blog() {
                                 <GrNext />
                             </button>
                         </div>
-                    )}
+                    )} */}
                 </section>
             </div>
         </div>

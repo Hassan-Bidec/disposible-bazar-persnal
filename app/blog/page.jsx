@@ -1,61 +1,79 @@
+// ─── SERVER COMPONENT ─────────────────────────────────────────────────────────
+// Blog listing — blogs fetched server-side, titles visible in initial HTML.
+// ─────────────────────────────────────────────────────────────────────────────
+
+import { Suspense } from "react";
+import BlogClient from "../src/Pages/Blog";
+
 export const dynamic = "force-dynamic";
 
+const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
-// 🟩 Dynamic Metadata Function for Blog Page
-export async function generateMetadata() {
+// ─── Server fetch ─────────────────────────────────────────────────────────────
+async function getPageData() {
   try {
-    const res = await fetch(
-      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/10", // API page ID for Blog
-      { cache: "no-store" }
-    );
-
-    if (!res.ok) {
-      throw new Error(`API error: ${res.status}`);
-    }
-
-    const data = await res.json();
-    console.log("Blog Metadata Fetched:", data);
+    const [metaRes, blogsRes] = await Promise.all([
+      fetch(`${API_BASE}/page/detail/10`, { cache: "no-store" }),
+      fetch(`${API_BASE}/blogs/index`, { cache: "no-store" }),
+    ]);
+    const meta = metaRes.ok ? await metaRes.json() : null;
+    const blogs = blogsRes.ok ? await blogsRes.json() : null;
     return {
-      title: data?.data?.meta_title || "Blog",
-      description: data?.data?.meta_description || "Blog page",
-
-      alternates: {
-        canonical: data?.data?.canonical_url || "",
-      },
-
-      robots: {
-        index: data?.data?.robots_index !== "noindex",
-        follow: data?.data?.robots_follow !== "nofollow",
-
-        googleBot: {
-          index: data?.data?.robots_index !== "noindex",
-          follow: data?.data?.robots_follow !== "nofollow",
-        },
-      },
+      meta: meta?.data || null,
+      blogs: blogs?.data || [],
+      totalPages: blogs?.pagination?.last_page || 1,
     };
-  } catch (error) {
-    console.error("Blog metadata fetch failed:", error);
-
-    return {
-      title: "Blog",
-      description: "Blog page",
-      robots: {
-        index: true,
-        follow: true,
-      },
-    };
+  } catch {
+    return { meta: null, blogs: [], totalPages: 1 };
   }
 }
 
+// ─── Metadata ─────────────────────────────────────────────────────────────────
+export async function generateMetadata() {
+  const { meta } = await getPageData();
+  return {
+    title: meta?.meta_title || "Blog - Disposable Bazar",
+    description: meta?.meta_description || "Read our latest blog posts.",
+    alternates: { canonical: meta?.canonical_url || "" },
+    robots: {
+      index: meta?.robots_index !== "noindex",
+      follow: meta?.robots_follow !== "nofollow",
+      googleBot: {
+        index: meta?.robots_index !== "noindex",
+        follow: meta?.robots_follow !== "nofollow",
+      },
+    },
+  };
+}
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
+export default async function Page() {
+  const { meta, blogs, totalPages } = await getPageData();
+  const schema = meta?.schema || null;
 
-import { Suspense } from "react";
-import Blog from "../../app/src/Pages/Blog";
-
-export default function Page() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Blog />
-    </Suspense>
+    <>
+      {schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: schema }}
+        />
+      )}
+
+      {/* SSR: blog titles visible in initial HTML */}
+      <noscript>
+        <ul>
+          {blogs.slice(0, 10).map((b) => (
+            <li key={b.id}>
+              <a href={`/${b.slug}`}>{b.title}</a>
+            </li>
+          ))}
+        </ul>
+      </noscript>
+
+      <Suspense fallback={null}>
+        <BlogClient />
+      </Suspense>
+    </>
   );
 }
