@@ -287,7 +287,7 @@ export default function CustomDetails() {
     addToCart(
         product_id,
         product_name,
-        printing_price,
+        
         product_quantity,
         pack_size,
         total_pieces,
@@ -295,7 +295,9 @@ export default function CustomDetails() {
         product_img,
         product_total_final,  // Final total with discount
         product_variants,
+        printing_price,
         product_color,
+
         product_size,
         logo,
         product_options,
@@ -304,7 +306,7 @@ export default function CustomDetails() {
         lid_Price,           // Lid price per piece
         customizeDetail,
         option_Price,        // Printing price per piece
-        false,
+        null,
         order_limit,
         packaging_options,   // Packaging options with total_price
     );

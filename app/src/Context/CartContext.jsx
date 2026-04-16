@@ -27,6 +27,7 @@ export const CartProvider = ({ children }) => {
   const addToCart = (
     product_id,
     product_name,
+    
     product_quantity,
     pack_size,
     total_pieces,
