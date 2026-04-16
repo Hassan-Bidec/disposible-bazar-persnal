@@ -123,12 +123,22 @@ export const CartProvider = ({ children }) => {
           );
           if (selectedVariant) {
             const validPackSize = Number(selectedVariant.pack_size) || 1;
-            const packPrice = Number(selectedVariant.price) || 0;
             const newTotalPieces = validPackSize * item.product_quantity;
-            const newPricePerPiece = Number(selectedVariant.price_per_piece) || 0;
-            const newProductTotal = item.lid_Price
-              ? newTotalPieces * (newPricePerPiece + Number(item.lid_Price) + Number(item.option_Price || 0) + Number(item?.packaging_options?.price || 0))
-              : newTotalPieces * (newPricePerPiece + Number(item.option_Price || 0) + Number(item?.packaging_options?.price || 0));
+
+            // Use price_per_piece if available, otherwise derive from variant price / pack_size
+            const newPricePerPiece =
+              Number(selectedVariant.price_per_piece) > 0
+                ? Number(selectedVariant.price_per_piece)
+                : Number(selectedVariant.price) > 0
+                  ? Number(selectedVariant.price) / validPackSize
+                  : 0;
+
+            const extras =
+              Number(item.lid_Price || 0) +
+              Number(item.option_Price || 0) +
+              Number(item?.packaging_options?.price || 0);
+
+            const newProductTotal = newTotalPieces * (newPricePerPiece + extras);
 
             return {
               ...item,

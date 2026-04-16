@@ -83,11 +83,12 @@ function Cart() {
                 <div className="hidden md:flex flex-col w-full">
     {/* Header Section: Using Grid for perfect alignment */}
     <div className="grid grid-cols-12 gap-4 py-5 border-b border-gray-600 font-semibold text-gray-300 text-sm">
-        <div className="col-span-3">Product</div>
+        <div className="col-span-1 text-center">Picture</div>
+        <div className="col-span-2">Product Name</div>
         <div className="col-span-1 text-center">Pack Size</div>
         <div className="col-span-2 text-center">Quantity</div>
-        <div className="col-span-2 text-center">Lid Price</div>
-        <div className="col-span-1 text-center">Printing</div>
+        <div className="col-span-1 text-center">Price/Piece</div>
+        <div className="col-span-2 text-center">Printing Price/Piece</div>
         <div className="col-span-1 text-center">Total Pcs</div>
         <div className="col-span-2 text-center">Total Price</div>
     </div>
@@ -106,23 +107,24 @@ function Cart() {
                 key={product.id}
                 className="grid grid-cols-12 gap-4 py-6 border-t border-gray-600 items-center hover:bg-[#1a1a24] transition rounded-xl"
             >
-                {/* Product Column (3 spans) */}
-                <div className="col-span-3 flex items-center gap-4">
+                {/* Picture Column (1 span) */}
+                <div className="col-span-1 flex justify-center items-center gap-1">
                     <button
                         className="text-white cursor-pointer hover:text-red-500 transition shrink-0"
                         onClick={() => removeFromCart(product.id)}
                     >
-                        <RxCross2 size={18} />
+                        <RxCross2 size={16} />
                     </button>
-
                     <img
                         src={`${Assets_Url}${product.product_img}`}
                         alt={product.product_name}
-                        className="w-20 h-16 border-2 border-[#1E7773] rounded-xl object-cover shrink-0"
+                        className="w-12 h-10 border-2 border-[#1E7773] rounded-xl object-cover shrink-0"
                     />
-                    <div className="truncate text-white text-sm">
-                        {product.product_name}
-                    </div>
+                </div>
+
+                {/* Product Name Column (2 spans) */}
+                <div className="col-span-2 text-white text-sm truncate">
+                    {product.product_name}
                 </div>
 
                 {/* Pack Size Column (1 span) */}
@@ -166,23 +168,21 @@ function Cart() {
                     </div>
                 </div>
 
-                {/* Lid Price Column (2 spans) */}
-                <div className="col-span-2 flex justify-center px-2">
-                    <div className="border border-[#1E7773] rounded-lg text-center py-2 w-full bg-[#20202C]">
-                        <span className="font-semibold text-white text-sm">
-                            {product.lid_Price && product.lid_Price > 0 
-                                ? `Rs ${Number(product.lid_Price).toLocaleString()}` 
-                                : "No Lid"}
-                        </span>
-                    </div>
+                {/* Price per Piece Column (1 span) */}
+                <div className="col-span-1 flex justify-center text-white font-medium text-sm">
+                    {product.price_per_piece && Number(product.price_per_piece) > 0
+                        ? `Rs ${Number(product.price_per_piece).toLocaleString()}`
+                        : product.product_price && Number(product.product_price) > 0
+                            ? `Rs ${Number(product.product_price).toLocaleString()}`
+                            : "N/A"}
                 </div>
 
-                {/* Printing Price Column (1 span) */}
-                <div className="col-span-1 flex justify-center">
+                {/* Printing Price/Piece Column (2 spans) */}
+                <div className="col-span-2 flex justify-center">
                     <div className="border border-[#1E7773] rounded-lg text-center py-2 w-full bg-[#20202C]">
                         <span className="font-semibold text-white text-sm">
-                            {product.printing_price && Number(product.printing_price) > 0 
-                                ? `Rs ${Number(product.printing_price).toLocaleString()   }` 
+                            {product.printing_price && Number(product.printing_price) > 0
+                                ? `Rs ${Number(product.printing_price).toLocaleString()}`
                                 : "N/A"}
                         </span>
                     </div>
@@ -190,12 +190,12 @@ function Cart() {
 
                 {/* Total Pieces Column (1 span) */}
                 <div className="col-span-1 flex justify-center text-white font-medium text-sm">
-                    {product.total_pieces}
+                    {product.total_pieces ?? 0}
                 </div>
 
                 {/* Total Price Column (2 spans) */}
-                <div className="col-span-2 text-xl font-bold text-white text-center">
-                    Rs {Number(product.product_total).toLocaleString()}
+                <div className="col-span-2 text-base font-bold text-white text-center">
+                    Rs {Number(product.product_total || 0).toLocaleString()}
                 </div>
             </div>
         );
