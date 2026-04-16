@@ -43,21 +43,14 @@ export async function generateMetadata() {
   }
 }
 
-// 🟩 Load Customization Component
-
-
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import Customization from "../src/Pages/Customization ";
 
 export const dynamic = "force-dynamic";
 export default function Page() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
-      <Customization   />
-     </Suspense>
+    <Suspense fallback={null}>
+      <Customization />
+    </Suspense>
   );
 }
