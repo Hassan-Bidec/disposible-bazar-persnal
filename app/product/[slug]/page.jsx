@@ -651,7 +651,7 @@ const [selectedSize, setSelectedSize] = useState(null);
                   <form onSubmit={handleSubmit} className='max-w-130 w-full flex flex-col gap-5 '>
     {/* Quantity Selection */}
     <div className="my-form border w-full border-[#1E7773] rounded-full flex items-stretch">
-        <p className="my-form-heading bg-[#1E7773] rounded-l-full h-full p-1 px-5 flex items-center">Pieces</p>
+        <p className="my-form-heading bg-[#1E7773] rounded-l-full h-full p-1 px-5 flex items-center">{productDetail.product.unit_type || "-"}</p>
         <div className="flex flex-wrap gap-4 justify-start p-1 px-2 items-center">
             {selectedProductVariants && selectedProductVariants.length > 0 ? (
                 selectedProductVariants.map((variant, index) => (
@@ -731,44 +731,10 @@ const [selectedSize, setSelectedSize] = useState(null);
         }
     </>
 )}
-                        
-
-
-    <div className='flex flex-row gap-3'>
-        <div className="border border-[#1E7773] rounded-md flex flex-row justify-between items-center px-2 w-24 h-10">
-            <button
-                disabled={subQuantity === 1}
-                onClick={() => setSubQuantity(subQuantity - 1)}
-            >
-                -
-            </button>
-            <p>{subQuantity}</p>
-            <button
-                onClick={() => {
-                    const limit = productDetail.product?.order_limit !== null ? productDetail.product?.order_limit : 1000;
-                    if (subQuantity < limit) {
-                        setSubQuantity(subQuantity + 1);
-                    } else {
-                        toast.warning(`Maximum order limit (${limit}) reached!`);
-                    }
-                }}
-            >
-                +
-            </button>
-        </div>
-
-        <button 
-            className='p-2 pt-3 px-20 bg-[#1E7773] cursor-pointer w-full lg:text-[15px] font-bazaar text-xs rounded-md'
-            onClick={() => handleAddCart(productDetail.product)}
-        >
-            ADD TO CART
-        </button>
-    </div>
-
-    {/* Product Lids Selection*/}
+                    {/* Product Lids Selection*/}
   {productLids && productLids.length > 0 && (
     <>
-        <div className="my-form border rounded-lg h32 w-6/7 md:w-96 border-[#1E7773]">
+        <div className="my-form border rounded-lg h32 w-2/7 md:w-[100%] border-[#1E7773]">
             <p className="bg-[#1E7773] rounded-t-lg py-0.5 px-5">Lids</p>
             <div className="flex flex-wrap gap-4 justify-start p-3 items-center">
                 
@@ -812,7 +778,42 @@ const [selectedSize, setSelectedSize] = useState(null);
             <p className='text-sm'>Lids Pieces {selectedVariant}</p>
         )}
     </>
-)}
+)}       
+
+
+    <div className='flex flex-row gap-3'>
+        <div className="border border-[#1E7773] rounded-md flex flex-row justify-between items-center px-2 w-24 h-10">
+            <button
+                disabled={subQuantity === 1}
+                onClick={() => setSubQuantity(subQuantity - 1)}
+            >
+                -
+            </button>
+            <p>{subQuantity}</p>
+            <button
+                onClick={() => {
+                    const limit = productDetail.product?.order_limit !== null ? productDetail.product?.order_limit : 1000;
+                    if (subQuantity < limit) {
+                        setSubQuantity(subQuantity + 1);
+                    } else {
+                        toast.warning(`Maximum order limit (${limit}) reached!`);
+                    }
+                }}
+            >
+                +
+            </button>
+        </div>
+
+        <button 
+            className='p-2 pt-3 px-20 bg-[#1E7773] cursor-pointer w-full lg:text-[15px] font-bazaar text-xs rounded-md'
+            onClick={() => handleAddCart(productDetail.product)}
+        >
+            ADD TO CART
+        </button>
+
+    </div>
+
+ 
 
 </form>
 
