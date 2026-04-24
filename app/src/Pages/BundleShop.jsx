@@ -8,16 +8,15 @@ import { Loader } from "../components/Loader";
 import CustomSeo from "../components/CustomSeo";
 import Link from "next/link";
 
-function BundleShop({ initialBundles = null }) {
+function BundleShop() {
   const router = useRouter();
   const params = useParams();
 
   const [grid, setGrid] = useState(3);
-  // If SSR data is provided, no loading needed on first render
-  const [loading, setLoading] = useState(initialBundles ? false : true);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
-  const [filteredProduct, setFilteredProduct] = useState(initialBundles || []);
+  const [filteredProduct, setFilteredProduct] = useState([]);
   const [seoData, setSeoData] = useState({
     meta_title: "",
     focus_keyword: "",
@@ -80,11 +79,8 @@ function BundleShop({ initialBundles = null }) {
     }
   };
 
-  // Only fetch client-side when no SSR initialBundles were provided
   useEffect(() => {
-    if (!initialBundles) {
-      fetchData();
-    }
+    fetchData();
   }, []);
 
   useEffect(() => {

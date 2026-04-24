@@ -16,7 +16,7 @@ import CustomSeo from "../components/CustomSeo";
 import Link from "next/link";
 import { useCart } from "../Context/CartContext";
 
-export default function Customization({ initialProducts = null }) {
+export default function Customization() {
   const [grid, setGrid] = useState(3);
   const params = useParams();
   const searchParams = useSearchParams();
@@ -33,11 +33,10 @@ const [isCartModalOpen, setIsCartModalOpen] = useState(false);
 const isFirstMount = React.useRef(true);
 
   const [isFilter, setIsFilter] = useState(false);
-  // If SSR data provided, no loading on first render
-  const [loading, setLoading] = useState(initialProducts ? false : true);
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
-  const [filteredProduct, setFilteredProduct] = useState(initialProducts || []);
+  const [filteredProduct, setFilteredProduct] = useState([]);
   const [searchTerm, setSearchTerm] = useState(searchTermFromURL || "");
 
   const [filter, setFilter] = useState({
@@ -159,20 +158,7 @@ const isFirstMount = React.useRef(true);
   }, [category]);
 
   // Fetch when filter or searchTerm changes
-  // Skip first fetch if SSR initialProducts were provided (no filter/search active)
   useEffect(() => {
-    const hasActiveFilter =
-      filter.price_from > 0 ||
-      filter.price_to > 0 ||
-      filter.sort_by !== 1 ||
-      (Array.isArray(filter.category_Id) && filter.category_Id.length > 0) ||
-      (Array.isArray(filter.pack_size) && filter.pack_size.length > 0) ||
-      (Array.isArray(filter.option_id) && filter.option_id.length > 0) ||
-      (Array.isArray(filter.rating) && filter.rating.length > 0) ||
-      searchTerm;
-
-    if (initialProducts && !hasActiveFilter && isFirstMount.current) return;
-
     const timeout = setTimeout(fetchData, 300);
     return () => clearTimeout(timeout);
   }, [filter, searchTerm]);

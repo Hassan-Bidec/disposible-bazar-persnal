@@ -1,38 +1,35 @@
 // 🟩 Dynamic Metadata Function for Cart Page
 export async function generateMetadata() {
   try {
-
     const res = await fetch(
-      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/5",
+      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/5", // API page ID for Cart
       { cache: "no-store" }
     );
 
     if (!res.ok) throw new Error("Fetch failed");
 
-    const json = await res.json();
-    const seo = json?.data;
+    const data = await res.json();
 
     return {
-      title: seo?.meta_title || "Your Cart",
-      description:
-        seo?.meta_description || "View and manage your cart items",
+      title: data?.data?.meta_title || "Your Cart",
+      description: data?.data?.meta_description || "View and manage your cart items",
 
       alternates: {
-        canonical: seo?.canonical_url || "",
+        canonical: data?.data?.canonical_url || "",
       },
 
       robots: {
-        index: true,
-        follow: true,
+        index: data?.data?.robots_index !== "noindex",
+        follow: data?.data?.robots_follow !== "nofollow",
+
         googleBot: {
-          index: true,
-          follow: true,
+          index: data?.data?.robots_index !== "noindex",
+          follow: data?.data?.robots_follow !== "nofollow",
         },
       },
     };
   } catch (error) {
-    console.error("❌ Cart metadata fetch failed:", error);
-
+    console.error("Cart metadata fetch failed:", error);
     return {
       title: "Your Cart | Shop",
       description: "View and manage your cart items",

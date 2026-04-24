@@ -42,11 +42,6 @@ function Header() {
     const [searchTerm, setSearchTerm] = useState("");
     const [showKraftDropdown, setShowKraftDropdown] = useState(false);
     let dropdownTimeout = useRef(null);
-    const [isMounted, setIsMounted] = useState(false);
-
-useEffect(() => {
-  setIsMounted(true);
-}, []);
 
 
     const dropdownRef = useRef(null);
@@ -59,7 +54,7 @@ useEffect(() => {
     const { wishlistCount } = useWishlist();
     const { cartItems, getTotalQuantity } = useCart();
 
-    const totalItems = isMounted ? getTotalQuantity() : 0;
+    const totalItems = getTotalQuantity();
 
     // Auto-reset the search & category on certain pages
     useEffect(() => {
@@ -73,7 +68,6 @@ useEffect(() => {
     }, [pathname, params]);
 
     const calculateSubtotal = () => {
-  if (!isMounted) return 0;
         return cartItems.reduce(
             (total, item) => total + Number(item.product_total),
             0
@@ -240,13 +234,13 @@ useEffect(() => {
                     <li className="flex">
                         <Link href="/cart/">
                             <RiShoppingBasket2Line className="bg-[#1E7773] rounded-lg text-white p-1 text-3xl" />
-                          <p className="text-xs px-2 text-black">
-  <span className="text-[15px] font-semibold">
-    My Cart
-  </span>
-  <br />
-  {isMounted ? `${totalItems} items - Rs ${subtotal}` : "0 items - Rs 0"}
-</p>
+                            <p className="text-xs px-2  text-black">
+                                {" "}
+                                <span className="text-[15px] font-semibold">
+                                    My Cart
+                                </span>{" "}
+                                <br /> {totalItems} items - Rs {subtotal}{" "}
+                            </p>
                         </Link>
                     </li>
                 </ul>
@@ -619,12 +613,12 @@ useEffect(() => {
                             <div className="flex">
                                 <RiShoppingBasket2Line className="bg-[#1E7773] rounded-lg text-white p-1 text-3xl" />
                                 <p className="text-xs px-2 text-zinc-950">
-  <span className="text-[15px] font-semibold">
-    My Cart
-  </span>
-  <br />
-  {isMounted ? `${totalItems} items - Rs ${subtotal}` : "0 items - Rs 0"}
-</p>
+                                    <span className="text-[15px] font-semibold">
+                                        My Cart
+                                    </span>{" "}
+                                    <br />
+                                    {totalItems} items - Rs {subtotal}
+                                </p>
                             </div>
 
                         </Link>

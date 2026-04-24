@@ -8,7 +8,6 @@ const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
-  const [mounted, setMounted] = useState(false);
 
   // Load cart from localStorage (only on client)
   useEffect(() => {
@@ -16,7 +15,6 @@ export const CartProvider = ({ children }) => {
       const savedCart = localStorage.getItem("cartItems");
       if (savedCart) setCartItems(JSON.parse(savedCart));
     }
-    setMounted(true);
   }, []);
 
   // Save cart to localStorage whenever it changes
@@ -196,7 +194,6 @@ export const CartProvider = ({ children }) => {
     <CartContext.Provider
       value={{
         cartItems,
-        mounted,
         addToCart,
         removeFromCart,
         updateQuantity,
