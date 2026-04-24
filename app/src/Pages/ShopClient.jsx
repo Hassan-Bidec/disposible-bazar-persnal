@@ -215,9 +215,9 @@ export default function ShopClient({ initialProducts = [] }) {
         <div className="py-4 w-full flex flex-col text-white rounded-lg">
           <div className="flex flex-col gap-2">
             <div className="flex justify-between">
-              <p className="text-4xl font-bazaar">
+              <h1 className="text-4xl font-bazaar">
                 {filter.category_Id ? filteredProduct[0]?.category?.name : "Shop All"}
-              </p>
+              </h1>
               <button onClick={() => setIsFilter(true)}>
                 <RiFilter3Line className="lg:hidden block text-4xl rounded-full p-2 bg-[#1E7773]" />
               </button>

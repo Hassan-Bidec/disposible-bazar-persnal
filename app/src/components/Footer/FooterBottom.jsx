@@ -103,7 +103,7 @@ export default function FooterBottom() {
                             <li className="text-2xl font-light py-2 font-bazaar">Policy</li>
 
                             <li className="font-[400]"><Link href="/privacy-policy">Privacy Policy</Link></li>
-                            <li className="font-[400]"><Link href="/termsand-conditions/">Terms & Condition</Link></li>
+                            <li className="font-[400]"><Link href="/terms-and-conditions/">Terms & Condition</Link></li>
                             <li className="font-[400]"><Link href="/return-policy/">Return Policy</Link></li>
 
                         </ul>

@@ -95,7 +95,7 @@ export default async function Page() {
           <ul className="sr-only">
             {products.slice(0, 12).map((p) => (
               <li key={p.id}>
-                <a
+                <a  
                   href={
                     p.is_customizeable
                       ? `/customization/${p.slug}`

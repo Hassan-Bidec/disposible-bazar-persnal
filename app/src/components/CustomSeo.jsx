@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import axios from "../Utils/axios";
 
-const CustomSeo = ({ slug }) => {
+const CustomSeo = ({ slug, id, data }) => {
   const [seoData, setSeoData] = useState({
     meta_title: "Disposable Bazaar",
     meta_description: "Disposable Bazaar Description",
@@ -15,22 +15,29 @@ const CustomSeo = ({ slug }) => {
     schema: "",
   });
 
+  // If direct data is passed, use it immediately — no fetch needed
   useEffect(() => {
-    if (!slug) return;
+    if (data) {
+      setSeoData((prev) => ({ ...prev, ...data }));
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (data || (!slug && !id)) return;
 
     const fetchSeoData = async () => {
       try {
-        // FIXED: template literal string
-        const response = await axios.public.get(`/page/detail?slug=${slug}`);
+        const endpoint = id ? `/page/detail/${id}` : `/page/detail?slug=${slug}`;
+        const response = await axios.public.get(endpoint);
 
-        const data = response?.data?.data;
+        const responseData = response?.data?.data;
 
-        if (!data) {
+        if (!responseData) {
           console.warn("No SEO data found for slug:", slug);
           return;
         }
 
-        setSeoData(data);
+        setSeoData(responseData);
       } catch (error) {
         console.log("RAW ERROR =>", error);
 
@@ -53,7 +60,7 @@ const CustomSeo = ({ slug }) => {
     };
 
     fetchSeoData();
-  }, [slug]);
+  }, [slug, id, data]);
 
   // Safe JSON Parse
   let schemaData = null;

@@ -62,9 +62,9 @@ function CustomHeroSection({
                     <h1 className="md:text-6xl text-5xl font-bazaar text-white">
                         {heading}
                     </h1>
-                    <p className="md:text-5xl text-4xl font-bazaar text-white">
+                    <h1 className="md:text-5xl text-4xl font-bazaar text-white">
                         {title}
-                    </p>
+                    </h1>
 
                     {path2 ? (
                         <p className="text-lg text-white">

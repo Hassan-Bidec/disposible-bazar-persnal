@@ -17,6 +17,12 @@ function BundleShop() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
   const [filteredProduct, setFilteredProduct] = useState([]);
+  const [seoData, setSeoData] = useState({
+    meta_title: "",
+    focus_keyword: "",
+    canonical_url: "",
+    schema: "",
+  });
 
   // Navigate to a new page — ?product-page=2 format, no remount
   const updatePageQuery = (newPage) => {
@@ -57,7 +63,15 @@ function BundleShop() {
 
     try {
       const response = await axios.public.get(`bundles`);
-      setFilteredProduct(response.data.data);
+      const data = response.data.data;
+      setFilteredProduct(data);
+      console.log("Filtered Product:", data);
+
+      // Extract SEO fields from the first bundle item if available
+      if (data?.length > 0) {
+        const { meta_title, focus_keyword, canonical_url, schema } = data[0];
+        setSeoData({ meta_title, focus_keyword, canonical_url, schema });
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -79,7 +93,7 @@ function BundleShop() {
 
   return (
     <div className="py-13">
-      <CustomSeo id={3} />
+      <CustomSeo data={seoData} />
       <CustomHeroSection
         heading="Ready Bundles"
         path="bundles"

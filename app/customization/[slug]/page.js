@@ -349,7 +349,7 @@ export default function CustomDetails() {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
-
+ console.log("productDetailproductDetail", productDetail);
     if (isLoading) return <Loader />;
 
     return (
