@@ -474,7 +474,7 @@ function ShopDetails({ initialData = null }) {
                         <form onSubmit={handleSubmit} className='max-w-130 w-full flex flex-col gap-5'>
                             {/* Quantity Selection */}
                             <div className="my-form border w-full border-[#1E7773] rounded-full flex items-stretch">
-                                <p className="my-form-heading bg-[#1E7773] rounded-l-full h-full p-1 px-5 flex items-center">{productDetail.product.unit_type || "-"}</p>
+                                <p className="my-form-heading bg-[#1E7773] rounded-l-full h-full p-1 px-5 flex items-center">{productDetail.product.unit_type}</p>
                                 <div className="flex flex-wrap gap-4 justify-start p-1 px-2 items-center">
                                     {selectedProductVariants && selectedProductVariants.length > 0 ? (
                                         selectedProductVariants.map((variant, index) => (
