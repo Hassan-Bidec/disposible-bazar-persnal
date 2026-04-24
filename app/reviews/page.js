@@ -2,7 +2,7 @@
 export async function generateMetadata() {
   try {
     const res = await fetch(
-      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/4 ", // API page ID for Reviews
+      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/4", // API page ID for Reviews
       { cache: "no-store" }
     );
 
@@ -11,7 +11,7 @@ export async function generateMetadata() {
     }
 
     const data = await res.json();
-    console.log("Reviews Metadata Fetched:", data);
+   
 
     return {
       title: data?.data?.meta_title || "Reviews",

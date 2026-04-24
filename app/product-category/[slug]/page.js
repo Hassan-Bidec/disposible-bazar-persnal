@@ -60,8 +60,9 @@ async function getPageData(slug) {
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
-  const slug = params?.slug || "";
-  const data = await getPageData(slug);
+  const { slug } = await params;
+  const resolvedSlug = slug || "";
+  const data = await getPageData(resolvedSlug);
   const seo = data?.cat?.category_seo_metadata;
    console.log("CategoryPage Metadata Fetched:", data);
   return {
@@ -83,7 +84,8 @@ export async function generateMetadata({ params }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page({ params }) {
-  const slug = params?.slug || "";
+  const { slug } = await params;
+  const resolvedSlug = slug || "";
   const data = await getPageData(slug);
 
   const schema = data?.category?.category_seo_metadata?.schema || null;
