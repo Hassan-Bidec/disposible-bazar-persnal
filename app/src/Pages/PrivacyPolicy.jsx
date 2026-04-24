@@ -1,10 +1,19 @@
 "use client";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CustomSeo from '../components/CustomSeo';
 
 function PrivacyPolicy() {
+    const [paddingTop, setPaddingTop] = useState(160);
+
+    useEffect(() => {
+        const header = document.getElementById('header');
+        if (header) {
+            setPaddingTop(header.offsetHeight + 16);
+        }
+    }, []);
+
     return (
-        <div className="min-h-screen my-6 py-10">
+        <div className="min-h-screen pb-10" style={{ paddingTop: `${paddingTop}px` }}>
             <CustomSeo id={12} />
             <div className="container mx-auto px-4 lg:px-16">
                 
