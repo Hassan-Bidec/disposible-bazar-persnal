@@ -53,7 +53,7 @@ export default function CategoryPageClient({ initialData }) {
     sort_by: 1,
     slug: category,
   });
-
+console.log("initialDatainitialData" , initialData)
   // ─── URL update — ?product-page=2 format, no remount ────────────────────
   const goToPage = (newPage) => {
     setCurrentPage(newPage);
@@ -112,9 +112,14 @@ export default function CategoryPageClient({ initialData }) {
         decodeURIComponent(s || "").toLowerCase().replace(/\/+$/, "");
 
       const findCategory = (cats, currentSlug, currentId) => {
+        const normTarget = normalize(currentSlug);
         for (const c of cats) {
+          const cSlug = normalize(c.slug);
+          const cSlugLastPart = cSlug.split('/').filter(Boolean).pop();
+
           if (
-            normalize(c.slug) === normalize(currentSlug) ||
+            cSlug === normTarget ||
+            cSlugLastPart === normTarget ||
             (currentId && c.id == currentId)
           )
             return c;
