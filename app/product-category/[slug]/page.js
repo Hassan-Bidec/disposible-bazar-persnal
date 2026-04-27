@@ -11,23 +11,13 @@ const normalize = (s) =>
     .toLowerCase()
     .replace(/\/+$/, "");
 
-// ─── SAME CATEGORY FIND (IMPROVED) ────────
-function findCatBySlug(cats, targetSlug, targetId) {
-  const normTarget = normalize(targetSlug);
+// ─── SAME CATEGORY FIND (UNCHANGED) ────────
+function findCatBySlug(cats, targetSlug) {
   for (const c of cats) {
-    const cSlug = normalize(c.slug);
-    const cSlugLastPart = cSlug.split('/').filter(Boolean).pop();
-
-    if (
-      cSlug === normTarget ||
-      cSlugLastPart === normTarget ||
-      (targetId && String(c.id) === String(targetId))
-    ) {
-      return c;
-    }
+    if (normalize(c.slug) === normalize(targetSlug)) return c;
 
     if (c.subCategories?.length) {
-      const found = findCatBySlug(c.subCategories, targetSlug, targetId);
+      const found = findCatBySlug(c.subCategories, targetSlug);
       if (found) return found;
     }
   }
@@ -35,7 +25,7 @@ function findCatBySlug(cats, targetSlug, targetId) {
 }
 
 // ─── MAIN FETCH (UNCHANGED LOGIC) ──────────
-async function getPageData(slug, id) {
+async function getPageData(slug) {
   try {
     const catRes = await fetch(`${API_BASE}/product/category`, {
       cache: "no-store",
@@ -44,7 +34,7 @@ async function getPageData(slug, id) {
     if (!catRes.ok) return null;
 
     const catJson = await catRes.json();
-    const cat = findCatBySlug(catJson?.data || [], slug, id);
+    const cat = findCatBySlug(catJson?.data || [], slug);
 
     if (!cat) return null;
 
@@ -67,25 +57,11 @@ async function getPageData(slug, id) {
 }
 
 // ─── 🔥 ONLY SEO IMPROVED (IMPORTANT PART) ───
-export async function generateMetadata(props) {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
+export async function generateMetadata({ params }) {
   const slug = params?.slug || "";
-  const id = searchParams?.id || null;
 
-  const data = await getPageData(slug, id);
-  const seo = 
-    data?.cat?.categorySeoMetadata || 
-    data?.cat?.categorySeoDetail ||
-    data?.category?.categorySeoMetadata ||
-    data?.category?.categorySeoDetail ||
-    data?.products?.[0]?.categorySeoDetail;
-
-  let canonical = seo?.canonical_url || "";
-  if (canonical && !canonical.startsWith("http")) {
-    // If it's a relative slug, construct the full URL
-    canonical = `https://disposablebazaar.com/product-category/${canonical.replace(/^\//, "")}`;
-  }
+  const data = await getPageData(slug);
+  const seo = data?.cat?.categorySeoMetadata;
 
   return {
     title:
@@ -96,7 +72,7 @@ export async function generateMetadata(props) {
     description: seo?.meta_description || "",
 
     alternates: {
-      canonical: canonical,
+      canonical: seo?.canonical_url || "",
     },
 
     robots: {
@@ -111,28 +87,17 @@ export async function generateMetadata(props) {
 }
 
 // ─── PAGE (UNCHANGED) ───────────────────────
-export default async function Page(props) {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
+export default async function Page({ params }) {
   const slug = params?.slug || "";
-  const id = searchParams?.id || null;
+  const data = await getPageData(slug);
 
-  const data = await getPageData(slug, id);
-
-  const seo = 
-    data?.cat?.categorySeoMetadata || 
-    data?.cat?.categorySeoDetail ||
-    data?.category?.categorySeoMetadata ||
-    data?.category?.categorySeoDetail ||
-    data?.products?.[0]?.categorySeoDetail;
-
-  const schema = seo?.schema || null;
+  const schema = data?.cat?.categorySeoMetadata?.schema || null;
 
   const initialData = data
     ? {
-        products: data.products,
-        category: data.category,
-      }
+      products: data.products,
+      category: data.category,
+    }
     : null;
 
   return (

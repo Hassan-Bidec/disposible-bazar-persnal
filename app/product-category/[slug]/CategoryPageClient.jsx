@@ -20,8 +20,8 @@ import DecodeTextEditor from "../../src/components/DecodeTextEditor";
 // initialData is passed from the Server Component (SSR pre-fetch)
 export default function CategoryPageClient({ initialData }) {
   const queryParams = useSearchParams();
-  const { slug } = useParams();
-  const category = slug || "";
+  const paramsObj = useParams();
+  const category = paramsObj["category-slug"] || paramsObj.slug || "";
   const categoryIdFromURL = queryParams.get("id");
   const searchTermFromURL = queryParams.get("q") || "";
  console.log("initialData" , initialData)
