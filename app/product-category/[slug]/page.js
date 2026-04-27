@@ -81,6 +81,12 @@ export async function generateMetadata(props) {
     data?.category?.categorySeoDetail ||
     data?.products?.[0]?.categorySeoDetail;
 
+  let canonical = seo?.canonical_url || "";
+  if (canonical && !canonical.startsWith("http")) {
+    // If it's a relative slug, construct the full URL
+    canonical = `https://disposablebazaar.com/product-category/${canonical.replace(/^\//, "")}`;
+  }
+
   return {
     title:
       seo?.meta_title ||
@@ -90,7 +96,7 @@ export async function generateMetadata(props) {
     description: seo?.meta_description || "",
 
     alternates: {
-      canonical: seo?.canonical_url || "",
+      canonical: canonical,
     },
 
     robots: {
