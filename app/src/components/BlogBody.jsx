@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import DOMPurify from "dompurify";
 import parse from "html-react-parser";
 
@@ -144,9 +145,17 @@ const BlogBody = ({ body }) => {
     },
   };
 
+  const [sanitized, setSanitized] = useState(body || "");
+
+  useEffect(() => {
+    if (body) {
+      setSanitized(DOMPurify.sanitize(body));
+    }
+  }, [body]);
+
   return (
     <div className="mb-8 font-poppins">
-      {parse(DOMPurify.sanitize(body || ""), options)}
+      {parse(sanitized, options)}
     </div>
   );
 };

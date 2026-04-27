@@ -26,6 +26,7 @@ import { FiX } from 'react-icons/fi';
 
 function ShopDetails({ initialData = null }) {
     const router = useRouter();
+    console.log("initialDatainitialData" , initialData)
 
     const [productDetail, setProductDetail] = useState(initialData || []);
     const [productVariants, setProductVariants] = useState([]);
@@ -361,7 +362,7 @@ function ShopDetails({ initialData = null }) {
                     <Link href="/">Home</Link> /{" "}
                     <Link href="/shop/">Shop</Link> /{" "}
                     <span
-                        onClick={() => handleCategoryLink(productDetail?.product?.category)}
+                        onClick={() => router.push(`/product-category/${productDetail?.product?.category?.slug}/`)}
                         className="inline cursor-pointer hover:text-[#1E7773]"
                     >
                         {productDetail?.product?.category?.name || ""}

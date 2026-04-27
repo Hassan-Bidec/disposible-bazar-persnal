@@ -24,7 +24,7 @@ export default function CategoryPageClient({ initialData }) {
   const category = slug || "";
   const categoryIdFromURL = queryParams.get("id");
   const searchTermFromURL = queryParams.get("q") || "";
-
+ console.log("initialData" , initialData)
   const [showQtyModal, setShowQtyModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);

@@ -16,8 +16,10 @@ async function getPageData() {
       fetch(`${API_BASE}/page/detail/10`, { cache: "no-store" }),
       fetch(`${API_BASE}/blogs/index`, { cache: "no-store" }),
     ]);
+
     const meta = metaRes.ok ? await metaRes.json() : null;
     const blogs = blogsRes.ok ? await blogsRes.json() : null;
+
     return {
       meta: meta?.data || null,
       blogs: blogs?.data || [],
@@ -31,10 +33,13 @@ async function getPageData() {
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata() {
   const { meta } = await getPageData();
+
   return {
     title: meta?.meta_title || "Blog - Disposable Bazar",
     description: meta?.meta_description || "Read our latest blog posts.",
-    alternates: { canonical: meta?.canonical_url || "" },
+    alternates: {
+      canonical: meta?.canonical_url || "",
+    },
     robots: {
       index: meta?.robots_index !== "noindex",
       follow: meta?.robots_follow !== "nofollow",
@@ -48,19 +53,35 @@ export async function generateMetadata() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page() {
-  const { meta, blogs, totalPages } = await getPageData();
-  const schema = meta?.schema || null;
+  const { blogs } = await getPageData();
+  console.log("getPageData" , getPageData)
 
   return (
     <>
-      {schema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: schema }}
-        />
-      )}
+      {/* ✅ Inject ALL blog schemas safely */}
+      {blogs?.map((blog) => {
+        let parsedSchema = null;
 
-      {/* SSR: blog titles visible in initial HTML */}
+        try {
+          parsedSchema = blog?.blogSeoMetadata?.schema
+            ? JSON.stringify(JSON.parse(blog.blogSeoMetadata.schema))
+            : null;
+        } catch (e) {
+          parsedSchema = null;
+        }
+
+        return (
+          parsedSchema && (
+            <script
+              key={blog.id}
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: parsedSchema }}
+            />
+          )
+        );
+      })}
+
+      {/* ✅ SSR fallback for SEO */}
       <noscript>
         <ul>
           {blogs.slice(0, 10).map((b) => (
@@ -71,6 +92,7 @@ export default async function Page() {
         </ul>
       </noscript>
 
+      {/* ✅ Client component */}
       <Suspense fallback={null}>
         <BlogClient />
       </Suspense>

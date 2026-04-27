@@ -1,6 +1,7 @@
 "use client";
 import ReactDOM from "react-dom";
 // import "leaflet/dist/leadistflet.css";
+import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer } from "react-leaflet";
 import React, { useEffect, useRef, useState } from "react";
 import Hamburger from "../components/Hamburger";
@@ -586,12 +587,12 @@ console.log("Final Payload Object:", debugPayload);
            <div className="border-b border-gray-300 py-3">
     <p className="text-xs mb-2">Delivery Location</p>
 
-    <div className="h-44 w-full rounded-lg overflow-hidden">
+    <div className="h-72 w-full rounded-lg overflow-hidden">
         <MapContainer 
             center={[24.8607, 67.0011]} 
             zoom={13} 
             scrollWheelZoom={false} 
-            className="h-full w-[200px] md:w-full"
+            style={{ height: "100%", width: "100%" }}
         >
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

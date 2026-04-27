@@ -33,10 +33,12 @@ async function getProductData(slug) {
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
-  const slug = params?.slug || "";
-  const data = await getProductData(slug);
+  const { slug } = await params;
+  const resolvedSlug = slug || "";
+  const data = await getProductData(resolvedSlug);
   const seo = data?.seoMetadata;
   const product = data?.product;
+  console.log("getProductData" , data)
 
   return {
     title: seo?.meta_title || product?.name || "Product - Disposable Bazar",
@@ -62,8 +64,9 @@ export async function generateMetadata({ params }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page({ params }) {
-  const slug = params?.slug || "";
-  const data = await getProductData(slug);
+  const { slug } = await params;
+  const resolvedSlug = slug || "";
+  const data = await getProductData(resolvedSlug);
 
   // Inject schema as ld+json in initial HTML if available
   const schema = data?.seoMetadata?.schema || null;

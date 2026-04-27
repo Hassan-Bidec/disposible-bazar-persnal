@@ -13,7 +13,7 @@ import DecodeTextEditor from "../../src/components/DecodeTextEditor";
 
 export default function BundleDetailClient({ initialBundle, slug }) {
   const bundle = initialBundle;
-
+   console.log("initialBundle" , initialBundle)
   const [selectedImage, setSelectedImage] = useState(
     bundle?.bundle_images?.[0]?.image || ""
   );
