@@ -70,7 +70,7 @@ export default function BundleDetailClient({ initialBundle, slug }) {
                   <Image
                    
                     className="w-full h-full bg-[#32303e] rounded-xl border-2 border-[#1E7773] object-cover cursor-pointer"
-                    src={`${Assets_Url}${img.image}`}
+                    src={`${Assets_Url}/${img.image.replace(/^\//, "")}`}
                     alt={bundle.name}
                     onClick={() => setSelectedImage(img.image)}
                     width={500}
@@ -85,8 +85,8 @@ export default function BundleDetailClient({ initialBundle, slug }) {
                   fill
                   className="object-cover rounded-lg"
                   src={selectedImage
-                    ? `${Assets_Url}${selectedImage.replace(/^\//, "")}`
-                    : `${Assets_Url}${bundle.main_image.replace(/^\//, "")}`}
+                    ? `${Assets_Url}/${selectedImage.replace(/^\//, "")}`
+                    : `${Assets_Url}/${bundle.main_image.replace(/^\//, "")}`}
                   alt={bundle.name}
                 />
               )}
