@@ -2,12 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
-  images: {
+   images: {
     remotePatterns: [
       {
         protocol: "https",
         hostname: "ecommerce-inventory.thegallerygen.com",
-      },
+        pathname: "storage/**",
+      }
     ],
   },
   async headers() {
