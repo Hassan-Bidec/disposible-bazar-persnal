@@ -37,7 +37,7 @@ export async function generateMetadata() {
 
 import Homes from "./src/Pages/Homes";
 
-// export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 // Fetch page data including schema on the server
 async function getPageData() {

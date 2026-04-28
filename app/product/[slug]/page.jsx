@@ -10,7 +10,7 @@ import { Suspense } from "react";
 import ShopDetails from "./ShopDetails";
 import { Loader } from "../../src/components/Loader";
 
-// export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
