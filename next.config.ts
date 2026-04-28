@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "ecommerce-inventory.thegallerygen.com",
-        pathname: "/storage/**",
+        pathname: "/**",
       }
     ],
   },
