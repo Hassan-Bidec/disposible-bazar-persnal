@@ -15,7 +15,7 @@ export default function BundleDetailClient({ initialBundle, slug }) {
   const bundle = initialBundle;
    console.log("initialBundle" , initialBundle)
   const [selectedImage, setSelectedImage] = useState(
-    bundle?.bundle_images?.[0]?.image || ""
+    bundle?.main_image || bundle?.bundle_images?.[0]?.image || ""
   );
   const [subQuantity, setSubQuantity] = useState(1);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
@@ -65,7 +65,7 @@ export default function BundleDetailClient({ initialBundle, slug }) {
           {/* Images */}
           <div className="lg:w-3/5 md:h-[34rem] h-[20rem] flex flex-row gap-2">
             <div className="w-1/5 flex flex-col gap-1">
-              {(bundle.bundle_images || []).map((img, i) => (
+              {(bundle.bundle_images?.length > 0 ? bundle.bundle_images : []).map((img, i) => (
                 <div key={i} className="w-full h-1/4 py-1">
                   <img
                     className="w-full h-full bg-[#32303e] rounded-xl border-2 border-[#1E7773] object-cover cursor-pointer"
@@ -77,10 +77,12 @@ export default function BundleDetailClient({ initialBundle, slug }) {
               ))}
             </div>
             <div className="w-4/5 rounded-lg bg-[#32303e]">
-              {selectedImage && (
+              {(selectedImage || bundle.main_image) && (
                 <img
                   className="w-full h-full object-cover rounded-lg"
-                  src={`${Assets_Url}${selectedImage}`}
+                  src={selectedImage
+                    ? `${Assets_Url}${selectedImage.replace(/^\//, "")}`
+                    : `${Assets_Url}${bundle.main_image.replace(/^\//, "")}`}
                   alt={bundle.name}
                 />
               )}

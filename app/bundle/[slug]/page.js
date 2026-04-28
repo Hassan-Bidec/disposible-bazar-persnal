@@ -11,15 +11,21 @@ const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
 async function getBundleData(slug) {
   try {
-    const res = await fetch(`${API_BASE}/bundles/getBySlug`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug: `${slug}/` }),
+    // Fetch all bundles and find by slug
+    const res = await fetch(`${API_BASE}/bundles`, {
       cache: "no-store",
     });
     if (!res.ok) return null;
     const json = await res.json();
-    return json?.data || null;
+    const bundles = json?.data || [];
+
+    // Match slug with or without trailing slash
+    const normalize = (s) => (s || "").replace(/\/+$/, "").toLowerCase();
+    const bundle = bundles.find(
+      (b) => normalize(b.slug) === normalize(slug)
+    );
+
+    return bundle || null;
   } catch {
     return null;
   }
@@ -27,24 +33,47 @@ async function getBundleData(slug) {
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
-  const slug = params?.slug || "";
-  const bundle = await getBundleData(slug);
+  const { slug } = await params;
+  const bundle = await getBundleData(slug || "");
   return {
-    title: bundle?.name ? `${bundle.name} - Disposable Bazar` : "Bundle - Disposable Bazar",
+    title: bundle?.meta_title || (bundle?.name ? `${bundle.name} - Disposable Bazar` : "Bundle - Disposable Bazar"),
     description: bundle?.description
       ? bundle.description.replace(/<[^>]*>/g, "").slice(0, 160)
       : "Premium bundle deals at Disposable Bazar.",
+    keywords: bundle?.focus_keyword || "",
+    alternates: {
+      canonical: bundle?.canonical_url || "",
+    },
     robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   };
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page({ params }) {
-  const slug = params?.slug || "";
-  const bundle = await getBundleData(slug);
+  const { slug } = await params;
+  const bundle = await getBundleData(slug || "");
+
+  // Safe schema parsing
+  let schema = null;
+  try {
+    const raw = bundle?.schema;
+    if (raw && raw !== "null") {
+      JSON.parse(raw); // validate
+      schema = raw;
+    }
+  } catch {
+    schema = null;
+  }
 
   return (
     <>
+      {schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: schema }}
+        />
+      )}
+
       {/* SSR: bundle name + items visible in initial HTML */}
       {bundle && (
         <noscript>
