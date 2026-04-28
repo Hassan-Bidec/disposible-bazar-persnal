@@ -256,7 +256,7 @@ const isFirstMount = React.useRef(true);
                             : "ShopAssets/4gridImg.svg"
                         }`}
                         alt=""
-                        width={500} height={500}
+                        width={40} height={40}
                       />
 
                       <Image
@@ -268,7 +268,7 @@ const isFirstMount = React.useRef(true);
                             : "ShopAssets/3gridImg.svg"
                         }`}
                         alt=""
-                        width={500} height={500}
+                        width={40} height={40}
                       />
 
                       <Image
@@ -280,7 +280,7 @@ const isFirstMount = React.useRef(true);
                             : "ShopAssets/2gridImg.svg"
                         }`}
                         alt=""
-                        width={500} height={500}
+                        width={40} height={40}
                       />
                     </div>
                   </div>

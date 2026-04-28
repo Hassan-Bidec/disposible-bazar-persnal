@@ -116,7 +116,7 @@ function BundleShop() {
                       grid === 4 ? "ShopAssets/4greenGridImg.svg" : "ShopAssets/4gridImg.svg"
                     }`}
                     alt=""
-                    width={500} height={500}
+                    width={40} height={40}
                   />
                   <Image
                     onClick={() => setGrid(3)}
@@ -125,7 +125,7 @@ function BundleShop() {
                       grid === 3 ? "ShopAssets/3greenGridImg.svg" : "ShopAssets/3gridImg.svg"
                     }`}
                     alt=""
-                    width={500} height={500}
+                    width={40} height={40}
                   />
                   <Image
                     onClick={() => setGrid(2)}
@@ -134,7 +134,7 @@ function BundleShop() {
                       grid === 2 ? "ShopAssets/2greenGridImg.svg" : "ShopAssets/2gridImg.svg"
                     }`}
                     alt=""
-                    width={500} height={500}
+                    width={40} height={40}
                   />
                 </div>
               </div>
