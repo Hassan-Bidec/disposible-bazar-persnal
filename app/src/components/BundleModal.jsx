@@ -4,6 +4,7 @@ import { FiX, FiPlus, FiMinus } from "react-icons/fi";
 import { Assets_Url, Image_Url } from "../../const";
 import { useCart } from "../../Context/CartContext";
 import { useBundle } from "../Context/BundleContext";
+import Image from "next/image";
 
 export const BundleModal = () => {
     const { bundleitems, removeFromCart } =
@@ -28,7 +29,7 @@ export const BundleModal = () => {
                                 key={item.id}
                                 className="flex justify-around items-center mb-4 border-t pt-4 border-[#D9D9D9] mr-4"
                             >
-                                <img
+                                <Image
                                     src={`${Assets_Url}${item.product_img}`}
                                     alt={item.product_name}
                                     className="w-16 h-16 object-cover rounded"

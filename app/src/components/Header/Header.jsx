@@ -599,11 +599,13 @@ useEffect(() => {
                             </Link>
                         ) : (
                             <Link href="/profile">
-                                <img
+                                <Image
                                     // src={user ? `${Profile_Assets_Url}${user.photo}` : dummyProfilePic}
                                     src={user?.photo ? `${Profile_Assets_Url}/${user.photo}` : dummyProfilePic}
                                     alt="Profile"
                                     className="w-10 h-10 rounded-full object-cover"
+                                    width={500}
+                                    height={500}
                                 // onClick={handleLogout}
                                 />
                             </Link>
@@ -664,10 +666,12 @@ useEffect(() => {
                             </Link>
                         ) : (
                             <Link href="/profile">
-                                <img
+                                <Image
                                     src={user.profile_picture || dummyProfilePic}
                                     alt="Profile"
                                     className="w-10 h-10 rounded-full object-cover"
+                                    width={500}
+                                    height={500}
                                 // onClick={handleLogout}
                                 />
                             </Link>

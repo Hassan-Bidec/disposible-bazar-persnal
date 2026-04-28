@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { PiStarFill, PiStarThin } from 'react-icons/pi';
 import '../../Pages/Pages.css';
 import axios from '../../Utils/axios';
@@ -18,8 +19,7 @@ export const Rating = ({ productReview }) => {
             setGetRating(productReview?.average_rating);
             setRatingCounts(productReview?.rating_counts || {});
             setImages(productReview?.data); // Assuming it's an array
-            // console.log(productReview.data[1].image);
-            // console.log(images);
+          
 
         }
     }, [productReview]);
@@ -77,13 +77,15 @@ export const Rating = ({ productReview }) => {
                     images.slice(0, 6).map((data, index) => (
                         <div key={index}>
                             {data.image ? (
-                                <img
+                                <Image
                                     className='w-16 h-12 m-1'
-                                    src={`${Profile_Assets_Url}/${data.image}`}  // Concatenating the base URL and relative image path
+                                    src={`${Profile_Assets_Url}/${data.image}`}
                                     alt={data.name || 'Image'}
+                                    width={500}
+                                    height={500}
                                 />
                             ) : (
-                                <img src={`${Image_Url}defaultImage.svg`} alt="" className='w-16 h-12 m-1' />
+                                <Image src={`${Image_Url}defaultImage.svg`} alt="" className='w-16 h-12 m-1' width={500} height={500} />
                             )}
                         </div>
                     ))

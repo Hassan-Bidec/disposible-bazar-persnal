@@ -47,7 +47,7 @@ export async function generateMetadata({ params }) {
 import React, { Suspense } from "react";
 import BundleShop from "../../src/Pages/BundleShop";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export default function Page() {
   return (

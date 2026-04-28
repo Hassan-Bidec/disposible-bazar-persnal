@@ -136,8 +136,7 @@ const CustomPriceRangeMob = ({ onFilter, isFilter, setIsFilter }) => {
         setSelectedQuantities((prev) =>
             prev.includes(id) ? prev.filter((quan) => quan !== id) : [...prev, id]
         );
-        console.log(selectedQuantities);
-        
+       
         onFilter({ pack_size: selectedQuantities.includes(id) ? selectedQuantities.filter(quan => quan != id) : [...selectedQuantities, id] });
     }
     const handleOption = (id) => {

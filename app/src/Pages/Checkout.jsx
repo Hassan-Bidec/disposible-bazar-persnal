@@ -1,4 +1,5 @@
 "use client";
+import Image from 'next/image';
 import ReactDOM from "react-dom";
 // import "leaflet/dist/leadistflet.css";
 import "leaflet/dist/leaflet.css";
@@ -73,9 +74,7 @@ function Checkout() {
         // validateField(name, value);
     };
 
-      useEffect(() => {
-   console.log("Cart Items:", cartItems);
-}, [cartItems]);
+      
     // Calculate the subtotal of the cart
     const calculateSubtotal = () => {
         return cartItems.reduce((total, item) => {
@@ -96,7 +95,6 @@ function Checkout() {
             try {
                 const response = await axios.public.get("areasList");
                 setAreaList(response.data.data); // Set AreaList with the 'data' array
-                console.log("Area List:", response.data.data); // Log the areas
             } catch (error) {
                 console.log("Error:", error);
             }
@@ -246,7 +244,6 @@ formData.forEach((value, key) => {
     debugPayload[key] = value;
 });
 
-console.log("Final Payload Object:", debugPayload);
 
 
             if (item.logo) {
@@ -662,10 +659,11 @@ console.log("Final Payload Object:", debugPayload);
                                 className="flex  gap-4 py-5 border-b border-gray-600 justify-center items-center"
                             >
                                 <div className="flex items-center">
-                                    <img
+                                    <Image
                                         src={`${Assets_Url}${product.product_img}`}
                                         alt={product.name}
                                         className="w-40 h-32 border-2 border-[#1E7773] rounded-xl object-cover"
+                                        width={500} height={500}
                                     />
                                     {/* <button className="mr-2 text-white"><RxCross2 /></button> */}
                                 </div>

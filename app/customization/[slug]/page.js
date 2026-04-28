@@ -23,6 +23,7 @@ import CartModal from '../../src/components/cart/CartModal';
 import CustomDetailSeo from '../../src/components/CustomDetailSeo';
 import { useCart } from '../../src/Context/CartContext';
 import { Loader } from '../../src/components/Loader';
+import Image from 'next/image';
 
 export default function CustomDetails() {
     const [productDetail, setProductDetail] = useState([]);
@@ -119,7 +120,7 @@ export default function CustomDetails() {
             router.push('/login/');
             return;
         }
-        console.log("id", id);
+     
         try {
             const wishlistResponse = await axios.protected.get(`/user/wishlist/${id}/check`);
             if (wishlistResponse.data.exists) {
@@ -203,25 +204,7 @@ export default function CustomDetails() {
     //     (total_base_price + total_lid_price + total_printing_price) * product_quantity
     // ).toFixed(2);
 
-    console.log("💰 PRICE BREAKDOWN:", {
-        per_piece: {
-            base: price_per_piece,
-            lid: lid_price_per_piece,
-            printing: printing_price_per_piece,
-            total: total_per_piece,
-            nowprintingprice : printing_price
-        },
-        per_pack: {
-            pack_size,
-            base_pack: total_base_price,
-            lid_pack: total_lid_price,
-            printing_pack: total_printing_price,
-            total_pack: total_base_price + total_lid_price + total_printing_price
-        },
-        quantity: product_quantity,
-        total_pieces,
-        product_total
-    });
+
 
     // Apply discount if available
     let finalTotal = parseFloat(product_total);
@@ -333,7 +316,7 @@ export default function CustomDetails() {
     };
 
     const handleCategoryLink = (item) => {
-        console.log("item", item);
+      
         router.push(`/customization-category/${item.slug}`);
     };
     // Close dropdown if clicked outside
@@ -349,7 +332,6 @@ export default function CustomDetails() {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
- console.log("productDetailproductDetail", productDetail);
     if (isLoading) return <Loader />;
 
     return (
@@ -385,7 +367,7 @@ export default function CustomDetails() {
                             {Array.isArray(productImages) && productImages.length === 0 ? (
                                 // If productImages is an empty array, show the default image
                                 <div className="w-full h-1/4 py-1">
-                                    <img
+                                    <Image
                                         className="w-full h-full bg-[#32303e] rounded-xl border-2 border-[#1E7773] object-cover cursor-pointer"
                                         src={`${Image_Url}defaultImage.svg`} // Default image when no products
                                         alt="Default Product Image"
@@ -395,7 +377,7 @@ export default function CustomDetails() {
                                 // If productImages is not empty, map over the images and display them
                                 productImages.slice(0, 4).map((prod, index) => (
                                     <div key={index} className="w-full h-1/4 py-1">
-                                        <img
+                                        <Image
                                             className="w-full h-full bg-[#32303e] rounded-xl border-2 border-[#1E7773] object-cover cursor-pointer"
                                             // If the prod.image array is empty, use the default image; otherwise, use the first image in the array
                                             src={`${Assets_Url}${prod.image}`}
@@ -410,7 +392,7 @@ export default function CustomDetails() {
                         {/* Large Image Display */}
                         <div className="w-4/5 rounded-lg bgblack ">
                             {selectedImage && (
-                                <img
+                                <Image
                                     className="w-full h-full object-cover rounded-lg"
                                     src={`${Assets_Url}${selectedImage}`} // Show selected image
                                     alt={productImages[0]?.image_alt || 'Product Image'}
@@ -517,7 +499,6 @@ export default function CustomDetails() {
                                                         setSelectedLidPrice(null);
                                                         setSelectedLid(null);
                                                         setSelectedImage(productDetail?.product?.product_image[0]?.image);
-                                                        // console.log(selectedLidPrice);
 
                                                         setLidsDropdown(false); // Close dropdown after selection
                                                     }}>
@@ -532,7 +513,6 @@ export default function CustomDetails() {
                                                             setSelectedLidPrice(lid.price);
                                                             setSelectedLid(lid.name);
                                                             setSelectedImage(lid.image);
-                                                            // console.log(selectedLidPrice);
 
                                                             setLidsDropdown(false); // Close dropdown after selection
                                                         }}>
@@ -570,7 +550,6 @@ export default function CustomDetails() {
                                                     onClick={() => {
                                                         setSelectedPackSize(variant.pack_size); // Set selected pack size
                                                         setSelectedPackPrice(variant.price_per_piece)
-                                                        console.log(selectedPackPrice);
 
                                                         setPiecesDropdown(false); // Close dropdown after selection
                                                     }}>
@@ -797,13 +776,13 @@ export default function CustomDetails() {
                 <Review />
             </main>
             {/* Background Image */}
-            <img
+            <Image
                 data-aos="fade-left"
                 className="absolute top-[44rem] right-0 md:w-28 w-16"
                 src={`${Image_Url}plateRight.svg`}
                 alt="Plate"
             />
-            <img
+            <Image
                 data-aos="fade-right"
                 className="absolute top-[100rem] left-0 lg:w-16 w-8"
                 src={`${Image_Url}leftCup.svg`}

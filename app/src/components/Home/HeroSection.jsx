@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Image_Url } from '../../const';
 
 import AOS from "aos";
@@ -44,12 +45,12 @@ function HeroSection() {
                 <button className='px-6 py-3 bg-[#1e7773] rounded-xl text-white'>Explore Products</button>
             </div>
             <div className='max-w-1-2'>
-                <img src={`${Image_Url}HomeAssets/HeroSecton/emptycup.svg`} alt="" className='hidden md:block absolute top-30' />
-                <img src={`${Image_Url}HomeAssets/HeroSecton/basket.svg`} alt="" className='hidden md:block absolute right-[15%] top-60' />
-                <img src={`${Image_Url}HomeAssets/HeroSecton/box.svg`} alt="" className='hidden md:block absolute right-[40%] bottom-1/2' />
-                <img src={`${Image_Url}HomeAssets/HeroSecton/cup.svg`} alt="" className='hidden md:block absolute w-1/3 right-25 bottom-[0%]' />
-                <img src={`${Image_Url}HomeAssets/HeroSecton/plate.svg`} alt="" className='hidden md:block absolute lg:w-72 -right-0 top-[25%]' />
-                <img src={`${Image_Url}HomeAssets/HeroSecton/shoper.svg`} alt="" className='hidden md:block absolute right-[15%] bottom-1/4' />
+                <Image src={`${Image_Url}HomeAssets/HeroSecton/emptycup.svg`} alt="" className='hidden md:block absolute top-30' width={500} height={500} />
+                <Image src={`${Image_Url}HomeAssets/HeroSecton/basket.svg`} alt="" className='hidden md:block absolute right-[15%] top-60' width={500} height={500} />
+                <Image src={`${Image_Url}HomeAssets/HeroSecton/box.svg`} alt="" className='hidden md:block absolute right-[40%] bottom-1/2' width={500} height={500} />
+                <Image src={`${Image_Url}HomeAssets/HeroSecton/cup.svg`} alt="" className='hidden md:block absolute w-1/3 right-25 bottom-[0%]' width={500} height={500} />
+                <Image src={`${Image_Url}HomeAssets/HeroSecton/plate.svg`} alt="" className='hidden md:block absolute lg:w-72 -right-0 top-[25%]' width={500} height={500} />
+                <Image src={`${Image_Url}HomeAssets/HeroSecton/shoper.svg`} alt="" className='hidden md:block absolute right-[15%] bottom-1/4' width={500} height={500} />
             </div>
         </div>
     );

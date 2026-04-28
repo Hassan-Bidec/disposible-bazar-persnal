@@ -4,6 +4,7 @@
 import React from "react";
 import parse from "html-react-parser";
 import DOMPurify from "isomorphic-dompurify";
+import Image from "next/image";
 
 const DecodeTextEditor = ({ body }) => {
   // if no body, render nothing
@@ -48,7 +49,7 @@ const DecodeTextEditor = ({ body }) => {
 
       if (domNode?.name === "img") {
         return (
-          <img
+          <Image
             src={domNode?.attribs?.src || ""}
             alt={domNode?.attribs?.alt || ""}
             className="max-w-full h-auto rounded-lg my-2"

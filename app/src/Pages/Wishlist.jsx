@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image';
 import { Assets_Url, Image_Url } from '../const';
 import Hamburger from '../components/Hamburger';
 import { RxCross2 } from 'react-icons/rx';
@@ -27,7 +28,6 @@ function Wishlist() {
             try {
                 const response = await axios.protected.get('user/wishlist/get');
                 setWishList(response.data?.data);
-                console.log("wishlistdata", wishlist);
             } catch (error) {
                 console.log(error);
             }
@@ -44,7 +44,6 @@ function Wishlist() {
         try {
             // Replace '1' with the dynamic wishlistId passed as a prop
             const response = await axios.protected.post(`user/wishlist/delete/${wishlistId}`);
-            console.log('Wishlist item deleted:', response.data);
             if (wishlistId) {
                 removeFromWishlist();
             }
@@ -73,8 +72,7 @@ function Wishlist() {
 
 
     const handleAddCart = (product) => {
-        console.log(product);
-
+      
         if (!product.variants || product.variants.length === 0) {
             toast.error("No variants available for this product");
             return;
@@ -185,7 +183,7 @@ function Wishlist() {
 
 
 
-                                <img src={`${Assets_Url}${item.image_path}`} alt={item.name} className="w-28 h-28 border-2 border-[#1E7773] rounded-xl object-cover" />
+                                <Image src={`${Assets_Url}${item.image_path}`} alt={item.name} className="w-28 h-28 border-2 border-[#1E7773] rounded-xl object-cover" width={500} height={500} />
                             </div>
 
                             <div className="col-span-6 text-xl font-semibold textright">
@@ -212,7 +210,7 @@ function Wishlist() {
                         <div key={index} className="flex  gap-4 py-8 border-b border-gray-600 justify-center items-center">
                             <div className="flex items-center">
                                 <button className="mr-2 text-white" onClick={() => handleDelete(item.id)}><RxCross2 /></button>
-                                <img src={`${Assets_Url}${item.image_path}`} alt={item.name} className="w-40 h-32 border-2 border-[#1E7773] rounded-xl object-cover" />
+                                <Image src={`${Assets_Url}${item.image_path}`} alt={item.name} className="w-40 h-32 border-2 border-[#1E7773] rounded-xl object-cover" width={500} height={500} />
                             </div>
                             <div className="flex flex-col  gap-2 px4">
                                 <div>{item.name}</div>

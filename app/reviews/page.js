@@ -11,8 +11,7 @@ export async function generateMetadata() {
     }
 
     const data = await res.json();
-    console.log("Reviews Metadata Fetched:", data);
-
+ 
     return {
       title: data?.data?.meta_title || "Reviews",
       description: data?.data?.meta_description || "Reviews page",
@@ -51,7 +50,7 @@ export async function generateMetadata() {
 import React, { Suspense } from "react";
 import Reviews from "../src/Pages/Reviews";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 export default function Page() {
   return (
     <Suspense fallback={<div>Loading...</div>}>

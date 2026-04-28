@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from 'next/image';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "../Utils/axios"; 
@@ -254,23 +255,26 @@ export default function Login() {
                                 LOGIN
                             </button>
                         </form>
-                             <img
+                             <Image
                                                     // data-aos="fade-down"
                                                     className="absolute z-0 top-10 right-0 w-16 hscreen"
                                                     src={`${Image_Url}basket.svg`}
                                                     alt="bgGradient"
+                                                    width={500} height={500}
                                                 />
-                                                <img
+                                                <Image
                                                     // data-aos="fade-down"
                                                     className="absolute z-0 top-30 left-0 w-12 hscreen"
                                                     src={`${Image_Url}plate.svg`}
                                                     alt="bgGradient"
+                                                    width={500} height={500}
                                                 />
-                                                <img
+                                                <Image
                                                     // data-aos="fade-down"
                                                     className="absolute z-0 bottom-0 right-20 w-20 hscreen"
                                                     src={`${Image_Url}FooterAssets/footerCenterImg.svg`}
                                                     alt="bgGradient"
+                                                    width={500} height={500}
                                                 />
                     </div>
                     

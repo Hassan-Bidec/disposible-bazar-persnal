@@ -6,6 +6,7 @@ import 'aos/dist/aos.css';
 import axios from '../../Utils/axios';
 import Link from 'next/link';
 import { Loader } from '../Loader';
+import Image from 'next/image';
 
 function Blogs() {
     const [blogs, setBlogs] = useState([]);
@@ -62,10 +63,12 @@ function Blogs() {
             <div className="grid grid-cols-2 lg:grid-cols-3 justify-center items-center md:gap10 gap-4 md:py-10 py-5">
                 {blogs.slice(0, visibleItems).map((data, index) => (
                     <Link href={`/${data.slug}`} key={index} data-aos="fade-up" className="flex flex-col gap-2 py-4 w-[180px] md:w-[380px] justify-center items-start" aria-label={`Read ${data.title}`}>
-                        <img className="rounded-2xl w-[180px] h-[180px] md:w-[380px] md:h-[380px]" src={`${Assets_Url}${data.main_image}`} alt={data.title}
+                        <Image className="rounded-2xl w-[180px] h-[180px] md:w-[380px] md:h-[380px]" src={`${Assets_Url}${data.main_image}`} alt={data.title}
                             onError={(e) => {
                                 e.currentTarget.src = Image_Not_Found; // Path to your dummy image
                             }}
+                            width={500}
+                            height={500}
                         />
                         <p className="my-2 md:text-md text-[12px] md:text-sm text-start text-[#898989]">{data.category} | {new Date(data.date).toDateString()}</p>
                         <p className="md:text-xl text-xs text-start font-semibold">{data.title}</p>
@@ -80,11 +83,13 @@ function Blogs() {
             </div>
 
             {/* Background Image with AOS */}
-            <img
+            <Image
                 data-aos='fade-left'
                 src={`${Image_Url}HomeAssets/Blogs/blogsBgImg.svg`}
                 className='absolute hidden md:block top-0 right-0 w-32'
                 alt="Blog Background"
+                width={500}
+                height={500}
             />
         </div>
     );

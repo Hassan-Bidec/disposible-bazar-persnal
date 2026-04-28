@@ -25,13 +25,7 @@ function CustomHeroSection({
             ? `${Image_Url}${bgImage}`
             : `${Assets_Url}CustomHeroAssets/CustomHeroBgImg.svg`;
 
-    console.log("Background Image URL:", backgroundImageUrl);
-
-    console.log("Category ?? heroImage", heroImage);
-    console.log(
-        "Category ?? url",
-        `${Assets_Url}${heroImage || "CustomHeroAssets/CustomHeroBgImg.svg"}`,
-    );
+    
 
     return (
         <div

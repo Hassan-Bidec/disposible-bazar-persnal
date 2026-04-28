@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image';
 import { Image_Url } from '../../const'
 import AOS from "aos";
 import 'aos/dist/aos.css';
@@ -75,7 +76,7 @@ function Introduction() {
             {/* <img data-aos='fade-up-right' src={`${Image_Url}HomeAssets/Introduction/intro-img01.svg`} className='absolute md:w-40 w-20 md:top-20 bottom-0 md:left-[200px] -left-4' alt="" /> */}
             {/* <img data-aos='fade-up' src={`${Image_Url}HomeAssets/Introduction/intro-img02.svg`} className='absolute md:w-40 w-20 md:top-10 bottom-0 md:right-[200px] -right-8' alt="" /> */}
             {/* <img data-aos='fade-up-left' src={`${Image_Url}HomeAssets/Introduction/intro-img03.svg`} className='absolute md:w-40 w-20 top-0 md:right-0 -right-2' alt="" /> */}
-            <img data-aos='fade-right' src={`${Image_Url}HomeAssets/Introduction/intro-img04.svg`} className='absolute md:w-40 w-20 top-0 left-0' alt="" />
+            <Image data-aos='fade-right' src={`${Image_Url}HomeAssets/Introduction/intro-img04.svg`} className='absolute md:w-40 w-20 top-0 left-0' alt="" width={500} height={500} />
         </div>
     )
 }

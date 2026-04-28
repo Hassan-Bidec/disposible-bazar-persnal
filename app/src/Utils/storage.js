@@ -14,10 +14,8 @@ export const setAccessToken = (token) => {
 
     if (token !== null) {
       localStorage.setItem(TOKEN_KEY, token);
-      console.log("Access token stored successfully");
     } else {
       localStorage.removeItem(TOKEN_KEY);
-      console.warn("Attempted to store a null token");
     }
   } catch (e) {
     console.error("Error storing access token:", e);
@@ -43,7 +41,6 @@ export const setUserData = (user) => {
 
     if (user !== null) {
       localStorage.setItem(USER_KEY, JSON.stringify(user));
-      console.log("User data stored successfully");
     } else {
       localStorage.removeItem(USER_KEY);
       console.warn("Attempted to store null user data");
@@ -72,7 +69,6 @@ export const removeAccessToken = () => {
     if (!isBrowser()) return;
 
     localStorage.removeItem(TOKEN_KEY);
-    console.log("Access token removed successfully");
   } catch (e) {
     console.error("Error removing access token:", e);
   }
@@ -83,7 +79,6 @@ export const removeUserData = () => {
     if (!isBrowser()) return;
 
     localStorage.removeItem(USER_KEY);
-    console.log("User data removed successfully");
   } catch (e) {
     console.error("Error removing user data:", e);
   }

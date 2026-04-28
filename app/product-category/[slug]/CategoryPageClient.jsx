@@ -16,6 +16,7 @@ import CartModal from "../../src/components/cart/CartModal";
 import { FiX } from "react-icons/fi";
 import Link from "next/link";
 import DecodeTextEditor from "../../src/components/DecodeTextEditor";
+import Image from "next/image";
 
 // initialData is passed from the Server Component (SSR pre-fetch)
 export default function CategoryPageClient({ initialData }) {
@@ -24,7 +25,6 @@ export default function CategoryPageClient({ initialData }) {
   const category = paramsObj["category-slug"] || paramsObj.slug || "";
   const categoryIdFromURL = queryParams.get("id");
   const searchTermFromURL = queryParams.get("q") || "";
- console.log("initialData" , initialData)
   const [showQtyModal, setShowQtyModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -53,7 +53,6 @@ export default function CategoryPageClient({ initialData }) {
     sort_by: 1,
     slug: category,
   });
-console.log("initialDatainitialData" , initialData)
   // ─── URL update — ?product-page=2 format, no remount ────────────────────
   const goToPage = (newPage) => {
     setCurrentPage(newPage);
@@ -288,15 +287,19 @@ console.log("initialDatainitialData" , initialData)
                       <div key={index} className="w-full">
                         <div className="p-2 bg-gradient-to-l from-[#403E4A] to-[#32303E] rounded-2xl border border-[#1E7773] group">
                           <Link href={`/product/${product.slug}`} className="block p-5">
-                            <img
+                            <Image
                               className="w-full h-[200px] rounded-xl group-hover:hidden object-cover"
                               src={product.product_image?.[0]?.image ? `${Assets_Url}${product.product_image[0].image}` : Image_Not_Found}
                               alt={product.name || "Product Image"}
+                              width={500}
+                              height={500}
                             />
-                            <img
+                            <Image
                               className="w-full h-[200px] hidden group-hover:block rounded-xl object-cover"
                               src={product.product_image?.[1]?.image ? `${Assets_Url}${product.product_image[1].image}` : Image_Not_Found}
                               alt={product.name || "Product Image"}
+                              width={500}
+                              height={500}
                             />
                           </Link>
                           <p className="font-semibold xl:text-lg">{product.name}</p>
@@ -384,11 +387,13 @@ console.log("initialDatainitialData" , initialData)
       {Category && (
         <div className="flex flex-wrap justify-start gap-4 w-full p-5 items-start md:px-24">
           <div>
-            <img
+            <Image
               src={Category?.image ? `${Assets_Url}${Category.image}` : null}
               alt={Category?.name || "Category Image"}
               className="w-96 h-96 object-contain rounded-lg"
               onError={(e) => { e.currentTarget.src = Image_Not_Found; }}
+              width={500}
+              height={500}
             />
           </div>
           <div className="mt-25 w-full md:w-1/2">

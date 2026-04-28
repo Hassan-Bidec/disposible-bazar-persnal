@@ -13,6 +13,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CartModal from "../components/cart/CartModal";
 import { FiX } from "react-icons/fi";
+import Image from "next/image";
 
 export default function ShopClient({ initialProducts = [] }) {
   const params = useParams();
@@ -245,7 +246,7 @@ export default function ShopClient({ initialProducts = [] }) {
                       <div className="w-full xl:p-4 p-2 border border-[#1E7773] bg-gradient-to-l from-[#403E4A] to-[#32303E] rounded-2xl group">
                         <Link href={product.is_customizeable ? `/customization/${product.slug}` : `/product/${product.slug}`}>
                           <div className="relative p-5 flex justify-center items-center">
-                            <img
+                            <Image
                               className="w-full rounded-xl h-[200px] object-cover transition-all duration-300"
                               src={
                                 hoveredProductId === product.id && product.product_image?.[1]
@@ -255,6 +256,8 @@ export default function ShopClient({ initialProducts = [] }) {
                                   : `${Image_Url}defaultImage.svg`
                               }
                               alt={product.product_image?.[0]?.image_alt || product.name || "Product Image"}
+                              width={500}
+                              height={500}
                               onMouseEnter={() => setHoveredProductId(product.id)}
                               onMouseLeave={() => setHoveredProductId(null)}
                               onError={(e) => (e.currentTarget.src = Image_Not_Found)}

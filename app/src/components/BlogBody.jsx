@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import DOMPurify from "dompurify";
 import parse from "html-react-parser";
+import Image from "next/image";
 
 // Component
 const BlogBody = ({ body }) => {
@@ -103,7 +104,7 @@ const BlogBody = ({ body }) => {
       // Image
       if (domNode.name === "img") {
         return (
-          <img
+          <Image
             src={domNode.attribs.src}
             alt={domNode.attribs.alt || "Image"}
             className="my-4 rounded-lg max-w-full h-auto"

@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image';
 import CustomHeroSection from '../components/CustomHeroSection'
 import { CiSearch } from 'react-icons/ci';
 import { Assets_Url, Image_Url } from '../const';
@@ -131,7 +132,7 @@ function Blog() {
                             blogs.map((data) => (
                                 <div className='max-w-[380px] w-[270px] md:w-[350px]' key={data.id}>
                                     <Link href={`/${data.slug}`} data-aos="fade-up" className="flex flex-col gap-2 py-4 justify-center items-start" aria-label={`Read ${data.title}`}>
-                                        <img className="rounded-xl w-[270px] h-[270px] md:w-[350px] md:h-[350px] object-cover" src={`${Assets_Url}${data.main_image}`} alt={data.title} />
+                        <Image className="rounded-xl w-[270px] h-[270px] md:w-[350px] md:h-[350px] object-cover" src={`${Assets_Url}${data.main_image}`} alt={data.title} width={500} height={500} />
                                         <p className="md:text-md text-[12px] md:text-sm text-start text-[#898989]">{data.category} | {new Date(data.date).toDateString()}</p>
                                         <p className="md:text-xl text-xs text-start font-semibold">{data.title}</p>
                                     </Link>
@@ -290,7 +291,7 @@ export const BlogSidebar = ({ onCategorySelect, toggleSidebar, isSidebarOpen, bl
                 <h2 className="text-lg font-semibold mb-4 p-4 pb-2">INSTAGRAM</h2>
                 <div className="flex flex-wrap">
                     {instagram.map((insta, index) => (
-                        <img key={index} src={`${Image_Url}${insta}`} alt="" className='w-[80px] h-[80px] my-1' />
+                        <Image key={index} src={`${Image_Url}${insta}`} alt="" className='w-[80px] h-[80px] my-1' width={500} height={500} />
                     ))}
                 </div>
             </div>

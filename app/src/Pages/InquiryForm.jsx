@@ -113,7 +113,6 @@ function InquiryForm() {
             const logoInput = document.getElementById("logo");
             if (logoInput) logoInput.value = "";
 
-            console.log("Form submitted:", response.data);
         } catch (error) {
             toast.error("Error submitting form. Please try again.");
             console.log("Error:", error);

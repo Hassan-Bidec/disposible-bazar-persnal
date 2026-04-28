@@ -14,9 +14,10 @@ import { Assets_Url, Image_Not_Found, Image_Url } from '../../const';
 import AOS from "aos";
 import 'aos/dist/aos.css';
 import Link from 'next/link';
+import Image from 'next/image';
 
 function CategorySlider({ products }) {
-    console.log(products);
+  
 
     useEffect(() => {
         AOS.init({ duration: 1000, delay: 0 });
@@ -56,7 +57,7 @@ function CategorySlider({ products }) {
                             <div className='flex flex-col items-center justifycenter w-full h-full'>
                                 <Link href={`/product/${data.slug}`}>
                                     <div className=" flex justify-center items-center w-[150px] h-[150px] md:w-[250px] md:h-[250px]">
-                                        <img
+                                        <Image
                                             className="w-full h-full block group-hover:hidden rounded-xl object-cover"
                                             src={`${Assets_Url}${data.product_image[0]?.image}`}
                                             alt={data.name}
@@ -65,8 +66,10 @@ function CategorySlider({ products }) {
                                             onError={(e) => {
                                                 e.currentTarget.src = Image_Not_Found; // Path to your dummy image
                                             }}
+                                            width={500}
+                                            height={500}
                                         />
-                                        <img
+                                        <Image
                                             className="w-full h-full hidden group-hover:block rounded-xl object-cover"
                                             src={`${Assets_Url}${data.product_image[1]?.image}`}  // Replace with hover image if available
                                             alt={data.name}
@@ -75,6 +78,8 @@ function CategorySlider({ products }) {
                                             onError={(e) => {
                                                 e.currentTarget.src = Image_Not_Found; // Path to your dummy image
                                             }}
+                                            width={500}
+                                            height={500}
                                         />
                                     </div>
                                 </Link>

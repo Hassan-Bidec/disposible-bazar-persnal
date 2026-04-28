@@ -46,7 +46,7 @@ export async function generateMetadata() {
 import { Suspense } from "react";
 import Customization from "../src/Pages/Customization ";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 export default function Page() {
   return (
     <Suspense fallback={null}>

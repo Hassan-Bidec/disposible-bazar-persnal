@@ -11,7 +11,6 @@ export async function generateMetadata() {
     }
 
     const data = await res.json();
-    console.log("About Us Metadata Fetched:", data);
     return {
       title: data?.data?.meta_title || "About Us",
       description: data?.data?.meta_description || "About Us page",
@@ -48,7 +47,7 @@ export async function generateMetadata() {
 import { Suspense } from "react";
 import About from "../src/Pages/AboutUs";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export default function Page() {
   return (

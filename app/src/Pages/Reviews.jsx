@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image';
 import { Image_Url, Profile_Assets_Url } from '../const'
 import Aos from 'aos';
 import 'aos/dist/aos.css';
@@ -76,11 +77,11 @@ const Reviews = () => {
                         </div>
                     </div>
 
-                    <img data-aos='fade-down' src={`${Image_Url}CustomHeroAssets/glass.svg`}
-                        className='absolute top-6 md:right-36 right-0 w-25' alt="" />
+                    <Image data-aos='fade-down' src={`${Image_Url}CustomHeroAssets/glass.svg`}
+                        className='absolute top-6 md:right-36 right-0 w-25' alt="" width={500} height={500} />
               
-                    <img data-aos='fade-up' src={`${Image_Url}CustomHeroAssets/basket.svg`}
-                        className='absolute hidden md:block bottom-16 right-[30rem] w-25' alt="" />
+                    <Image data-aos='fade-up' src={`${Image_Url}CustomHeroAssets/basket.svg`}
+                        className='absolute hidden md:block bottom-16 right-[30rem] w-25' alt="" width={500} height={500} />
                 </div>
 
                 <div className='absolute -bottom-55 w-full'>
@@ -143,10 +144,10 @@ function ReviewStatement({ filteredReviews, setFilteredReviews }) {
             {filteredReviews.map((review, index) => (
                 <div key={index} className="py-10 border-b border-[#9F9F9F]">
                     <div className="flex justify-start items-center">
-                        <img
+                        <Image
                             className='w-16 h-16 rounded-full'
                             src={review.user ? `${Profile_Assets_Url}/${review.user.photo}` : `https://static.vecteezy.com/system/resources/previews/018/765/757/original/user-profile-icon-in-flat-style-member-avatar-illustration-on-isolated-background-human-permission-sign-business-concept-vector.jpg`} alt={`${review.name}`}
-                        />
+                            width={500} height={500} />
                         <div className="ml-4 text-white">
                             <h2 className="text-2xl">{review.name}</h2>
                             <p className="text-md text-[#9F9F9F]">{review.created_at.slice(0, 10).split('-').join('/')}</p>

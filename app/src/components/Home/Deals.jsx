@@ -3,6 +3,7 @@ import React from 'react'
 import { Image_Url } from '../../const'
 // import { Link } from 'react-router-dom'
 import Link from 'next/link';
+import Image from 'next/image';
 
 function Deals() {
     return (
@@ -27,8 +28,8 @@ function Deals() {
                     </Link>
 
                 </div>
-                <img data-aos='fade-up-right' src={`${Image_Url}HomeAssets/Deals/fork.svg`} className='absolute top-4 md:-left-14 -left-4 md:w-36 w-16' alt="" />
-                <img data-aos='fade-up-left' src={`${Image_Url}HomeAssets/Deals/spoon.svg`} className='absolute -bottom-14 md:right-[43%] right-[130px] md:w-36 w-16 ' alt="" />
+                <Image data-aos='fade-up-right' src={`${Image_Url}HomeAssets/Deals/fork.svg`} className='absolute top-4 md:-left-14 -left-4 md:w-36 w-16' alt="" width={500} height={500} />
+                <Image data-aos='fade-up-left' src={`${Image_Url}HomeAssets/Deals/spoon.svg`} className='absolute -bottom-14 md:right-[43%] right-[130px] md:w-36 w-16 ' alt="" width={500} height={500} />
             </div >
         </div>
     )

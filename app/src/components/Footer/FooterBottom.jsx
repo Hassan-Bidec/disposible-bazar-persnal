@@ -10,6 +10,7 @@ import { MdEmail, MdPhone } from "react-icons/md";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from '../../Utils/axios';
+import Image from "next/image";
 
 export default function FooterBottom() {
     const [categories, setCategories] = useState([]);
@@ -38,10 +39,13 @@ export default function FooterBottom() {
 
                 {/* Logo Section */}
                 <div className="w-full lg:w-[25%] text-start flex flex-col items-center md:items-start gap-2 text-md">
-                    <img
+                    <Image
+                    
                         className="cursor-pointer w-44 lg:w-64"
                         src={`${Image_Url}Logoo.png`}
                         alt=""
+                        width={500}
+                        height={500}
                     />
                     <p className="text-center md:text-start font-[400]">
                         In the vast world of food packaging, the emphasis on sustainability and

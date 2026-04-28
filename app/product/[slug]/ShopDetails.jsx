@@ -26,7 +26,6 @@ import { FiX } from 'react-icons/fi';
 
 function ShopDetails({ initialData = null }) {
     const router = useRouter();
-    console.log("initialDatainitialData" , initialData)
 
     const [productDetail, setProductDetail] = useState(initialData || []);
     const [productVariants, setProductVariants] = useState([]);
@@ -136,11 +135,7 @@ function ShopDetails({ initialData = null }) {
             });
             const resData = response.data.data;
             const hasChildProducts = productDetail.product?.childProducts?.length > 0;
-            if (hasChildProducts) {
-                console.log("resData Show button");
-            } else {
-                console.log("resData Hide button");
-            }
+          
             applyProductData(resData);
             setIsCustomizeable(productDetail.product?.childProducts?.length > 0);
             setIsLoading(false);
@@ -200,18 +195,14 @@ function ShopDetails({ initialData = null }) {
         }
     }, [user, selectedVariantId, selectedProductVariants, productVariants]);
 
-    useEffect(() => {
-        console.log("selectedBrands", selectedBrands);
-        console.log("selectedBrandId", selectedBrandId);
-        console.log('productLids', productLids);
-    });
+  
 
     const handleWishlist = async () => {
         if (!user) {
             router.push("/login");
             return;
         }
-        console.log("pd", productDetail);
+        
         const variantId = productDetail.product.id;
         if (!variantId) {
             toast.error("No product variant available");
@@ -291,7 +282,6 @@ function ShopDetails({ initialData = null }) {
                 (selectedVariantPrice * quantity) +
                 (selectedLidPrice ? selectedLidPrice * quantity : 0),
         };
-        console.log("ADD TO CART PAYLOAD:", payload);
         setShowQtyModal(true);
     };
 
@@ -329,11 +319,8 @@ function ShopDetails({ initialData = null }) {
         toast.success(`${product.name} added to cart`);
     };
 
-    console.log("product detail");
-
     useEffect(() => {
         setProductUrl(window.location.href);
-        console.log("productDetailproductDetail", productDetail);
     }, []);
 
     const whatsappNumber = "+923213850002";
@@ -419,18 +406,22 @@ function ShopDetails({ initialData = null }) {
                         {/* Large Image Display */}
                         <div className="w-4/5 rounded-lg bg-[#32303e] relative min-h-[300px]">
                             {selectedImage ? (
-                                <img
+                                <Image
                                     src={`${Assets_Url.replace(/\/$/, "")}/${selectedImage.replace(/^\/+/, "")}`}
                                     alt={productImages?.[0]?.image_alt || "Product Image"}
                                     className="w-full h-full object-cover rounded-lg absolute inset-0"
+                                    width={500}
+                                    height={500}
                                 />
                             ) : (
-                                <img
+                                <Image
                                     src={productDetail?.product?.image_path
                                         ? `${Assets_Url.replace(/\/$/, "")}/${productDetail.product.image_path.replace(/^\/+/, "")}`
                                         : `${Image_Url}defaultImage.svg`}
                                     alt={productImages?.[0]?.image_alt || "Product Image"}
                                     className="w-full h-full object-cover rounded-lg absolute inset-0"
+                                    width={500}
+                                    height={500}
                                 />
                             )}
                         </div>
@@ -671,7 +662,6 @@ function ShopDetails({ initialData = null }) {
                     <div>
                         {productTextDetail === 'Description' && (
                             <div className="flex flex-col gap-2">
-                                {console.log("aa", productDetail)}
                                 {productDetail?.product?.description ? (
                                     <DecodeTextEditor body={productDetail.product.description} />
                                 ) : (

@@ -15,6 +15,7 @@ import 'swiper/css/pagination';
 // Import required Swiper modules
 import { Pagination, Navigation } from 'swiper/modules';
 import Link from 'next/link';
+import Image from 'next/image';
 
 function BlogSlider({ blogsCategories }) {
     useEffect(() => {
@@ -49,7 +50,7 @@ function BlogSlider({ blogsCategories }) {
                     <SwiperSlide key={index}>
                          <Link href={`/${data.slug}`}>
                         <div data-aos='fade-up' className="flex flex-col gap-2 py-4 justify-center items-start">
-                            <img className='rounded-xl w-full h-full' src={`${Assets_Url}${data.image}`} alt={data.title} />
+                            <Image className='rounded-xl w-full h-full' src={`${Assets_Url}${data.image}`} alt={data.title} width={500} height={500} />
                             <p className='md:text-md text-sm text-start text-[#898989] '>
                                 {data.product_category.name} | {data.date}
                             </p>
@@ -60,7 +61,7 @@ function BlogSlider({ blogsCategories }) {
                 ))}
             </Swiper>
 
-            <img data-aos='fade-left' src={`${Image_Url}HomeAssets/Blogs/blogsBgImg.svg`} className='absolute hidden md:block top-0 right-0 w-32' alt="" />
+            <Image data-aos='fade-left' src={`${Image_Url}HomeAssets/Blogs/blogsBgImg.svg`} className='absolute hidden md:block top-0 right-0 w-32' alt="" width={500} height={500} />
         </div>
         
     );

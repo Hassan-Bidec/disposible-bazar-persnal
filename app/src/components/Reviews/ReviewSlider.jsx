@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { FaUserCircle } from 'react-icons/fa';
 // Import Swiper styles
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -76,7 +77,6 @@ const ReviewSlider = () => {
         // Fetch categories from the API
         const response = await axios.public.get('all_reviews');
         setReviews(response.data.data)
-        console.log('Reviews slider', reviews);
 
       } catch (error) {
         console.log(error);
@@ -129,11 +129,11 @@ const ReviewSlider = () => {
               }}
             >
               {/* Main Image Section */}
-              <img src={`${Profile_Assets_Url}/${review.image}`} alt="" className='h-[250px] rounded-2xl mb-5 object-fit w-full' />
+              <Image src={`${Profile_Assets_Url}/${review.image}`} alt="" className='h-[250px] rounded-2xl mb-5 object-fit w-full' width={500} height={500} />
 
               {/* Profile and Description Section */}
               <div className=" w-full flex items-center gap-4 mt-2 text-white rounded-b-xl">
-                <img className='w-12 h-12 rounded-full' src={review.user ? `${Profile_Assets_Url}/${review.user.photo}` : `https://static.vecteezy.com/system/resources/previews/018/765/757/original/user-profile-icon-in-flat-style-member-avatar-illustration-on-isolated-background-human-permission-sign-business-concept-vector.jpg`} alt={`${review.name}`} />
+                <Image className='w-12 h-12 rounded-full' src={review.user ? `${Profile_Assets_Url}/${review.user.photo}` : `https://static.vecteezy.com/system/resources/previews/018/765/757/original/user-profile-icon-in-flat-style-member-avatar-illustration-on-isolated-background-human-permission-sign-business-concept-vector.jpg`} alt={`${review.name}`} width={500} height={500} />
                 <div>
                   <h2 className="text-xl font-bold">{review.name}</h2>
                   <p className="text-sm">{review.description.slice(0, 50)}...</p>

@@ -4,7 +4,7 @@ import CustomHeroSection from "../../src/components/CustomHeroSection";
 import CustomSeo from "../../src/components/CustomSeo";
 import ShopClient from "../../src/Pages/ShopClient";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 // ─── Shared data fetch ────────────────────────────────────────────────────────
 async function getPageData() {

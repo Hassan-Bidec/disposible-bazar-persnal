@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { PiStarFill, PiStarThin } from 'react-icons/pi';
 import { TbCameraPlus } from 'react-icons/tb';
 import axios from '../../Utils/axios';
@@ -241,7 +242,7 @@ function Review({ productId, setProductReview, productReview }) {
             {isReview.map((r, idx) => (
               <div key={idx} className="py-10 border-b border-[#9F9F9F]">
                 <div className="flex justify-start items-center">
-                  <img className="w-16 h-16 rounded-full" src="https://static.vecteezy.com/system/resources/previews/018/765/757/original/user-profile-icon-in-flat-style-member-avatar-illustration-on-isolated-background-human-permission-sign-business-concept-vector.jpg" alt={r.name || 'User'} />
+                  <Image className="w-16 h-16 rounded-full" src="https://static.vecteezy.com/system/resources/previews/018/765/757/original/user-profile-icon-in-flat-style-member-avatar-illustration-on-isolated-background-human-permission-sign-business-concept-vector.jpg" alt={r.name || 'User'} width={500} height={500} />
                   <div className="ml-4 text-white">
                     <h2 className="text-2xl">{r.name}</h2>
                     <p className="text-md text-[#9F9F9F]">{r.created_at?.slice(0, 10)?.split('-')?.join('/')}</p>

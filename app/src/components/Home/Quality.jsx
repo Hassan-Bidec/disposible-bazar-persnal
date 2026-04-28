@@ -3,6 +3,7 @@
 import Aos from "aos";
 import "aos/dist/aos.css";
 import React, { useEffect, useState } from "react";
+import Image from 'next/image';
 import { Image_Url } from "../../const";
 import { useRouter } from "next/navigation";
 
@@ -60,11 +61,12 @@ function Quality() {
             BROWSE NOW
           </button>
         </div>
-        <img
+        <Image
           data-aos="fade-up-right"
           src={`${Image_Url}HomeAssets/Quality/cup.svg`}
           className="absolute hidden md:block top-20 left-20 w-32"
           alt=""
+          width={500} height={500}
         />
       </div>
     </div>

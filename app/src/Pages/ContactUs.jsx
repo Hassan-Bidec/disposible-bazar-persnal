@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Image_Url } from '../const';
 import Aos from 'aos';
 import 'aos/dist/aos.css';
@@ -78,7 +79,7 @@ function ContactUs() {
                 </div>
            </div> */}
             <div className='flex flex-col m-20 mb-0 md:m-0 md:w-1/4  justify-center '>
-                <img data-aos='fade-left' src={`${Image_Url}CustomHeroAssets/banners.png`} className='hidden md:block absolute right-0 w-32' alt="" />
+                <Image data-aos='fade-left' src={`${Image_Url}CustomHeroAssets/banners.png`} className='hidden md:block absolute right-0 w-32' alt="" width={500} height={500} />
                 <h3 className='text-3xl text-center -mt-10 font-bold font-bazaar m-4'>Get In Touch</h3>
                 <p className='text-center text-sm'>We're here to assist you with any information you need. Let's start a conversation.</p>
 

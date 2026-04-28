@@ -4,6 +4,7 @@ import React from "react";
 import { FiX } from "react-icons/fi";
 import { Assets_Url } from "../../const";
 import { useCart } from "../../Context/CartContext";
+import Image from "next/image";
 
 const CartModal = () => {
   const { cartItems, removeFromCart } = useCart(); // Destructure only what's used
@@ -27,10 +28,12 @@ const CartModal = () => {
                 key={item.id}
                 className="flex justify-between items-center mb-4 border-t pt-4 border-gray-300"
               >
-                <img
+                <Image
                   src={`${Assets_Url}${item.product_img}`}
                   alt={item.product_name}
                   className="w-16 h-16 object-cover rounded"
+                  width={500}
+                  height={500}
                 />
                 <div className="flex flex-col flex-1 ml-4">
                   <div className="flex justify-between items-center mb-2">

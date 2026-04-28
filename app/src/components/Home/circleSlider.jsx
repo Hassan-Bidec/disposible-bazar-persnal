@@ -4,6 +4,7 @@ import { Image_Url } from '../../const';
 // import './animation.css'
 import AOS from "aos";
 import 'aos/dist/aos.css';
+import Image from 'next/image';
 
 function CircleSlider() {
     const [rotation, setRotation] = useState();
@@ -33,8 +34,7 @@ function CircleSlider() {
         setTranslateLeft(newTranslateLeft);
         setTranslateRight(newTranslateRight);
 
-        // console.log('Right :', newTranslateRight);
-        // console.log('', scrollTop);
+        
     };
 
 
@@ -64,7 +64,7 @@ function CircleSlider() {
                 backgroundSize: 'cover', // or 'cover' depending on your design
                 backgroundRepeat: 'no-repeat',
             }}>
-                <img style={{ transform: `rotate(${rotation}deg)` }} className='md:w-60 w-32 ' src={`${Image_Url}CircleSliderAssets/circleLogo.svg`} alt="" />
+                <Image style={{ transform: `rotate(${rotation}deg)` }} className='md:w-60 w-32 ' src={`${Image_Url}CircleSliderAssets/circleLogo.svg`} alt="" width={240} height={240} />
                 {/* <img style={{
                     transform: `translateX(${translateLeft}px)`,
                     transition: 'transform 0.2s ease-out',
@@ -74,10 +74,10 @@ function CircleSlider() {
                         transform: `translateX(${translateRight}px)`,
                         transition: 'transform 0.2s ease-out',
                     }} className='absolute md:-right-20 -right-28 -md:top-16 md:w-80 w-32' src={`${Image_Url}CircleSliderAssets/rightImg.svg`} alt="" /> */}
-                <img data-aos='fade-up-right' className='absolute md:left-[350px] left-12 w-16 md:w-fit md:-top-10' src={`${Image_Url}CircleSliderAssets/shoper.svg`} alt="" />
-                <img data-aos='fade-right' className='absolute w-16 md:w-fit  md:left-[450px] left-20 md:top-40 top-32' src={`${Image_Url}CircleSliderAssets/plate.svg`} alt="" />
-                <img data-aos='fade-up-right' className='absolute w-16 md:w-fit  md:right-[450px] right-16 md:top-40 top-32' src={`${Image_Url}CircleSliderAssets/fork.svg`} alt="" />
-                <img data-aos='fade-up-left' className='absolute w-16 md:w-fit  md:right-[350px] right-12 md:-top-12' src={`${Image_Url}CircleSliderAssets/spoon.svg`} alt="" />
+                <Image data-aos='fade-up-right' className='absolute md:left-[350px] left-12 w-16 md:w-fit md:-top-10' src={`${Image_Url}CircleSliderAssets/shoper.svg`} alt="" width={100} height={100} />
+                <Image data-aos='fade-right' className='absolute w-16 md:w-fit  md:left-[450px] left-20 md:top-40 top-32' src={`${Image_Url}CircleSliderAssets/plate.svg`} alt="" width={100} height={100} />
+                <Image data-aos='fade-up-right' className='absolute w-16 md:w-fit  md:right-[450px] right-16 md:top-40 top-32' src={`${Image_Url}CircleSliderAssets/fork.svg`} alt="" width={100} height={100} />
+                <Image data-aos='fade-up-left' className='absolute w-16 md:w-fit  md:right-[350px] right-12 md:-top-12' src={`${Image_Url}CircleSliderAssets/spoon.svg`} alt="" width={100} height={100} />
             </div>
         </div>
     )

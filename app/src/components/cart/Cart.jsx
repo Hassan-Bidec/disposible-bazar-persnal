@@ -10,6 +10,7 @@ import { useCart } from "../../Context/CartContext";
 import CustomSeo from "../../components/CustomSeo";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import Image from "next/image";
 
 function Cart() {
     const { cartItems, removeFromCart, updateQuantity, updatePackSize, updateProductOption } = useCart();
@@ -101,7 +102,6 @@ function Cart() {
 
     {cartItems.map((product) => {
         const limitExceeded = isOrderLimitExceeded(product);
-         console.log("product" , product)
         return (
             <div
                 key={product.id}
@@ -115,10 +115,12 @@ function Cart() {
                     >
                         <RxCross2 size={16} />
                     </button>
-                    <img
+                    <Image
                         src={`${Assets_Url}${product.product_img}`}
                         alt={product.product_name}
                         className="w-12 h-10 border-2 border-[#1E7773] rounded-xl object-cover shrink-0"
+                        width={500}
+                        height={500}
                     />
                 </div>
 
@@ -218,10 +220,12 @@ function Cart() {
                                     <button className="mr-2 text-white" onClick={() => removeFromCart(product.id)}>
                                         <RxCross2 />
                                     </button>
-                                    <img 
+                                    <Image
                                         src={`${Assets_Url}${product.product_img}`} 
                                         alt={product.product_name} 
                                         className="w-20 h-16 border-2 border-[#1E7773] rounded-xl object-cover" 
+                                        width={500}
+                                        height={500}
                                     />
                                 </div>
                                 <div className="flex flex-col gap-2 flex-1">

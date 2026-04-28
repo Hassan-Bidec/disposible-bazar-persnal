@@ -1,6 +1,7 @@
  "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from 'next/image';
 import CustomHeroSection from "../components/CustomHeroSection";
 import PriceRange from "../components/Shop/PriceRange";
 import { Assets_Url, Image_Not_Found, Image_Url } from "../const";
@@ -246,7 +247,7 @@ const isFirstMount = React.useRef(true);
                     <div className="hidden lg:flex justify-between gap-3 items-center">
                       <h4 className="text-md font-bazaar">View</h4>
 
-                      <img
+                      <Image
                         onClick={() => setGrid(4)}
                         className="cursor-pointer"
                         src={`${Image_Url}${
@@ -254,9 +255,11 @@ const isFirstMount = React.useRef(true);
                             ? "ShopAssets/4greenGridImg.svg"
                             : "ShopAssets/4gridImg.svg"
                         }`}
+                        alt=""
+                        width={500} height={500}
                       />
 
-                      <img
+                      <Image
                         onClick={() => setGrid(3)}
                         className="cursor-pointer"
                         src={`${Image_Url}${
@@ -264,9 +267,11 @@ const isFirstMount = React.useRef(true);
                             ? "ShopAssets/3greenGridImg.svg"
                             : "ShopAssets/3gridImg.svg"
                         }`}
+                        alt=""
+                        width={500} height={500}
                       />
 
-                      <img
+                      <Image
                         onClick={() => setGrid(2)}
                         className="cursor-pointer"
                         src={`${Image_Url}${
@@ -274,6 +279,8 @@ const isFirstMount = React.useRef(true);
                             ? "ShopAssets/2greenGridImg.svg"
                             : "ShopAssets/2gridImg.svg"
                         }`}
+                        alt=""
+                        width={500} height={500}
                       />
                     </div>
                   </div>
@@ -320,7 +327,7 @@ const isFirstMount = React.useRef(true);
                         >
                           <div className="w-full xl:p-4 p-2 flex flex-col border border-[#1E7773] bg-[#32303e] rounded-2xl group">
                             <div className="relative p-5 flex flex-col justify-center items-center">
-                              <img
+                              <Image
                                 className="w-full h-full block group-hover:hidden rounded-xl object-cover"
                                 src={
                                   product.product_image
@@ -331,9 +338,10 @@ const isFirstMount = React.useRef(true);
                                 onError={(e) => {
                                   e.currentTarget.src = Image_Not_Found;
                                 }}
+                                width={500} height={500}
                               />
 
-                              <img
+                              <Image
                                 className="w-full h-full hidden group-hover:block rounded-xl object-cover"
                                 src={
                                   product.product_image
@@ -344,6 +352,7 @@ const isFirstMount = React.useRef(true);
                                 onError={(e) => {
                                   e.currentTarget.src = Image_Not_Found;
                                 }}
+                                width={500} height={500}
                               />
                             </div>
 

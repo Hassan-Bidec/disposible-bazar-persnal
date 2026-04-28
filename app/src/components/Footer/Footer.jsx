@@ -5,6 +5,7 @@ import FooterBottom from './FooterBottom';
 import Aos from 'aos';
 import 'aos/dist/aos.css';
 import axios from '../../Utils/axios';
+import Image from 'next/image';
 
 function Footer() {
     const [visibleItems, setVisibleItems] = useState('');
@@ -66,7 +67,7 @@ function Footer() {
                 backgroundRepeat: 'no-repeat',  // Prevent repeating the image
                 backgroundPosition: 'top',
             }}>
-            <img data-aos='fade-up' src={`${Image_Url}FooterAssets/footerCenterImg.svg`} className='absolute w-[80px] md:w-auto -top-6' alt="" />
+            <Image data-aos='fade-up' src={`${Image_Url}FooterAssets/footerCenterImg.svg`} className='absolute w-[80px] md:w-auto -top-6' alt="" width={200} height={200} />
             {/* <img data-aos='fade-right' src={`${Image_Url}FooterAssets/footerLeftImg.svg`} className='absolute w-[80px] md:w-auto -left-4 top-2 lg:top-32' alt="" /> */}
             {/* <img data-aos='fade-left' src={`${Image_Url}FooterAssets/footerRightImg.svg`} className='absolute w-[80px] md:w-auto -right-4 top-2 lg:top-32' alt="" /> */}
 

@@ -21,6 +21,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FiX } from 'react-icons/fi';
 import CartModal from '../components/cart/CartModal';
 import CustomDetailSeo from '../components/CustomDetailSeo';
+import Image from 'next/image';
 
 export default function CustomDetails() {
     const [productDetail, setProductDetail] = useState([]);
@@ -267,21 +268,25 @@ export default function CustomDetails() {
                             {Array.isArray(productImages) && productImages.length === 0 ? (
                                 // If productImages is an empty array, show the default image
                                 <div className="w-full h-1/4 py-1">
-                                    <img
+                                    <Image
                                         className="w-full h-full bg-[#32303e] rounded-xl border-2 border-[#1E7773] object-cover cursor-pointer"
                                         src={`${Image_Url}defaultImage.svg`} // Default image when no products
                                         alt="Default Product Image"
+                                        width={500}
+                                        height={500}
                                     />
                                 </div>
                             ) : (
                                 // If productImages is not empty, map over the images and display them
                                 productImages.slice(0, 4).map((prod, index) => (
                                     <div key={index} className="w-full h-1/4 py-1">
-                                        <img
+                                        <Image
                                             className="w-full h-full bg-[#32303e] rounded-xl border-2 border-[#1E7773] object-cover cursor-pointer"
                                             // If the prod.image array is empty, use the default image; otherwise, use the first image in the array
                                             src={`${Assets_Url}${prod.image}`}
                                             alt={prod?.image_alt || 'Product Image'}
+                                            width={500}
+                                            height={500}
                                             onClick={() => handleImageClick(prod.image)} // Set clicked image (first image in the array)
                                         />
 
@@ -292,10 +297,12 @@ export default function CustomDetails() {
                         {/* Large Image Display */}
                         <div className="w-4/5 rounded-lg bgblack ">
                             {selectedImage && (
-                                <img
+                                <Image
                                     className="w-full h-full object-cover rounded-lg"
                                     src={`${Assets_Url}${selectedImage}`} // Show selected image
                                     alt={productImages[0]?.image_alt || 'Product Image'}
+                                    width={500}
+                                    height={500}
                                 />
                             )}
                         </div>
@@ -413,7 +420,6 @@ export default function CustomDetails() {
                                                     onClick={() => {
                                                         setSelectedPackSize(variant.pack_size); // Set selected pack size
                                                         setSelectedPackPrice(variant.price_per_piece)
-                                                        console.log(selectedPackPrice);
 
                                                         setPiecesDropdown(false); // Close dropdown after selection
                                                     }}>
@@ -612,17 +618,21 @@ export default function CustomDetails() {
                 <Review />
             </main>
             {/* Background Image */}
-            <img
+            <Image
                 data-aos="fade-left"
                 className="absolute top-[44rem] right-0 md:w-28 w-16"
                 src={`${Image_Url}plateRight.svg`}
                 alt="Plate"
+                width={500}
+                height={500}
             />
-            <img
+            <Image
                 data-aos="fade-right"
                 className="absolute top-[100rem] left-0 lg:w-16 w-8"
                 src={`${Image_Url}leftCup.svg`}
                 alt="Plate"
+                width={500}
+                height={500}
             />
             {/* <img
                 // data-aos="fade-left"

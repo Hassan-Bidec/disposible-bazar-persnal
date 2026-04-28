@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
@@ -28,8 +29,8 @@ function Premium() {
                 <h3 data-aos='fade-right' className='md:w-1/2 w-11/12 md:text-start text-center font-bazaar md:text-6xl text-4xl'>Plastic Containers</h3>
                 <p data-aos='fade-left' className='md:w-1/3 w-11/12 md:text-start text-center md:text-lg text-sm'>Discover our versatile range of high-quality plastic containers. Perfect for all your storage needs, combining style and functionality.</p>
             </div>
-            <img data-aos='fade-left' src={`${Image_Url}HomeAssets/PremiumAssets/shoper.svg`} className='absolute hidden md:block top-0 right-0 w-32' alt="" />
-            <img data-aos='fade-left' src={`${Image_Url}HomeAssets/PremiumAssets/shoper2.svg`} className='absolute md:hidden block top-0 right-0 w-24' alt="" />
+            <Image data-aos='fade-left' src={`${Image_Url}HomeAssets/PremiumAssets/shoper.svg`} className='absolute hidden md:block top-0 right-0 w-32' alt="" width={500} height={500} />
+            <Image data-aos='fade-left' src={`${Image_Url}HomeAssets/PremiumAssets/shoper2.svg`} className='absolute md:hidden block top-0 right-0 w-24' alt="" width={500} height={500} />
 
             <Slider />
 
@@ -125,7 +126,7 @@ function Slider() {
                             <div className='flex flex-col items-center justifycenter w-full h-full'>
                                 <Link href={`/product/${product.slug}`}>
                                 <div className="relative p-5 flex justify-center items-center w-[150px] h-[150px] md:w-[250px] md:h-[250px]">
-                                    <img
+                                    <Image
                                         className=" w-full h-full block group-hover:hidden rounded-xl object-cover"
                                         src={`${Assets_Url}${product.product_image[0]?.image}`}
                                         alt={product.name}
@@ -134,8 +135,9 @@ function Slider() {
                                         onError={(e) => {
                                             e.currentTarget.src = Image_Not_Found; // Path to your dummy image
                                           }}
+                                        width={500} height={500}
                                     />
-                                    <img
+                                    <Image
                                         className=" w-full h-full hidden group-hover:block rounded-xl object-cover"
                                         src={`${Assets_Url}${product.product_image[1]?.image}`}  // Replace with hover image if available
                                         alt={product.name}
@@ -144,6 +146,7 @@ function Slider() {
                                         onError={(e) => {
                                             e.currentTarget.src = Image_Not_Found; // Path to your dummy image
                                           }}
+                                        width={500} height={500}
                                     />
                                 </div>
                                 </Link>

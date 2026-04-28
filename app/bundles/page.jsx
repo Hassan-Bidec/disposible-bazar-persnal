@@ -5,7 +5,7 @@
 import { Suspense } from "react";
 import BundleShop from "../src/Pages/BundleShop";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 

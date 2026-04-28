@@ -15,7 +15,6 @@ export const OrderHistory = ({setActivePage}) => {
   const handleDownloadInvoice = async (order) => {
     setLoading(true);
     // setError('');
-console.log(orderDetails);
 
     // Order details to pass to the invoice
     const orderDetails = {
@@ -107,7 +106,7 @@ console.log(orderDetails);
           setOrderList({});
         }
 
-        console.log(listData);
+       
       } catch (error) {
         console.error("Failed to fetch order list", error);
         setOrderList({});

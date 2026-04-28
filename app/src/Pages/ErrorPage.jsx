@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
 import { Image_Url } from '../const';
@@ -13,11 +14,11 @@ const ErrorPage = () => {
         
         {/* Image and text */}
         <div className="absolute w-[180px] sm:w-[260px] md:w-[300px] lg:w-[350px] xl:w-[450px]">
-          <img 
+          <Image 
             src={`${Image_Url}ErrorPlate.png`} 
             alt="Page not found" 
             className="w-full" 
-          />
+            width={500} height={500} />
           {/* <h4 className="absolute text-sm sm:text-lg md:text-xl lg:text-2xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             Page not found fsfsfsf
           </h4> */}

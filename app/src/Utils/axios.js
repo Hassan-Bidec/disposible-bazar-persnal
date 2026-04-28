@@ -36,7 +36,7 @@ protectedApi.interceptors.request.use(
 // Optional response interceptor
 protectedApi.interceptors.response.use(
   (response) => {
-    console.log("Response received:", response);
+ 
     return response;
   },
   (error) => {

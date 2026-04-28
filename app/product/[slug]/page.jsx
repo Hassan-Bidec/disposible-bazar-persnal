@@ -10,7 +10,7 @@ import { Suspense } from "react";
 import ShopDetails from "./ShopDetails";
 import { Loader } from "../../src/components/Loader";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
@@ -38,7 +38,6 @@ export async function generateMetadata({ params }) {
   const data = await getProductData(resolvedSlug);
   const seo = data?.seoMetadata;
   const product = data?.product;
-  console.log("getProductData" , data)
 
   return {
     title: seo?.meta_title || product?.name || "Product - Disposable Bazar",

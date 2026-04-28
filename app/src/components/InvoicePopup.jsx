@@ -4,6 +4,7 @@ import html2canvas from "html2canvas";
 import { Assets_Url } from "../const";
 import { CiCamera } from "react-icons/ci";
 import Link from "next/link";
+import Image from "next/image";
 
 const InvoicePopup = ({ setIsInvoice, isInvoice, invoicedetails }) => {
   const invoiceRef = useRef(null);
@@ -67,7 +68,7 @@ const InvoicePopup = ({ setIsInvoice, isInvoice, invoicedetails }) => {
             {invoicedetails?.items.map((item, index) => (
               <div key={index} className="flex w-full flex-row items-center justify-between gap-2">
                 <div>
-                  <img
+                  <Image
                     className="w-20 h-20 rounded-xl border-2 border-[#1E7773]"
                     src={`${Assets_Url}${item?.image}`}
                     alt={item?.productName}

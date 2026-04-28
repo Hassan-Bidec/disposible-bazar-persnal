@@ -5,7 +5,7 @@
 import { Suspense } from "react";
 import BlogClient from "../src/Pages/Blog";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
@@ -54,7 +54,6 @@ export async function generateMetadata() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page() {
   const { blogs } = await getPageData();
-  console.log("getPageData" , getPageData)
 
   return (
     <>
