@@ -6,7 +6,7 @@ import Aos from 'aos';
 import 'aos/dist/aos.css';
 import ReviewSlider from '../components/Reviews/ReviewSlider';
 import { Rating } from '../components/Reviews/Rating';
-import { motion } from 'framer-motion';   // ✅ FIXED HERE
+// import { motion } from 'framer-motion';   // imported but not used in JSX
 import { CiSearch } from 'react-icons/ci';
 import { PiStarFill } from 'react-icons/pi';
 import { VscShare } from 'react-icons/vsc';

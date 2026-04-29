@@ -14,7 +14,7 @@ import CheckoutModal from "../components/CheckoutModal";
 import { useCart } from "../Context/CartContext";
 import { useUser } from "../Context/UserContext";
 // import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+// import html2canvas from "html2canvas"; // not used — all html2canvas calls are commented out
 // import Invoice from './Invoice';
 import axios from "../Utils/axios";
 import { toast, ToastContainer } from "react-toastify";

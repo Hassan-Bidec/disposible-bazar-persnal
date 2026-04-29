@@ -5,7 +5,7 @@ import { Loader } from '../components/Loader';
 import './Pages.css'
 import Invoice from './Invoice';
 // import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+// import html2canvas from 'html2canvas'; // not used — handleDownloadInvoice is disabled
 
 export const OrderHistory = ({setActivePage}) => {
   const [orderList, setOrderList] = useState({});

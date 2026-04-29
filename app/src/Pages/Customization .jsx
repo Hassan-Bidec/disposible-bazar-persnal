@@ -334,6 +334,7 @@ const isFirstMount = React.useRef(true);
                                     ? `${Assets_Url}${product.product_image[0]?.image}`
                                     : `${Image_Url}defaultImage.svg`
                                 }
+                                alt={product.name || "Product Image"}
                                 loading="lazy"
                                 onError={(e) => {
                                   e.currentTarget.src = Image_Not_Found;
@@ -348,6 +349,7 @@ const isFirstMount = React.useRef(true);
                                     ? `${Assets_Url}${product.product_image[1]?.image}`
                                     : `${Image_Url}defaultImage.svg`
                                 }
+                                alt={product.name || "Product Image"}
                                 loading="lazy"
                                 onError={(e) => {
                                   e.currentTarget.src = Image_Not_Found;

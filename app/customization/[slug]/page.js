@@ -369,8 +369,10 @@ export default function CustomDetails() {
                                 <div className="w-full h-1/4 py-1">
                                     <Image
                                         className="w-full h-full bg-[#32303e] rounded-xl border-2 border-[#1E7773] object-cover cursor-pointer"
-                                        src={`${Image_Url}defaultImage.svg`} // Default image when no products
+                                        src={`${Image_Url}defaultImage.svg`}
                                         alt="Default Product Image"
+                                        width={500}
+                                        height={500}
                                     />
                                 </div>
                             ) : (
@@ -378,6 +380,8 @@ export default function CustomDetails() {
                                 productImages.slice(0, 4).map((prod, index) => (
                                     <div key={index} className="w-full h-1/4 py-1">
                                         <Image
+                                        width={500}
+                                        height={500}
                                             className="w-full h-full bg-[#32303e] rounded-xl border-2 border-[#1E7773] object-cover cursor-pointer"
                                             // If the prod.image array is empty, use the default image; otherwise, use the first image in the array
                                             src={`${Assets_Url}${prod.image}`}
@@ -390,11 +394,12 @@ export default function CustomDetails() {
                             )}
                         </div>
                         {/* Large Image Display */}
-                        <div className="w-4/5 rounded-lg bgblack ">
+                        <div className="w-4/5 rounded-lg bgblack relative min-h-[300px]">
                             {selectedImage && (
                                 <Image
-                                    className="w-full h-full object-cover rounded-lg"
-                                    src={`${Assets_Url}${selectedImage}`} // Show selected image
+                                    fill
+                                    className="object-cover rounded-lg"
+                                    src={`${Assets_Url}${selectedImage}`}
                                     alt={productImages[0]?.image_alt || 'Product Image'}
                                 />
                             )}
@@ -777,12 +782,16 @@ export default function CustomDetails() {
             </main>
             {/* Background Image */}
             <Image
+            width={500}
+            height={500}
                 data-aos="fade-left"
                 className="absolute top-[44rem] right-0 md:w-28 w-16"
                 src={`${Image_Url}plateRight.svg`}
                 alt="Plate"
             />
             <Image
+            width={500}
+            height={500}
                 data-aos="fade-right"
                 className="absolute top-[100rem] left-0 lg:w-16 w-8"
                 src={`${Image_Url}leftCup.svg`}

@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
-   images: {
+  images: {
     remotePatterns: [
       {
         protocol: "https",
@@ -14,15 +14,7 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
+        // Next.js compiled static assets — safe to cache forever (content-hashed filenames)
         source: '/_next/static/(.*)',
         headers: [
           {
@@ -32,14 +24,17 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/api/(.*)',
+        // Next.js optimized images — cache 24h, serve stale for 7 days while revalidating
+        source: '/_next/image(.*)',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-cache, no-store, must-revalidate',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
           },
         ],
       },
+      // HTML pages, API routes, dynamic routes — NOT touched
+      // Vercel/Next.js handles them automatically with correct no-cache behavior
     ];
   },
   compress: true,

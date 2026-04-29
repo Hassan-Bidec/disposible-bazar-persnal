@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef } from "react";
-import html2canvas from "html2canvas";
+// html2canvas loaded dynamically on demand — not in initial bundle
 import { Assets_Url } from "../const";
 import { CiCamera } from "react-icons/ci";
 import Link from "next/link";
@@ -9,9 +9,10 @@ import Image from "next/image";
 const InvoicePopup = ({ setIsInvoice, isInvoice, invoicedetails }) => {
   const invoiceRef = useRef(null);
 
-  // Capture screenshot
-  const captureScreenshot = () => {
+  // Capture screenshot — html2canvas loaded dynamically only when user clicks
+  const captureScreenshot = async () => {
     if (!invoiceRef.current) return;
+    const html2canvas = (await import("html2canvas")).default;
     html2canvas(invoiceRef.current, { useCORS: true, scale: 2 }).then((canvas) => {
       const link = document.createElement("a");
       link.download = `disposable_bazaar_${invoicedetails?.orderId}.png`;
