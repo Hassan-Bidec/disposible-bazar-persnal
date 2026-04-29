@@ -4,7 +4,7 @@ export async function generateMetadata() {
   try {
     const res = await fetch(
       "https://ecommerce-inventory.thegallerygen.com/api/page/detail/2",
-      { cache: "no-store" }
+      { next: { revalidate: 3600 } }
     );
 
     if (!res.ok) {
@@ -48,7 +48,7 @@ export async function generateMetadata() {
 // 🟩 Page Component
 import { Suspense } from "react";
 import InquiryFormClient from "../src/Pages/InquiryForm";
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 export default function Page() {
   return (
     <Suspense fallback={<div>Loading Inquiry Form...</div>}>

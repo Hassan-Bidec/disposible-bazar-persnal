@@ -6,7 +6,7 @@ export async function generateMetadata({ params }) {
   try {
     const res = await fetch(
       "https://ecommerce-inventory.thegallerygen.com/api/page/detail/3",
-      { cache: "no-store" }
+      { next: { revalidate: 300 } }
     );
 
     if (!res.ok) throw new Error(`API error: ${res.status}`);
@@ -47,7 +47,7 @@ export async function generateMetadata({ params }) {
 import React, { Suspense } from "react";
 import BundleShop from "../../src/Pages/BundleShop";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default function Page() {
   return (

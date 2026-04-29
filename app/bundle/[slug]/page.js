@@ -5,7 +5,7 @@
 import { Suspense } from "react";
 import BundleDetailClient from "./BundleDetailClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
@@ -13,7 +13,7 @@ async function getBundleData(slug) {
   try {
     // Fetch all bundles and find by slug
     const res = await fetch(`${API_BASE}/bundles`, {
-      cache: "no-store",
+      next: { revalidate: 300 },
     });
     if (!res.ok) return null;
     const json = await res.json();

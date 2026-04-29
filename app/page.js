@@ -3,10 +3,8 @@ export async function generateMetadata() {
   try {
     const res = await fetch(
       "https://ecommerce-inventory.thegallerygen.com/api/page/detail/7",
-      { cache: "no-store" }
+      { next: { revalidate: 300 } }
     );
-
-    if (!res.ok) throw new Error("API returned error");
 
     const data = await res.json();
 
@@ -37,14 +35,14 @@ export async function generateMetadata() {
 
 import Homes from "./src/Pages/Homes";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 // Fetch page data including schema on the server
 async function getPageData() {
   try {
     const res = await fetch(
       "https://ecommerce-inventory.thegallerygen.com/api/page/detail/7",
-      { cache: "no-store" }
+      { next: { revalidate: 300 } }
     );
     if (!res.ok) return null;
     const data = await res.json();

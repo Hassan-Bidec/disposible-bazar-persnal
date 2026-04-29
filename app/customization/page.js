@@ -3,7 +3,7 @@ export async function generateMetadata() {
   try {
     const res = await fetch(
       "https://ecommerce-inventory.thegallerygen.com/api/page/detail/3",
-      { cache: "no-store" }
+      { next: { revalidate: 600 } }
     );
 
     if (!res.ok) {
@@ -46,7 +46,7 @@ export async function generateMetadata() {
 import { Suspense } from "react";
 import Customization from "../src/Pages/Customization ";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 600;
 export default function Page() {
   return (
     <Suspense fallback={null}>

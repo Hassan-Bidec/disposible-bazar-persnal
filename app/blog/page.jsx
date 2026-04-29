@@ -5,7 +5,7 @@
 import { Suspense } from "react";
 import BlogClient from "../src/Pages/Blog";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
@@ -13,8 +13,8 @@ const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 async function getPageData() {
   try {
     const [metaRes, blogsRes] = await Promise.all([
-      fetch(`${API_BASE}/page/detail/10`, { cache: "no-store" }),
-      fetch(`${API_BASE}/blogs/index`, { cache: "no-store" }),
+      fetch(`${API_BASE}/page/detail/10`, { next: { revalidate: 300 } }),
+      fetch(`${API_BASE}/blogs/index`, { next: { revalidate: 300 } }),
     ]);
 
     const meta = metaRes.ok ? await metaRes.json() : null;

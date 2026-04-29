@@ -3,7 +3,7 @@ export async function generateMetadata() {
   try {
     const res = await fetch(
       "https://ecommerce-inventory.thegallerygen.com/api/page/detail/8", // API page ID for About Us
-      { cache: "no-store" }
+      { next: { revalidate: 3600 } }
     );
 
     if (!res.ok) {
@@ -47,7 +47,7 @@ export async function generateMetadata() {
 import { Suspense } from "react";
 import About from "../src/Pages/AboutUs";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default function Page() {
   return (

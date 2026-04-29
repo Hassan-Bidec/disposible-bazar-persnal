@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import CategoryPageClient from "./CategoryPageClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 600;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
@@ -28,7 +28,7 @@ function findCatBySlug(cats, targetSlug) {
 async function getPageData(slug) {
   try {
     const catRes = await fetch(`${API_BASE}/product/category`, {
-      cache: "no-store",
+      next: { revalidate: 600 },
     });
 
     if (!catRes.ok) return null;
@@ -40,7 +40,7 @@ async function getPageData(slug) {
 
     const prodRes = await fetch(
       `${API_BASE}/search/product?category_id=${cat.id}&sort_by=1`,
-      { cache: "no-store" }
+      { next: { revalidate: 600 } }
     );
 
     const prodJson = prodRes.ok ? await prodRes.json() : null;

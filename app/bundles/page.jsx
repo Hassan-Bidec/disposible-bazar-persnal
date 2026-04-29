@@ -5,15 +5,15 @@
 import { Suspense } from "react";
 import BundleShop from "../src/Pages/BundleShop";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
 async function getPageData() {
   try {
     const [metaRes, bundlesRes] = await Promise.all([
-      fetch(`${API_BASE}/page/detail/3`, { cache: "no-store" }),
-      fetch(`${API_BASE}/bundles`, { cache: "no-store" }),
+      fetch(`${API_BASE}/page/detail/3`, { next: { revalidate: 300 } }),
+      fetch(`${API_BASE}/bundles`, { next: { revalidate: 300 } }),
     ]);
     const meta = metaRes.ok ? await metaRes.json() : null;
     const bundles = bundlesRes.ok ? await bundlesRes.json() : null;

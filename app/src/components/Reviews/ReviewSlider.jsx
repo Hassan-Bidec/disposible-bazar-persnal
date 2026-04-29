@@ -133,7 +133,7 @@ const ReviewSlider = () => {
 
               {/* Profile and Description Section */}
               <div className=" w-full flex items-center gap-4 mt-2 text-white rounded-b-xl">
-                <Image width={500} height={500} className='w-12 h-12 rounded-full' src={review.user ? `${Profile_Assets_Url}/${review.user.photo}` : `https://static.vecteezy.com/system/resources/previews/018/765/757/original/user-profile-icon-in-flat-style-member-avatar-illustration-on-isolated-background-human-permission-sign-business-concept-vector.jpg`} alt={`${review.name}`} width={500} height={500} />
+                <Image fill className='w-12 h-12 rounded-full' src={review.user ? `${Profile_Assets_Url}/${review.user.photo}` : `https://static.vecteezy.com/system/resources/previews/018/765/757/original/user-profile-icon-in-flat-style-member-avatar-illustration-on-isolated-background-human-permission-sign-business-concept-vector.jpg`} alt={`${review.name}`} width={500} height={500} />
                 <div>
                   <h2 className="text-xl font-bold">{review.name}</h2>
                   <p className="text-sm">{review.description.slice(0, 50)}...</p>

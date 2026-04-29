@@ -5,14 +5,14 @@ import CustomSeo from "../src/components/CustomSeo";
 import ShopClient from "../src/Pages/ShopClient";
 // import ShopClient from "../src/Pages/ShopClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 // ─── Shared data fetch (metadata + schema + products) ─────────────────────────
 async function getPageData() {
   try {
     const res = await fetch(
       "https://ecommerce-inventory.thegallerygen.com/api/page/detail/1",
-      { cache: "no-store" }
+      { next: { revalidate: 300 } }
     );
     if (!res.ok) return null;
     const json = await res.json();
@@ -26,7 +26,7 @@ async function fetchProducts() {
   try {
     const res = await fetch(
       "https://ecommerce-inventory.thegallerygen.com/api/search/product?sort_by=1",
-      { cache: "no-store" }
+      { next: { revalidate: 300 } }
     );
     if (!res.ok) return [];
     const json = await res.json();
