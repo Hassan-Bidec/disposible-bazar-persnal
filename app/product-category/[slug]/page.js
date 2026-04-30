@@ -58,7 +58,7 @@ async function getPageData(slug) {
 
 // ─── 🔥 ONLY SEO IMPROVED (IMPORTANT PART) ───
 export async function generateMetadata({ params }) {
-  const slug = params?.slug || "";
+  const { slug } = await params;
 
   const data = await getPageData(slug);
   const seo = data?.cat?.categorySeoMetadata;
@@ -88,7 +88,7 @@ export async function generateMetadata({ params }) {
 
 // ─── PAGE (UNCHANGED) ───────────────────────
 export default async function Page({ params }) {
-  const slug = params?.slug || "";
+  const { slug } = await params;
   const data = await getPageData(slug);
 
   const schema = data?.cat?.categorySeoMetadata?.schema || null;
