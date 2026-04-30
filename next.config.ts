@@ -43,14 +43,8 @@ const nextConfig: NextConfig = {
 
   compress: true,
 
-  // ✅ SAFE ADDITION (fixes older crawler JS parsing issues)
   compiler: {
-    removeConsole: false,
-  },
-
-  // ✅ IMPORTANT: ensures broader compatibility build output
-  experimental: {
-    esmExternals: false,
+    removeConsole: process.env.NODE_ENV === 'production',
   },
 };
 
