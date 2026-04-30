@@ -51,10 +51,25 @@ import React, { Suspense } from "react";
 import Reviews from "../src/Pages/Reviews";
 
 export const revalidate = 3600;
-export default function Page() {
+
+const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
+
+async function getReviewsData() {
+  try {
+    const res = await fetch(`${API_BASE}/all_reviews`, { next: { revalidate: 3600 } });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export default async function Page() {
+  const reviewsData = await getReviewsData();
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      
-<Reviews />     </Suspense>
+      <Reviews initialReviews={reviewsData} />
+    </Suspense>
   );
 }

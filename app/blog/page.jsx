@@ -55,6 +55,16 @@ export async function generateMetadata() {
 export default async function Page() {
   const { blogs } = await getPageData();
 
+  // Also fetch categories for sidebar — avoids client-side fetch
+  let categories = [];
+  try {
+    const catRes = await fetch(`${API_BASE}/product/category`, { next: { revalidate: 3600 } });
+    if (catRes.ok) {
+      const catJson = await catRes.json();
+      categories = catJson?.data || [];
+    }
+  } catch { categories = []; }
+
   return (
     <>
       {/* ✅ Inject ALL blog schemas safely */}
@@ -91,9 +101,9 @@ export default async function Page() {
         </ul>
       </noscript>
 
-      {/* ✅ Client component */}
+      {/* ✅ Client component — receives SSR data as props */}
       <Suspense fallback={null}>
-        <BlogClient />
+        <BlogClient initialBlogs={blogs} initialCategories={categories} />
       </Suspense>
     </>
   );

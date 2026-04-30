@@ -15,13 +15,26 @@ import axios from '../Utils/axios';
 import CustomSeo from '../components/CustomSeo';
 
 
-const Reviews = () => {
-    const [reviews, setReviews] = useState([]);
-    const [filteredReviews, setFilteredReviews] = useState([]);
+const Reviews = ({ initialReviews = null }) => {
+    const [reviews, setReviews] = useState(initialReviews || []);
+    const [filteredReviews, setFilteredReviews] = useState(initialReviews?.data || []);
     const [averageRating, setAverageRating] = useState(0);
-    const [isloading, setIsLoading] = useState([])
+    const [isloading, setIsLoading] = useState(initialReviews ? false : true);
 
     useEffect(() => {
+        // If SSR data provided, compute average rating from it
+        if (initialReviews?.rating_counts) {
+            const ratingCounts = initialReviews.rating_counts;
+            const totalPoints = Object.entries(ratingCounts).reduce((sum, [rating, count]) => {
+                return sum + (parseFloat(rating) * count);
+            }, 0);
+            const totalReviews = Object.values(ratingCounts).reduce((sum, count) => sum + count, 0);
+            const average = totalReviews > 0 ? (totalPoints / totalReviews) : 0;
+            setAverageRating(average.toFixed(1));
+            return; // Skip client fetch
+        }
+
+        // Fallback: client-side fetch if no SSR data
         const fetchData = async () => {
             setIsLoading(true);
             try {
@@ -34,9 +47,7 @@ const Reviews = () => {
                     const totalPoints = Object.entries(ratingCounts).reduce((sum, [rating, count]) => {
                         return sum + (parseFloat(rating) * count);
                     }, 0);
-
                     const totalReviews = Object.values(ratingCounts).reduce((sum, count) => sum + count, 0);
-
                     const average = totalReviews > 0 ? (totalPoints / totalReviews) : 0;
                     setAverageRating(average.toFixed(1));
                 }

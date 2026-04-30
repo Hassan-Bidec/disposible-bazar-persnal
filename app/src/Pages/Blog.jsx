@@ -14,17 +14,17 @@ import CustomSeo from '../components/CustomSeo';
 import ErrorPage from './ErrorPage';
 import { useParams, useRouter } from 'next/navigation';
 
-function Blog() {
+function Blog({ initialBlogs = [], initialCategories = [] }) {
     const params = useParams();
     const router = useRouter();
-    // Read page from dynamic route segment (/blog/[page])
     const pageFromRoute = params.page ? parseInt(params.page) : 1;
 
-    const [blogs, setBlogs] = useState([]);
+    const [blogs, setBlogs] = useState(initialBlogs);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(pageFromRoute);
     const [totalPages, setTotalPages] = useState(1);
+    // No loading on first render if SSR data provided
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -78,6 +78,8 @@ function Blog() {
     };
 
     useEffect(() => {
+        // Skip initial fetch if SSR data was provided
+        if (initialBlogs.length > 0 && currentPage === 1 && !selectedCategory) return;
         fetchData(currentPage);
     }, [selectedCategory, currentPage]);
 
@@ -124,7 +126,7 @@ function Blog() {
             </div>
             <div className='flex w-full  text-white'>
                 <div className='lg:ml-10 md:w-1/4 w-3/2'>
-                    <BlogSidebar blogs={blogs} onCategorySelect={handleCategoryChange} toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+                <BlogSidebar blogs={blogs} onCategorySelect={handleCategoryChange} toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} initialCategories={initialCategories} />
                 </div>
                 <section>
                     <div className='w-full flex flex-wrap justify-center gap-10'>
@@ -184,12 +186,14 @@ function Blog() {
 export default Blog;
 
 
-export const BlogSidebar = ({ onCategorySelect, toggleSidebar, isSidebarOpen, blogs }) => {
-    const [categories, setCategories] = useState([]);
+export const BlogSidebar = ({ onCategorySelect, toggleSidebar, isSidebarOpen, blogs, initialCategories = [] }) => {
+    const [categories, setCategories] = useState(initialCategories);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filteredCategories, setFilteredCategories] = useState([]);
+    const [filteredCategories, setFilteredCategories] = useState(initialCategories);
 
     useEffect(() => {
+        // Only fetch if no SSR categories provided
+        if (initialCategories.length > 0) return;
         const fetchData = async () => {
             try {
                 const response = await axios.public.get('product/category');
