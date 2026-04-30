@@ -12,7 +12,7 @@ import { Image_Url } from "../const";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-function InquiryForm() {
+function InquiryForm({ initialProducts = [] }) {
     const router = useRouter();
 
     // Refs for auto-scroll
@@ -24,7 +24,7 @@ function InquiryForm() {
     const productRef = useRef(null);
     const fileRef = useRef(null);
 
-    const [productCategory, setProductCategory] = useState([]);
+    const [productCategory, setProductCategory] = useState(initialProducts);
     const [isDropdown, setIsDropdown] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState("Choose one product");
     const [selectedProductId, setSelectedProductId] = useState(null);
@@ -42,6 +42,8 @@ function InquiryForm() {
     }, []);
 
     useEffect(() => {
+        // Skip client fetch if SSR products provided
+        if (initialProducts.length > 0) return;
         const fetchData = async () => {
             try {
                 const response = await axios.public.get("search/product");

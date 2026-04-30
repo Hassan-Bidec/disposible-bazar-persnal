@@ -66,22 +66,22 @@ import axios from '../../Utils/axios';
 
 
 
-const ReviewSlider = () => {
-  const [reviews, setReviews] = useState([])
-  const [isloading, setIsLoading] = useState([])
+const ReviewSlider = ({ initialReviews = [] }) => {
+  const [reviews, setReviews] = useState(initialReviews);
+  const [isloading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    // Skip fetch if SSR data provided
+    if (initialReviews.length > 0) return;
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Fetch categories from the API
         const response = await axios.public.get('all_reviews');
-        setReviews(response.data.data)
-
+        setReviews(response.data.data);
       } catch (error) {
         console.log(error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     };
     fetchData();

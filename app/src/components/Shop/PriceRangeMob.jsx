@@ -6,36 +6,20 @@ import { CiSearch } from 'react-icons/ci';
 import { RxCross2 } from 'react-icons/rx';
 import axios from '../../Utils/axios';
 
-const PriceRangeMob = ({ isFilter, setIsFilter, onFilter, isCategoryShown }) => {
+const PriceRangeMob = ({ isFilter, setIsFilter, onFilter, isCategoryShown, initialCategories = [] }) => {
     const min = 0;
     const max = 100000;
     const [priceFrom, setPriceFrom] = useState(min);
     const [priceTo, setPriceTo] = useState(max);
-    const [selected, setSelected] = useState(1); // A to Z selected by default
+    const [selected, setSelected] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
-    const [category_Id, setCategory_Id] = useState(); // Store selected category ID
-    const [categories, setCategories] = useState([]);
-    const [filteredCategories, setFilteredCategories] = useState([]);
-
-    // const category = [
-    //     'Shoppers',
-    //     'Packing Material',
-    //     'Plastic Container',
-    //     'Dips and Cups',
-    //     'Thin Plastic',
-    //     'Cutlery',
-    //     'Black Edition',
-    //     'Aluminum Container',
-    //     'Styrofoam',
-    // ];
-
-    // Handle the min price change
-    // const handleMinChange = (e) => {
-    //     const value = Math.min(Number(e.target.value), maxPrice - 1); // Prevent overlap
-    //     setMinPrice(value);
-    // };
+    const [category_Id, setCategory_Id] = useState();
+    const [categories, setCategories] = useState(initialCategories);
+    const [filteredCategories, setFilteredCategories] = useState(initialCategories);
 
     useEffect(() => {
+        // Skip fetch if SSR categories already provided
+        if (initialCategories.length > 0) return;
         const fetchData = async () => {
             try {
                 const response = await axios.public.get('product/category');

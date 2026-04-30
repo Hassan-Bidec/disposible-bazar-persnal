@@ -15,7 +15,7 @@ import CartModal from "../components/cart/CartModal";
 import { FiX } from "react-icons/fi";
 import Image from "next/image";
 
-export default function ShopClient({ initialProducts = [] }) {
+export default function ShopClient({ initialProducts = [], initialCategories = [] }) {
   const params = useParams();
   const category = params?.category;
   const searchParams = useSearchParams();
@@ -200,7 +200,7 @@ export default function ShopClient({ initialProducts = [] }) {
       <ToastContainer autoClose={500} />
 
       <section className="hidden lg:flex flex-col p-5 text-white lg:w-1/5">
-        <PriceRange onFilter={handleFilter} isCategoryShown={true} />
+        <PriceRange onFilter={handleFilter} isCategoryShown={true} initialCategories={initialCategories} />
       </section>
 
       <div>
@@ -209,6 +209,7 @@ export default function ShopClient({ initialProducts = [] }) {
           isFilter={isFilter}
           setIsFilter={setIsFilter}
           isCategoryShown={true}
+          initialCategories={initialCategories}
         />
       </div>
 

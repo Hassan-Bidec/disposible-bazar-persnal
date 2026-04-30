@@ -96,7 +96,7 @@ const Reviews = ({ initialReviews = null }) => {
                 </div>
 
                 <div className='absolute -bottom-55 w-full'>
-                    <ReviewSlider />
+                    <ReviewSlider initialReviews={reviews?.data || []} />
                 </div>
             </div>
 

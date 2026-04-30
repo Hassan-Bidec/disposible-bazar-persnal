@@ -47,10 +47,31 @@ import { Suspense } from "react";
 import Customization from "../src/Pages/Customization ";
 
 export const revalidate = 600;
-export default function Page() {
+
+const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
+
+async function getPageData() {
+  try {
+    const [productsRes, categoriesRes] = await Promise.all([
+      fetch(`${API_BASE}/search/Customizeproduct?sort_by=1`, { next: { revalidate: 600 } }),
+      fetch(`${API_BASE}/product/category`, { next: { revalidate: 3600 } }),
+    ]);
+    const products = productsRes.ok ? await productsRes.json() : null;
+    const categories = categoriesRes.ok ? await categoriesRes.json() : null;
+    return {
+      products: products?.data || [],
+      categories: categories?.data || [],
+    };
+  } catch {
+    return { products: [], categories: [] };
+  }
+}
+
+export default async function Page() {
+  const { products, categories } = await getPageData();
   return (
     <Suspense fallback={null}>
-      <Customization />
+      <Customization initialProducts={products} initialCategories={categories} />
     </Suspense>
   );
 }

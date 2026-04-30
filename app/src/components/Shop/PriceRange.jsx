@@ -7,16 +7,16 @@ import axios from '../../Utils/axios';
 import { FiCornerDownRight } from 'react-icons/fi';
 import { useSearchParams } from 'next/navigation';
 
-const PriceRange = ({ onFilter, isCategoryShown }) => {
+const PriceRange = ({ onFilter, isCategoryShown, initialCategories = [] }) => {
     const min = 0;
     const max = 10000;
     const [priceFrom, setPriceFrom] = useState(min);
     const [priceTo, setPriceTo] = useState(max);
     const [selected, setSelected] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
-       const [category_Id, setCategory_Id] = useState();
-    const [categories, setCategories] = useState([]);
-    const [filteredCategories, setFilteredCategories] = useState([]);
+    const [category_Id, setCategory_Id] = useState();
+    const [categories, setCategories] = useState(initialCategories);
+    const [filteredCategories, setFilteredCategories] = useState(initialCategories);
 
     const searchParams = useSearchParams();
     const id = searchParams?.get('id');
@@ -24,20 +24,20 @@ const PriceRange = ({ onFilter, isCategoryShown }) => {
     // Sorting Function
     const sortCategories = (data, sortType) => {
         return [...data].sort((a, b) => {
-            if (sortType === 1) return a.name.localeCompare(b.name); // A → Z
-            if (sortType === 2) return b.name.localeCompare(a.name); // Z → A
+            if (sortType === 1) return a.name.localeCompare(b.name);
+            if (sortType === 2) return b.name.localeCompare(a.name);
             return 0;
         });
     };
 
     useEffect(() => {
+        // Skip fetch if SSR categories already provided
+        if (initialCategories.length > 0) return;
         const fetchData = async () => {
             try {
                 const response = await axios.public.get('product/category');
                 const categoryData = response.data.data;
-
                 const sorted = sortCategories(categoryData, selected);
-
                 setCategories(sorted);
                 setFilteredCategories(sorted);
             } catch (error) {

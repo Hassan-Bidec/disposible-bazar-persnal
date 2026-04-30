@@ -39,7 +39,19 @@ async function fetchProducts() {
   }
 }
 
-// ─── Metadata ─────────────────────────────────────────────────────────────────
+async function fetchCategories() {
+  try {
+    const res = await fetch(
+      "https://ecommerce-inventory.thegallerygen.com/api/product/category",
+      { next: { revalidate: 3600 } }
+    );
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json?.data || [];
+  } catch {
+    return [];
+  }
+}
 export async function generateMetadata() {
   const pageData = await getPageData();
   return {
@@ -61,9 +73,10 @@ export async function generateMetadata() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page() {
-  const [pageData, products] = await Promise.all([
+  const [pageData, products, categories] = await Promise.all([
     getPageData(),
     fetchProducts(),
+    fetchCategories(),
   ]);
 
   return (
@@ -110,7 +123,7 @@ export default async function Page() {
         </noscript>
 
         <Suspense fallback={null}>
-          <ShopClient initialProducts={products} />
+          <ShopClient initialProducts={products} initialCategories={categories} />
         </Suspense>
       </div>
     </>

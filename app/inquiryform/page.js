@@ -48,11 +48,27 @@ export async function generateMetadata() {
 // 🟩 Page Component
 import { Suspense } from "react";
 import InquiryFormClient from "../src/Pages/InquiryForm";
+
 export const revalidate = 3600;
-export default function Page() {
+
+const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
+
+async function getProducts() {
+  try {
+    const res = await fetch(`${API_BASE}/search/product`, { next: { revalidate: 3600 } });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json?.data || [];
+  } catch {
+    return [];
+  }
+}
+
+export default async function Page() {
+  const products = await getProducts();
   return (
     <Suspense fallback={<div>Loading Inquiry Form...</div>}>
-      <InquiryFormClient />
+      <InquiryFormClient initialProducts={products} />
     </Suspense>
   );
 }
