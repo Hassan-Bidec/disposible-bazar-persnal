@@ -47,10 +47,24 @@ const nextConfig: NextConfig = {
   },
 
   compress: true,
+  
+  // Transpile these packages as they may use modern JS features (?. , ??)
+  // that older SEO crawlers don't support.
+  transpilePackages: [
+    "framer-motion",
+    "aos",
+    "swiper",
+    "react-icons",
+    "axios",
+    "lucide-react"
+  ],
 
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+
+  // Ensure output is compatible with older browsers
+  swcMinify: true,
 };
 
 export default nextConfig;

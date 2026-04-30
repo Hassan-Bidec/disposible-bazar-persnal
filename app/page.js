@@ -37,11 +37,13 @@ import Homes from "./src/Pages/Homes";
 
 export const revalidate = 300;
 
+const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
+
 // Fetch page data including schema on the server
 async function getPageData() {
   try {
     const res = await fetch(
-      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/7",
+      `${API_BASE}/page/detail/7`,
       { next: { revalidate: 300 } }
     );
     if (!res.ok) return null;
@@ -52,8 +54,26 @@ async function getPageData() {
   }
 }
 
+// Fetch popular products on the server — SSR
+async function getPopularProducts() {
+  try {
+    const res = await fetch(
+      `${API_BASE}/home/popular/product/get`,
+      { next: { revalidate: 300 } }
+    );
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json?.data || [];
+  } catch {
+    return [];
+  }
+}
+
 export default async function Page() {
-  const pageData = await getPageData();
+  const [pageData, popularProducts] = await Promise.all([
+    getPageData(),
+    getPopularProducts(),
+  ]);
   const schema = pageData?.schema || null;
 
   return (
@@ -65,7 +85,7 @@ export default async function Page() {
           dangerouslySetInnerHTML={{ __html: schema }}
         />
       )}
-      <Homes />
+      <Homes initialPopularProducts={popularProducts} />
     </>
   );
 }

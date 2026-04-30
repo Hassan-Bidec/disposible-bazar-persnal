@@ -21,7 +21,7 @@ import InstaFeed from "../components/Home/InstaFeed";
 import CircleSlider from "../components/Home/circleSlider";
 import Premium from "../components/Home/premium";
 
-const Homes = () => {
+const Homes = ({ initialPopularProducts = [] }) => {
   const { user } = useUser();
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const Homes = () => {
       <Categories />
       <Introduction />
       <Quality />
-      <Premium />
+      <Premium initialProducts={initialPopularProducts} />
       <Deals />
       <InstaFeed />
       <Blogs />

@@ -21,7 +21,7 @@ import Link from 'next/link';
 
 
 // Premium Section
-function Premium() {
+function Premium({ initialProducts = [] }) {
     return (
 
         <div className="md:p-20 md:pb-0 py-10 relative">
@@ -32,7 +32,7 @@ function Premium() {
             <Image data-aos='fade-left' src={`${Image_Url}HomeAssets/PremiumAssets/shoper.svg`} className='absolute hidden md:block top-0 right-0 w-32' alt="" width={500} height={500} />
             <Image data-aos='fade-left' src={`${Image_Url}HomeAssets/PremiumAssets/shoper2.svg`} className='absolute md:hidden block top-0 right-0 w-24' alt="" width={500} height={500} />
 
-            <Slider />
+            <Slider initialProducts={initialProducts} />
 
         </div>
     )
