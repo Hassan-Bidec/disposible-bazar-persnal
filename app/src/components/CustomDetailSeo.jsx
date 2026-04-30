@@ -37,9 +37,10 @@ const CustomDetailSeo = ({ title, des, focuskey, canonicalUrl, schema, og_title,
 
             {/* Schema markup */}
             {schema && (
-                <script type="application/ld+json"   >
-                    {schema}
-                </script>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: schema }}
+                />
             )}
 
             {/* OG Description */}

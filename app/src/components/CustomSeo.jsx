@@ -86,9 +86,10 @@ catch(err) { console.warn("Invalid schema JSON:", err.message); }
       )}
 
       {schemaData && (
-        <script type="application/ld+json">
-          {JSON.stringify(schemaData)}
-        </script>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+        />
       )}
     </Head>
   );
