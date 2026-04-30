@@ -91,7 +91,13 @@ export default async function Page({ params }) {
   const { slug } = await params;
   const data = await getPageData(slug);
 
-  const schema = data?.cat?.categorySeoMetadata?.schema || null;
+  const schemaRaw = data?.cat?.categorySeoMetadata?.schema || null;
+  let schema = null;
+  try {
+    schema = schemaRaw ? JSON.stringify(JSON.parse(schemaRaw)) : null;
+  } catch {
+    schema = null;
+  }
 
   const initialData = data
     ? {

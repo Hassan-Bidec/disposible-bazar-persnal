@@ -68,7 +68,13 @@ export default async function Page({ params }) {
   const data = await getProductData(resolvedSlug);
 
   // Inject schema as ld+json in initial HTML if available
-  const schema = data?.seoMetadata?.schema || null;
+  const schemaRaw = data?.seoMetadata?.schema || null;
+  let schema = null;
+  try {
+    schema = schemaRaw ? JSON.stringify(JSON.parse(schemaRaw)) : null;
+  } catch {
+    schema = null;
+  }
 
   return (
     <>

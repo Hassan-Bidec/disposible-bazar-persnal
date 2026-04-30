@@ -82,7 +82,13 @@ export default async function Page({ params }) {
   const { slug, "category-slug": categorySlug } = await params;
   const data = await getPageData(categorySlug);
 
-  const schema = data?.category?.categorySeoMetadata?.schema || null;
+  const schemaRaw = data?.category?.categorySeoMetadata?.schema || null;
+  let schema = null;
+  try {
+    schema = schemaRaw ? JSON.stringify(JSON.parse(schemaRaw)) : null;
+  } catch {
+    schema = null;
+  }
 
   const initialData = data
     ? { products: data.products, category: data.category }

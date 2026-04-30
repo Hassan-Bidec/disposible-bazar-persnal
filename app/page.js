@@ -74,7 +74,13 @@ export default async function Page() {
     getPageData(),
     getPopularProducts(),
   ]);
-  const schema = pageData?.schema || null;
+  const schemaRaw = pageData?.schema || null;
+  let schema = null;
+  try {
+    schema = schemaRaw ? JSON.stringify(JSON.parse(schemaRaw)) : null;
+  } catch {
+    schema = null;
+  }
 
   return (
     <>
