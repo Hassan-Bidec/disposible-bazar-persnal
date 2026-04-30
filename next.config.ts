@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
+
   images: {
     remotePatterns: [
       {
@@ -16,10 +17,10 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+
   async headers() {
     return [
       {
-        // Next.js compiled static assets — safe to cache forever (content-hashed filenames)
         source: '/_next/static/(.*)',
         headers: [
           {
@@ -29,7 +30,6 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Next.js optimized images — cache 24h, serve stale for 7 days while revalidating
         source: '/_next/image(.*)',
         headers: [
           {
@@ -38,11 +38,20 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // HTML pages, API routes, dynamic routes — NOT touched
-      // Vercel/Next.js handles them automatically with correct no-cache behavior
     ];
   },
+
   compress: true,
+
+  // ✅ SAFE ADDITION (fixes older crawler JS parsing issues)
+  compiler: {
+    removeConsole: false,
+  },
+
+  // ✅ IMPORTANT: ensures broader compatibility build output
+  experimental: {
+    esmExternals: false,
+  },
 };
 
 export default nextConfig;
