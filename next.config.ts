@@ -62,9 +62,6 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-
-  // Ensure output is compatible with older browsers
-  swcMinify: true,
 };
 
 export default nextConfig;
