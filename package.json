@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@react-google-maps/api": "^2.20.7",
@@ -14,36 +15,50 @@
     "aos": "^2.3.4",
     "axios": "^1.13.2",
     "dompurify": "^3.3.0",
-    "framer-motion": "^12.23.24",
+    "framer-motion": "^11.0.0",
     "html-react-parser": "^5.2.10",
     "html2canvas": "^1.4.1",
     "isomorphic-dompurify": "^2.33.0",
     "js-confetti": "^0.13.1",
-    "next": "16.0.10",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "next": "15.3.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",
-    "react-leaflet": "^5.0.0",
-    "react-toastify": "^11.0.5",
-    "swiper": "^12.0.3",
-    "uuid": "^13.0.0"
+    "react-leaflet": "^4.2.1",
+    "react-toastify": "^10.0.6",
+    "swiper": "^11.0.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@babel/plugin-transform-logical-assignment-operators": "^7.24.0",
+    "@babel/plugin-transform-nullish-coalescing-operator": "^7.24.0",
+    "@babel/plugin-transform-optional-chaining": "^7.24.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "baseline-browser-mapping": "^2.9.11",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "core-js": "^3.37.0",
     "eslint": "^9",
-    "eslint-config-next": "16.0.3",
+    "eslint-config-next": "15.3.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not op_mini all",
-    "chrome 41",
-    "ie 11"
-  ]
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "last 2 versions",
+      "not dead",
+      "not ie 11",
+      "not ie_mob 11",
+      "chrome >= 70",
+      "firefox >= 68",
+      "safari >= 13",
+      "edge >= 79"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
