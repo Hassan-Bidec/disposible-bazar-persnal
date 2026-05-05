@@ -5,8 +5,7 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
 
   experimental: {
-    forceSwcTransforms: true,
-    // ✅ Sirf woh packages jo aapke package.json mein hain
+    // forceSwcTransforms removed — we need Babel for legacy browser transpilation
     optimizePackageImports: [
       "react-icons",
       "framer-motion",
