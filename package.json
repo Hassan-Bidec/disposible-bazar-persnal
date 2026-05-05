@@ -45,6 +45,10 @@
   "browserslist": [
     ">0.5%",
     "last 2 versions",
-    "not dead"
+    "not dead",
+    "chrome 79",
+    "firefox 72",
+    "safari 13",
+    "edge 79"
   ]
 }
