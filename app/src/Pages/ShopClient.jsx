@@ -244,7 +244,7 @@ export default function ShopClient({ initialProducts = [], initialCategories = [
                   .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                   .map((product) => (
                     <div key={product.id} className="flex justify-center">
-                      <div className="w-full xl:p-4 p-2 border border-[#1E7773] bg-gradient-to-l from-[#403E4A] to-[#32303E] rounded-2xl group">
+                      <div className="w-full xl:p-4 p-2 border border-[#1E7773] bg-gradient-to-l from-[#403E4A] to-[#32303E] rounded-2xl group flex flex-col">
                         <Link href={product.is_customizeable ? `/customization/${product.slug}` : `/product/${product.slug}`}>
                           <div className="relative p-5 flex justify-center items-center">
                             <Image
@@ -265,13 +265,15 @@ export default function ShopClient({ initialProducts = [], initialCategories = [
                             />
                           </div>
                         </Link>
-                        <h4 className="font-semibold xl:text-lg">{product.name}</h4>
+                        {/* Fixed height name — 2 lines max, all cards same height */}
+                        <h4 className="font-semibold xl:text-lg h-[3.5rem] line-clamp-2 overflow-hidden">{product.name}</h4>
                         <p className="text-md py-3 font-semibold">
                           {product.product_variants?.length > 0 ? (
                             <>Rs {product.product_variants[0].price} - Rs {product.product_variants[product.product_variants.length - 1].price}</>
                           ) : <span>No variants</span>}
                         </p>
-                        <div className="flex xl:flex-row lg:flex-col justify-center xl:gap-4 gap-1">
+                        {/* mt-auto pushes buttons to bottom of card always */}
+                        <div className="flex xl:flex-row lg:flex-col justify-center xl:gap-4 gap-1 mt-auto pt-2">
                           <button
                             className="p-2 bg-[#1E7773] w-full text-[13px] cursor-pointer font-bazaar rounded-lg"
                             onClick={() => handleAddCartClick(product)}

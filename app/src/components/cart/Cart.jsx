@@ -174,7 +174,7 @@ function Cart() {
                         ? `Rs ${Number(product.price_per_piece).toLocaleString()}`
                         : product.product_price && Number(product.product_price) > 0
                             ? `Rs ${Number(product.product_price).toLocaleString()}`
-                            : "N/A"}
+                            : "0"}
                 </div>
 
                 {/* Printing Price/Piece Column (2 spans) */}
@@ -183,7 +183,7 @@ function Cart() {
                         <span className="font-semibold text-white text-sm">
                             {product?.packaging_options?.price && Number(product?.packaging_options?.price) > 0
                                 ? `Rs ${Number(product?.packaging_options?.price).toLocaleString()}`
-                                : "N/A"}
+                                : "0"}
                         </span>
                     </div>
                 </div>

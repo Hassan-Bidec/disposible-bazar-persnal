@@ -584,19 +584,19 @@ formData.forEach((value, key) => {
            <div className="border-b border-gray-300 py-3">
     <p className="text-xs mb-2">Delivery Location</p>
 
-    <div className="h-72 w-full rounded-lg overflow-hidden">
-        <MapContainer 
-            center={[24.8607, 67.0011]} 
-            zoom={13} 
-            scrollWheelZoom={false} 
-            style={{ height: "100%", width: "100%" }}
-        >
-            <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution="© OpenStreetMap"
-            />
-        </MapContainer>
-    </div>
+    <div className="h-72 w-full rounded-lg overflow-hidden relative z-0">
+  <MapContainer
+    center={[24.8607, 67.0011]}
+    zoom={13}
+    scrollWheelZoom={false}
+    className="h-full w-full z-0"
+  >
+    <TileLayer
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      attribution="© OpenStreetMap"
+    />
+  </MapContainer>
+</div>
 </div>
 
 
@@ -704,13 +704,13 @@ formData.forEach((value, key) => {
                                                             Rs:{" "}
                                                             {selectedVariant
                                                                 ? selectedVariant.price
-                                                                : "N/A"}
+                                                                : "0"}
                                                         </p>
                                                     );
                                                 })()}
                                             </>
                                         ) : (
-                                            <p>Variant Rs: N/A</p>
+                                            <p>Variant Rs: 0</p>
                                         )}
 
                                         <div className="border border-gray-300 rounded-lg flex flex-row justify-center w-16">
