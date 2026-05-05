@@ -10,6 +10,7 @@ export async function generateMetadata() {
 
     return {
       title: data?.data?.meta_title || "Default Title",
+      
       description: data?.data?.meta_description || "Default Description",
       ...(data?.data?.focus_keyword
         ? { keywords: data.data.focus_keyword }
@@ -77,13 +78,7 @@ export default async function Page() {
     getPageData(),
     getPopularProducts(),
   ]);
-  const schemaRaw = pageData?.schema || null;
-  let schema = null;
-  try {
-    schema = schemaRaw ? JSON.stringify(JSON.parse(schemaRaw)) : null;
-  } catch {
-    schema = null;
-  }
+  const schema = pageData?.schema || null;
 
   return (
     <>

@@ -7,7 +7,7 @@ export async function generateMetadata() {
     );
 
     if (!res.ok) throw new Error("Fetch failed");
-
+// test
     const data = await res.json();
 
     return {

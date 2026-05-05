@@ -56,9 +56,9 @@ async function getPageData(categorySlug) {
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
-  const { slug, "category-slug": categorySlug } = await params;
+  const categorySlug = params?.["category-slug"] || "";
   const data = await getPageData(categorySlug);
-  const seo = data?.cat?.categorySeoMetadata;
+  const seo = data?.cat?.category_seo_metadata;
 
   return {
     title:
@@ -79,16 +79,10 @@ export async function generateMetadata({ params }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page({ params }) {
-  const { slug, "category-slug": categorySlug } = await params;
+  const categorySlug = params?.["category-slug"] || "";
   const data = await getPageData(categorySlug);
 
-  const schemaRaw = data?.category?.categorySeoMetadata?.schema || null;
-  let schema = null;
-  try {
-    schema = schemaRaw ? JSON.stringify(JSON.parse(schemaRaw)) : null;
-  } catch {
-    schema = null;
-  }
+  const schema = data?.category?.category_seo_metadata?.schema || null;
 
   const initialData = data
     ? { products: data.products, category: data.category }

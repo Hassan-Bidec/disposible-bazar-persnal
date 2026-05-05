@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  poweredByHeader: false,
   trailingSlash: true,
 
   // Transpile deps that ship modern JS (optional chaining, etc.) so crawler / older engines
@@ -36,50 +35,32 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "static.vecteezy.com",
         pathname: "/**",
-      },
+      }
     ],
+    // Reduce image sizes to prevent timeout in SEO crawlers
     deviceSizes: [640, 750, 828, 1080, 1200],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    // Minimize formats for broader compatibility
     formats: ["image/webp"],
-    minimumCacheTTL: 86400,
-    dangerouslyAllowSVG: true,
-    contentDispositionType: "inline",
   },
 
   async headers() {
     return [
       {
-        source: "/_next/static/(.*)",
+        source: '/_next/static/(.*)',
         headers: [
           {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },
       {
-        source: "/_next/image(.*)",
+        source: '/_next/image(.*)',
         headers: [
           {
-            key: "Cache-Control",
-            value: "public, max-age=86400, stale-while-revalidate=604800",
-          },
-        ],
-      },
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "X-Frame-Options",
-            value: "SAMEORIGIN",
-          },
-          {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
           },
         ],
       },
@@ -88,14 +69,20 @@ const nextConfig: NextConfig = {
 
   compress: true,
 
-  compiler: {
-    removeConsole:
-      process.env.NODE_ENV === "production"
-        ? { exclude: ["error", "warn"] }
-        : false,
-  },
+  // Transpile these packages as they may use modern JS features (?. , ??)
+  // that older SEO crawlers don't support.
+  transpilePackages: [
+    "framer-motion",
+    "aos",
+    "swiper",
+    "react-icons",
+    "axios",
+    "lucide-react"
+  ],
 
-  productionBrowserSourceMaps: false,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
 };
 
 export default nextConfig;
