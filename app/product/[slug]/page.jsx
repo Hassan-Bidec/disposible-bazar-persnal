@@ -6,26 +6,53 @@
 //                        (no loading flash, product name/images in initial HTML)
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { Suspense } from "react";
 import ShopDetails from "./ShopDetails";
-import { Loader } from "../../src/components/Loader";
 
 export const revalidate = 600;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
+/**
+ * CMS `product/s/details` matches on slug as stored (usually with trailing slash).
+ * App route `[slug]` omits the slash; pathname-based client fetches include it.
+ */
+function normalizeProductSlugForApi(raw) {
+  if (raw == null || raw === "") return "";
+  let s = String(raw).trim();
+  try {
+    s = decodeURIComponent(s);
+  } catch {
+    /* ignore malformed encoding */
+  }
+  s = s.replace(/^\/+|\/+$/g, "");
+  if (!s) return "";
+  return `${s}/`;
+}
+
+function stripHtmlToText(html) {
+  if (!html || typeof html !== "string") return "";
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 320);
+}
+
 // ─── Server-side data fetch ───────────────────────────────────────────────────
 async function getProductData(slug) {
+  const key = normalizeProductSlugForApi(slug);
+  if (!key) return null;
   try {
     const res = await fetch(`${API_BASE}/product/s/details`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug }),
+        body: JSON.stringify({ slug: key }),
       next: { revalidate: 600 },
     });
     if (!res.ok) return null;
     const json = await res.json();
-    return json?.data || null;
+    if (json?.status === "error" || !json?.data) return null;
+    return json.data;
   } catch {
     return null;
   }
@@ -39,18 +66,29 @@ export async function generateMetadata({ params }) {
   const seo = data?.seoMetadata;
   const product = data?.product;
 
+  const metaDescription =
+    (seo?.meta_description && String(seo.meta_description).trim()) ||
+    stripHtmlToText(product?.description) ||
+    (product?.name ? `Shop ${product.name} at Disposable Bazaar.` : "");
+
+  const canonical =
+    (seo?.canonical_url && String(seo.canonical_url).trim()) || undefined;
+
   return {
     title: seo?.meta_title || product?.name || "Product - Disposable Bazar",
-    description: seo?.meta_description || product?.description || "",
-    keywords: seo?.focus_keyword || "",
-    alternates: {
-      canonical: seo?.canonical_url || "",
-    },
+    description: metaDescription,
+    ...(seo?.focus_keyword
+      ? { keywords: String(seo.focus_keyword).trim() }
+      : {}),
+    alternates: canonical ? { canonical } : undefined,
     openGraph: {
-      title: product?.name || "",
-      description: product?.description || "",
+      title: product?.name || seo?.meta_title || "Product - Disposable Bazar",
+      description:
+        metaDescription ||
+        stripHtmlToText(product?.description) ||
+        undefined,
       images: product?.product_image?.[0]?.image
-        ? [`https://ecommerce-inventory.thegallerygen.com/${product.product_image[0].image}`]
+        ? [`https://ecommerce-inventory.thegallerygen.com/${product.product_image[0].image.replace(/^\/+/, "")}`]
         : [],
     },
     robots: {
@@ -84,9 +122,7 @@ export default async function Page({ params }) {
           dangerouslySetInnerHTML={{ __html: schema }}
         />
       )}
-      <Suspense fallback={<Loader />}>
-        <ShopDetails initialData={data} />
-      </Suspense>
+      <ShopDetails initialData={data} />
     </>
   );
 }

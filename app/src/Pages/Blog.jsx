@@ -10,7 +10,6 @@ import { RiFilter3Line } from 'react-icons/ri';
 import { RxCross2 } from 'react-icons/rx';
 import { Loader } from '../components/Loader';
 import { GrNext, GrPrevious } from "react-icons/gr";
-import CustomSeo from '../components/CustomSeo';
 import ErrorPage from './ErrorPage';
 import { useParams, useRouter } from 'next/navigation';
 
@@ -114,7 +113,6 @@ function Blog({ initialBlogs = [], initialCategories = [] }) {
 
     return (
         <div className="relative py-16">
-            <CustomSeo id={10} />
             <CustomHeroSection heading='Hot Topics' path='Blog ' bgImage="CustomHeroAssets/banners.png" />
             <div className="lg:hidden flex justify-end p-4">
                 <button

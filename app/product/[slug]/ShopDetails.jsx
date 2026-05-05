@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams, useRouter, usePathname } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import axios from '../../src/Utils/axios';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,12 +12,25 @@ import { Loader } from '../../src/components/Loader';
 import { useWishlist } from '../../src/Context/WishlistContext';
 import { useCart } from '../../src/Context/CartContext';
 import { useUser } from '../../src/Context/UserContext';
-import CustomDetailSeo from '../../src/components/CustomDetailSeo';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DecodeTextEditor from '../../src/components/DecodeTextEditor';
 import CartModal from '../../src/components/cart/CartModal';
 import { FiX } from 'react-icons/fi';
+
+/** CMS `product/s/details` expects slug with trailing slash. */
+function productSlugForApi(raw) {
+    if (raw == null || raw === '') return '';
+    let s = String(raw).trim();
+    try {
+        s = decodeURIComponent(s);
+    } catch {
+        /* ignore */
+    }
+    s = s.replace(/^\/+|\/+$/g, '');
+    if (!s) return '';
+    return `${s}/`;
+}
 
 // ─── ShopDetails Client Component ────────────────────────────────────────────
 // Accepts optional `initialData` from SSR page.jsx.
@@ -119,13 +132,11 @@ function ShopDetails({ initialData = null }) {
         }
     };
 
-    // ─── Pathname-based slug (used for client-side fetch fallback) ────────────
-    const pathname = usePathname();
-    let path = pathname;
-    if (!path.endsWith('/')) {
-        path += '/';
-    }
-    const id = path.split("/product/")[1] || '';
+    const params = useParams();
+    const slugSegment = params?.slug;
+    const id = productSlugForApi(
+        Array.isArray(slugSegment) ? slugSegment[0] : slugSegment ?? ''
+    );
 
     const fetchDataById = async (id) => {
         setIsLoading(true);
@@ -332,16 +343,6 @@ function ShopDetails({ initialData = null }) {
 
     return (
         <div className="relative py-32 px-10 text-white overflow-hidden">
-            <CustomDetailSeo
-                title={productDetail?.seoMetadata?.meta_title}
-                des={productDetail?.seoMetadata?.meta_description}
-                focuskey={productDetail?.seoMetadata?.focus_keyword}
-                canonicalUrl={productDetail?.seoMetadata?.canonical_url}
-                schema={productDetail?.seoMetadata?.schema}
-                og_title={productDetail?.product?.name}
-                og_des={productDetail?.product?.description}
-                og_img={productDetail?.product?.product_image[0]?.image}
-            />
             <ToastContainer autoClose={500} />
             {/* Breadcrumb and Title */}
             <div className="flex flex-col py-5">

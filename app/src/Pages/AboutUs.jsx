@@ -7,7 +7,6 @@ import Blogs from '../components/Home/Blogs'
 import Aos from 'aos';
 import 'aos/dist/aos.css';
 import Link from 'next/link';
-import CustomSeo from '../components/CustomSeo';
 
 
 function AboutUs() {
@@ -26,7 +25,6 @@ useEffect(() => {
     return (
         
         <div className="py-28 relative  ">
-            <CustomSeo id={8} />
             {/* <CustomHeroSection heading='Disposable Bazaar' title='Redefining Disposable Excellence' path='About Us' /> */}
             {/* CustomHeroSection */}
             <div className="flex justify-start items-center text-black relative min-h-[450px]" style={{

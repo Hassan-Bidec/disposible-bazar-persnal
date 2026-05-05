@@ -2,7 +2,6 @@
 // Bundle detail — name, price, items all in initial HTML for Google.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { Suspense } from "react";
 import BundleDetailClient from "./BundleDetailClient";
 
 export const revalidate = 300;
@@ -74,20 +73,7 @@ export default async function Page({ params }) {
         />
       )}
 
-      {/* SSR: bundle name + items visible in initial HTML */}
-      {bundle && (
-        <noscript>
-          <h1>{bundle.name}</h1>
-          <p>Rs {bundle.payable_amount}</p>
-          {bundle.bundle_items?.map((item) => (
-            <p key={item.id}>{item.product?.name}</p>
-          ))}
-        </noscript>
-      )}
-
-      <Suspense fallback={null}>
-        <BundleDetailClient initialBundle={bundle} slug={slug} />
-      </Suspense>
+      <BundleDetailClient initialBundle={bundle} slug={slug} />
     </>
   );
 }

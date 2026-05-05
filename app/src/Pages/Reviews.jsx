@@ -12,7 +12,6 @@ import { PiStarFill } from 'react-icons/pi';
 import { VscShare } from 'react-icons/vsc';
 import { AiFillDislike, AiFillLike } from 'react-icons/ai';
 import axios from '../Utils/axios';
-import CustomSeo from '../components/CustomSeo';
 
 
 const Reviews = ({ initialReviews = null }) => {
@@ -66,7 +65,6 @@ const Reviews = ({ initialReviews = null }) => {
 
     return (
         <div>
-            <CustomSeo id={4} />
             <div className='relative mb-12 py-30'>
                 <div className="flex justify-center items-center text-black relative min-h-[500px]  "
                     style={{

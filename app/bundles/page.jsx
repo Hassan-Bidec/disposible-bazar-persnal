@@ -4,6 +4,7 @@
 
 import { Suspense } from "react";
 import BundleShop from "../src/Pages/BundleShop";
+import { serializeLdJson } from "../lib/seo/pageDetail";
 
 export const revalidate = 300;
 
@@ -31,6 +32,7 @@ export async function generateMetadata() {
   return {
     title: meta?.meta_title || "Bundle Shop - Disposable Bazar",
     description: meta?.meta_description || "Special bundles and deals on disposable products.",
+    ...(meta?.focus_keyword ? { keywords: meta.focus_keyword } : {}),
     alternates: { canonical: meta?.canonical_url || "" },
     robots: {
       index: meta?.robots_index !== "noindex",
@@ -45,14 +47,25 @@ export async function generateMetadata() {
 
 export default async function Page() {
   const { meta, bundles } = await getPageData();
-  const schema = meta?.schema || null;
+  const schemaHtml = (() => {
+    const s = meta?.schema;
+    if (s == null) return null;
+    if (typeof s === "string") {
+      return serializeLdJson(s) ?? (s.trim() ? s : null);
+    }
+    try {
+      return JSON.stringify(s);
+    } catch {
+      return null;
+    }
+  })();
 
   return (
     <>
-      {schema && (
+      {schemaHtml && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: schema }}
+          dangerouslySetInnerHTML={{ __html: schemaHtml }}
         />
       )}
 

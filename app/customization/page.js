@@ -15,6 +15,9 @@ export async function generateMetadata() {
     return {
       title: data?.data?.meta_title || "Customization - Disposable Bazar",
       description: data?.data?.meta_description || "Customization services for all your disposal needs.",
+      ...(data?.data?.focus_keyword
+        ? { keywords: data.data.focus_keyword }
+        : {}),
 
       alternates: {
         canonical: data?.data?.canonical_url || "",
@@ -45,6 +48,7 @@ export async function generateMetadata() {
 
 import { Suspense } from "react";
 import Customization from "../src/Pages/Customization ";
+import { fetchPageDetailById, serializeLdJson } from "../lib/seo/pageDetail";
 
 export const revalidate = 600;
 
@@ -68,10 +72,23 @@ async function getPageData() {
 }
 
 export default async function Page() {
-  const { products, categories } = await getPageData();
+  const [{ products, categories }, pageDetail] = await Promise.all([
+    getPageData(),
+    fetchPageDetailById(3, { next: { revalidate: 600 } }),
+  ]);
+  const schemaLd = serializeLdJson(pageDetail?.schema);
+
   return (
-    <Suspense fallback={null}>
-      <Customization initialProducts={products} initialCategories={categories} />
-    </Suspense>
+    <>
+      {schemaLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: schemaLd }}
+        />
+      ) : null}
+      <Suspense fallback={null}>
+        <Customization initialProducts={products} initialCategories={categories} />
+      </Suspense>
+    </>
   );
 }

@@ -2,7 +2,7 @@
 export async function generateMetadata() {
   try {
     const res = await fetch(
-      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/4 ", // API page ID for Reviews
+      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/4", // API page ID for Reviews
       { next: { revalidate: 3600 } }
     );
 
@@ -15,6 +15,9 @@ export async function generateMetadata() {
     return {
       title: data?.data?.meta_title || "Reviews",
       description: data?.data?.meta_description || "Reviews page",
+      ...(data?.data?.focus_keyword
+        ? { keywords: data.data.focus_keyword }
+        : {}),
 
       alternates: {
         canonical: data?.data?.canonical_url || "",

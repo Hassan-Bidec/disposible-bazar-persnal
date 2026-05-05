@@ -7,7 +7,6 @@ import { RxCross2 } from "react-icons/rx";
 import { MdOutlineNavigateBefore } from "react-icons/md";
 import Link from "next/link";
 import { useCart } from "../../Context/CartContext";
-import CustomSeo from "../../components/CustomSeo";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Image from "next/image";
@@ -72,7 +71,6 @@ function Cart() {
     return (
         <div className="relative py-32 md:px-10 px-5 ">
             <ToastContainer autoClose={500} />
-            <CustomSeo slug="cart" />
 
             <div className="text-white py-4">
                 <Hamburger firstPage="Home" secondPage="Cart" />

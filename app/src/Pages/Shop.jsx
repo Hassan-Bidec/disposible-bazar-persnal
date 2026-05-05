@@ -14,7 +14,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CartModal from "../components/cart/CartModal";
 import { FiX } from "react-icons/fi";
-import CustomSeo from "../components/CustomSeo";
 import Image from "next/image";
 
 function Shop() {
@@ -226,7 +225,6 @@ function Shop() {
   return (
     <div className="py-15 ">
       {/* ------ UI Same ------ */}
-      <CustomSeo id={1} />
       <ToastContainer autoClose={500} />
       <CustomHeroSection
         heading="Shop All"

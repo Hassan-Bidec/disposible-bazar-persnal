@@ -1,7 +1,6 @@
 // ─── SERVER COMPONENT — paginated shop (/shop/2, /shop/3 …) ──────────────────
 import { Suspense } from "react";
 import CustomHeroSection from "../../src/components/CustomHeroSection";
-import CustomSeo from "../../src/components/CustomSeo";
 import ShopClient from "../../src/Pages/ShopClient";
 
 export const revalidate = 300;
@@ -40,7 +39,7 @@ async function fetchProducts() {
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
-  const page = params.page;
+  const { page } = await params;
   const pageData = await getPageData();
 
   const baseTitle = pageData?.meta_title || "Shop - Disposable Bazar";
@@ -52,6 +51,7 @@ export async function generateMetadata({ params }) {
     description:
       pageData?.meta_description ||
       "Browse our full collection of disposable products.",
+    ...(pageData?.focus_keyword ? { keywords: pageData.focus_keyword } : {}),
     alternates: { canonical: `${baseCanonical}/${page}` },
     robots: {
       index: pageData?.robots_index !== "noindex",
@@ -82,10 +82,6 @@ export default async function Page() {
       )}
 
       <div className="py-15">
-        <Suspense fallback={null}>
-          <CustomSeo id={1} />
-        </Suspense>
-
         <Suspense fallback={<div className="h-64 bg-[#20202c]" />}>
           <CustomHeroSection
             heading="Shop All"

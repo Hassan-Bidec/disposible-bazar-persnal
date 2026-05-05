@@ -41,42 +41,39 @@ function Premium({ initialProducts = [] }) {
 export default Premium
 
 
-// Slider Component
+// Slider Component — hydrates from SSR `initialPopularProducts` (home/page.js); client fetch only as fallback.
 
-function Slider() {
-    const [products, setProducts] = useState([])
-    const [isLoading, setIsLoading] = useState(false); // New state for loading
-
-    // const products = [
-    //     { img: `${Image_Url}HomeAssets/PremiumAssets/premiumBoxImg.svg`, title: 'Styrofoam Large Burger', name: 'Box PP-09' },
-    //     { img: `${Image_Url}HomeAssets/PremiumAssets/premiumBoxImg.svg`, title: 'Styrofoam Large Burger', name: 'Box PP-09' },
-    //     { img: `${Image_Url}HomeAssets/PremiumAssets/premiumBoxImg.svg`, title: 'Styrofoam Large Burger', name: 'Box PP-09' },
-    //     { img: `${Image_Url}HomeAssets/PremiumAssets/premiumBoxImg.svg`, title: 'Styrofoam Large Burger', name: 'Box PP-09' },
-    //     { img: `${Image_Url}HomeAssets/PremiumAssets/premiumBoxImg.svg`, title: 'Styrofoam Large Burger', name: 'Box PP-09' },
-    //     { img: `${Image_Url}HomeAssets/PremiumAssets/premiumBoxImg.svg`, title: 'Styrofoam Large Burger', name: 'Box PP-09' },
-    //     { img: `${Image_Url}HomeAssets/PremiumAssets/premiumBoxImg.svg`, title: 'Styrofoam Large Burger', name: 'Box PP-09' },
-    //     { img: `${Image_Url}HomeAssets/PremiumAssets/premiumBoxImg.svg`, title: 'Styrofoam Large Burger', name: 'Box PP-09' },
-    //     { img: `${Image_Url}HomeAssets/PremiumAssets/premiumBoxImg.svg`, title: 'Styrofoam Large Burger', name: 'Box PP-09' },
-    //     { img: `${Image_Url}HomeAssets/PremiumAssets/premiumBoxImg.svg`, title: 'Styrofoam Large Burger', name: 'Box PP-09' },
-    //     // Add more products as needed
-    // ];
-
+function Slider({ initialProducts = [] }) {
+    const seeded = Array.isArray(initialProducts) ? initialProducts : [];
+    const [products, setProducts] = useState(seeded);
+    const [isLoading, setIsLoading] = useState(seeded.length === 0);
 
     useEffect(() => {
+        const fromServer = Array.isArray(initialProducts) ? initialProducts : [];
+        if (fromServer.length > 0) {
+            setProducts(fromServer);
+            setIsLoading(false);
+            return;
+        }
+
+        let cancelled = false;
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.public.get('home/popular/product/get')
-                setProducts(response.data.data)
+                const response = await axios.public.get('home/popular/product/get');
+                const data = response?.data?.data;
+                if (!cancelled && Array.isArray(data)) setProducts(data);
             } catch (error) {
                 console.log(error);
-
             } finally {
-                setIsLoading(false)
+                if (!cancelled) setIsLoading(false);
             }
-        }
-        fetchData()
-    }, [])
+        };
+        fetchData();
+        return () => {
+            cancelled = true;
+        };
+    }, [initialProducts]);
 
     if (isLoading) return <Loader />
 

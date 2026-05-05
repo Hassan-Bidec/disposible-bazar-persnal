@@ -13,6 +13,9 @@ export async function generateMetadata() {
     return {
       title: data?.data?.meta_title || "Your Cart",
       description: data?.data?.meta_description || "View and manage your cart items",
+      ...(data?.data?.focus_keyword
+        ? { keywords: data.data.focus_keyword }
+        : {}),
 
       alternates: {
         canonical: data?.data?.canonical_url || "",

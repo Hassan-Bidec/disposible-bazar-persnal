@@ -4,17 +4,26 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   trailingSlash: true,
 
-  experimental: {
-    forceSwcTransforms: true,
-    // ✅ Sirf woh packages jo aapke package.json mein hain
-    optimizePackageImports: [
-      "react-icons",
-      "framer-motion",
-      "swiper",
-      "react-toastify",
-      "axios",
-    ],
-  },
+  // Transpile deps that ship modern JS (optional chaining, etc.) so crawler / older engines
+  // don’t parse syntax errors; see https://nextjs.org/docs/app/api-reference/config/next-config-js/transpilePackages
+  transpilePackages: [
+    "@react-google-maps/api",
+    "@react-oauth/google",
+    "aos",
+    "axios",
+    "dompurify",
+    "framer-motion",
+    "html-react-parser",
+    "html2canvas",
+    "isomorphic-dompurify",
+    "js-confetti",
+    "leaflet",
+    "react-icons",
+    "react-leaflet",
+    "react-toastify",
+    "swiper",
+    "uuid",
+  ],
 
   images: {
     remotePatterns: [

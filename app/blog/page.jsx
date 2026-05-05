@@ -37,6 +37,7 @@ export async function generateMetadata() {
   return {
     title: meta?.meta_title || "Blog - Disposable Bazar",
     description: meta?.meta_description || "Read our latest blog posts.",
+    ...(meta?.focus_keyword ? { keywords: meta.focus_keyword } : {}),
     alternates: {
       canonical: meta?.canonical_url || "",
     },

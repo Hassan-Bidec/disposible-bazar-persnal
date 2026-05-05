@@ -6,7 +6,6 @@ import Aos from "aos";
 import "aos/dist/aos.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CustomSeo from "../components/CustomSeo";
 import axios from "../Utils/axios";
 import { Image_Url } from "../const";
 import Link from "next/link";
@@ -123,7 +122,6 @@ function InquiryForm({ initialProducts = [] }) {
 
     return (
         <div className="relative py-32 px-10 text-white overflow-hidden">
-            <CustomSeo slug="inquiry" />
             <ToastContainer autoClose={800} />
 
             {/* Breadcrumb / Title */}

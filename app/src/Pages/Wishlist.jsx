@@ -11,7 +11,6 @@ import { useCart } from '../Context/CartContext';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import the CSS for Toastify
 // import dynamic from "next/dynamic";
-import CustomSeo from '../components/CustomSeo';
 
 
 
@@ -144,7 +143,6 @@ function Wishlist() {
     return (
         <div className="relative py-32 md:px-10 px-5">
 
-            <CustomSeo id={11} />
 
             <ToastContainer autoClose={500} />
             <div className="text-white py-4">

@@ -18,6 +18,9 @@ export async function generateMetadata() {
     return {
       title: data?.data?.meta_title || "Wishlist",
       description: data?.data?.meta_description || "Your Wishlist",
+      ...(data?.data?.focus_keyword
+        ? { keywords: data.data.focus_keyword }
+        : {}),
 
       alternates: {
         canonical: data?.data?.canonical_url || "",

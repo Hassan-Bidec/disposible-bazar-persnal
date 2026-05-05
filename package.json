@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --disable-source-maps",
+    "dev:maps": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "analyze": "ANALYZE=true next build"
+    "lint": "eslint",
+    "verify:bundles": "node scripts/verify-step-e.cjs",
+    "verify:step-e": "node scripts/run-step-e.cjs"
   },
   "dependencies": {
     "@react-google-maps/api": "^2.20.7",
@@ -43,22 +45,9 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "browserslist": {
-    "production": [
-      ">0.5%",
-      "last 2 versions",
-      "not dead",
-      "not ie 11",
-      "not ie_mob 11",
-      "chrome >= 70",
-      "firefox >= 68",
-      "safari >= 13",
-      "edge >= 79"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "browserslist": [
+    ">0.5%",
+    "last 2 versions",
+    "not dead"
+  ]
 }

@@ -1,29 +1,34 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { Assets_Url, Image_Url } from '../const';
-import axios from '../Utils/axios';
-import './Pages.css';
+import React, { useEffect, useLayoutEffect, useState, useRef } from 'react';
+import { Assets_Url, Image_Url } from '../../src/const';
+import axios from '../../src/Utils/axios';
+// import './Pages.css';
 import { FaAngleDown, FaCircle, FaWhatsapp } from 'react-icons/fa';
-import RcmdProduct from '../components/Shop/RcmdProduct';
-import Deals from '../components/Home/Deals';
-import Review from '../components/Reviews/Review';
+import RcmdProduct from '../../src/components/Shop/RcmdProduct';
+import Deals from '../../src/components/Home/Deals';
+import Review from '../../src/components/Reviews/Review';
 import { PiCaretDownThin, PiCaretUpThin } from 'react-icons/pi';
 import { TbCameraPlus } from 'react-icons/tb';
 import { BiSolidImageAdd } from 'react-icons/bi';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useUser } from '../Context/UserContext';
-import { useCart } from '../Context/CartContext';
-import { useWishlist } from '../Context/WishlistContext';
+import { useRouter } from 'next/navigation';
+import { useUser } from '../../src/Context/UserContext';
+// import { useCart } from '../../src/Context/CartContext';
+import { useWishlist } from '../../src/Context/WishlistContext';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FiX } from 'react-icons/fi';
-import CartModal from '../components/cart/CartModal';
+import CartModal from '../../src/components/cart/CartModal';
+import { useCart } from '../../src/Context/CartContext';
+import { Loader } from '../../src/components/Loader';
 import Image from 'next/image';
 
-export default function CustomDetails() {
-    const [productDetail, setProductDetail] = useState([]);
+export default function CustomizationSlugClient({
+    slug: slugProp = '',
+    initialData = null,
+}) {
+    const [productDetail, setProductDetail] = useState(() => initialData ?? null);
     const [recomendedProducts, setRecomendedProducts] = useState([]);
     const [productImages, setProductImages] = useState([]);
     const [productOptions, setProductOptions] = useState([]);
@@ -57,143 +62,98 @@ export default function CustomDetails() {
     const [logoImage, setLogoImage] = useState(null);
     const [customizeDetail, setCustomizeDetail] = useState('');
     const [isCartModalOpen, setIsCartModalOpen] = useState(false);
-    const [isWishlisted, setIsWishlisted] = useState(false);
-    const [wishlistId, setWishlistId] = useState(null);
+    const [printingPrice , setPrintingPrice] = useState(0);
+    const [isLoading, setIsLoading] = useState(() => initialData == null);
+    const dropdownRef = useRef(null);
 
-    const { addToWishlist, removeFromWishlist } = useWishlist();
+    const { addToWishlist } = useWishlist();
     const { addToCart } = useCart();
     const { user } = useUser();
     const router = useRouter();
-    const pathname = usePathname();
+
+    const normalizedSlug = (slugProp || '').replace(/^\/+|\/+$/g, '');
+    const applyPayload = (resData) => {
+        if (!resData?.product) return;
+        setProductDetail(resData);
+        setProductImages(resData.product.product_image);
+        setProductOptions(resData.product.product_options);
+        setProductPackageOptions(resData.product.packaging_options);
+        setSelectedOption(resData.product.packaging_options[0]);
+        setBrands(resData.product.product_brands.filter(i => i.status === 1));
+        setSelectedBrands(resData.product.product_brands.filter(i => i.status === 1)[0]?.name);
+        setSelectedBrandId(resData.product.product_brands.filter(i => i.status === 1)[0]?.id);
+        setProductVariants(resData.product.product_variants);
+        const seletedBrandId = resData.product.product_brands.filter(i => i.status === 1)[0]?.id;
+        if (resData.product.product_variants.filter(i => i.brand_id === seletedBrandId)) {
+            setSelectedProductVariants(resData.product.product_variants.filter(i => i.brand_id === seletedBrandId));
+        }
+        setSelectedPackSize(resData.product.product_variants[0].pack_size);
+        setSelectedPackPrice(resData.product.product_variants[0].price_per_piece);
+        setProductLid(resData.product?.product_lid_options);
+        setRecomendedProducts(resData.recommended_products);
+        const firstImg = resData.product.product_image?.[0]?.image;
+        setSelectedImage(firstImg || '');
+    };
 
     const whatsappNumber = "+923213850002";
     const productUrl = typeof window !== 'undefined' ? window.location.href : '';
     const inquiryMessage = encodeURIComponent(
-        `Hello! I am interested in the following product:\n\n${productDetail.product?.name}\n\n ${productUrl}`
+        `Hello! I am interested in the following product:\n\n${productDetail?.product?.name ?? ''}\n\n ${productUrl}`
     );
 
-    const id =
-      pathname?.match(/(?:customization|customdetails)\/([^/?#]+)/)?.[1]?.replace(
-        /\/$/,
-        ''
-      ) || null;
+    useLayoutEffect(() => {
+        if (initialData) {
+            applyPayload(initialData);
+            setIsLoading(false);
+        }
+    }, [initialData]);
 
     useEffect(() => {
+        if (!normalizedSlug) return;
+        if (initialData) {
+            setIsLoading(false);
+            return;
+        }
         const fetchData = async () => {
+            setIsLoading(true);
             try {
-                const response = await axios.public.post(`product/customize/s/details`, { slug: id + "/" });
+                const response = await axios.public.post(`product/customize/s/details`, {
+                    slug: normalizedSlug + "/",
+                });
                 const resData = response.data.data;
-                setProductDetail(resData);
-                setProductImages(resData?.product.product_image);
-                setProductOptions(resData.product.product_options);
-                setProductPackageOptions(resData.product.packaging_options);
-                setSelectedOption(resData.product.packaging_options[0]);
-                setBrands(resData.product.product_brands.filter(i => i.status === 1));
-                setSelectedBrands(resData.product.product_brands.filter(i => i.status === 1)[0]?.name);
-                setSelectedBrandId(resData.product.product_brands.filter(i => i.status === 1)[0]?.id);
-                setProductVariants(resData.product.product_variants);
-                const seletedBrandId = resData.product.product_brands.filter(i => i.status === 1)[0]?.id;
-                if (resData.product.product_variants.filter(i => i.brand_id === seletedBrandId)) {
-                    setSelectedProductVariants(resData.product.product_variants.filter(i => i.brand_id === seletedBrandId));
-                }
-                setSelectedPackSize(resData.product.product_variants[0].pack_size);
-                setSelectedPackPrice(resData.product.product_variants[0].price_per_piece);
-                setProductLid(resData.product?.product_lid_options);
-                setRecomendedProducts(resData.recommended_products);
-                setSelectedImage(resData?.product.product_image[0].image || '');
+                applyPayload(resData);
             } catch (error) {
                 console.log(error);
+            } finally {
+                setIsLoading(false);
             }
         };
-        if (id) fetchData();
-    }, [id]);
-
-    // Check if current variant is in wishlist
-    useEffect(() => {
-        const checkWishlistStatus = async () => {
-            if (!user) return;
-            try {
-                const response = await axios.protected.get('user/wishlist/get');
-                const wishlistItems = response.data?.data || [];
-                // Assuming we check against the product id or variant id. 
-                // Based on Wishlist.jsx, items have variants. 
-                // We act on the first variant usually shown or the product itself.
-                // Let's match by product ID for simplicity as variants might change.
-                // Or if specific variant is needed:
-                const currentVariantId = selectedProductVariants[0]?.id || productVariants[0]?.id;
-
-                const foundItem = wishlistItems.find(item =>
-                    item.product_variant_id === currentVariantId || item.product_variant?.id === currentVariantId
-                    // Fallback check if API structure differs
-                );
-
-                if (foundItem) {
-                    setIsWishlisted(true);
-                    setWishlistId(foundItem.id);
-                } else {
-                    setIsWishlisted(false);
-                    setWishlistId(null);
-                }
-            } catch (error) {
-                console.log("Error checking wishlist:", error);
-            }
-        };
-
-        if (user && (selectedProductVariants.length > 0 || productVariants.length > 0)) {
-            checkWishlistStatus();
-        }
-    }, [user, selectedProductVariants, productVariants]);
+        fetchData();
+    }, [normalizedSlug, initialData]);
 
     const handleSubmit = (e) => e.preventDefault();
     const handleImageClick = (image) => setSelectedImage(image);
-
-    const handleWishlist = async () => {
+    
+    const handleWishlist = async (id) => {
         if (!user) {
             router.push('/login/');
             return;
         }
-
-        // Use current variant ID
-        const variantId = selectedProductVariants[0]?.id || productVariants[0]?.id;
-        if (!variantId) {
-            toast.error("No product variant available");
-            return;
-        }
-
+     
         try {
-            if (isWishlisted && wishlistId) {
-                // Remove from wishlist
-                await axios.protected.post(`user/wishlist/delete/${wishlistId}`);
-                removeFromWishlist();
-                setIsWishlisted(false);
-                setWishlistId(null);
-                toast.success('Product removed from wishlist');
+            const wishlistResponse = await axios.protected.get(`/user/wishlist/${id}/check`);
+            if (wishlistResponse.data.exists) {
+                toast.error('Product already added to wishlist');
             } else {
-                // Add to wishlist
-                // Check if already added (double check)
-                const wishlistResponse = await axios.protected.get(`/user/wishlist/${variantId}/check`);
-                if (wishlistResponse.data.exists) {
-                    toast.error('Product already added to wishlist');
-                    setIsWishlisted(true);
-                    return;
-                }
-
-                const response = await axios.protected.post(`/user/wishlist/${variantId}/add`);
+                const response = await axios.protected.post(`/user/wishlist/${id}/add`);
                 if (response.status === 200) {
                     addToWishlist();
                     toast.success('Product added to wishlist');
-                    // Re-fetch to get the new wishlist ID
-                    const listRes = await axios.protected.get('user/wishlist/get');
-                    const found = listRes.data?.data?.find(item => item.product_variant_id === variantId || item.product_variant?.id === variantId);
-                    if (found) {
-                        setWishlistId(found.id);
-                        setIsWishlisted(true);
-                    }
                 }
             }
         } catch (error) {
             console.log(error);
-            toast.error('An error occurred while updating wishlist');
+            toast.error('An error occurred while adding to wishlist');
         }
     };
 
@@ -221,9 +181,151 @@ export default function CustomDetails() {
 
     // Add to cart logic (same as before, unchanged)
     const handleAddCart = async (product) => {
-        // ... copy your full handleAddCart logic exactly as is ...
+    if (!selectedOption) {
+        toast.error(`Select a packaging option`);
+        return;
+    }
+    
+    if (!uploadedFile) {
+        toast.error(`Select a file`);
+        return;
+    }
+
+    const product_id = product.id;
+    const product_name = product.name;
+    const pack_size = Number(selectedPackSize) || 1;
+    const product_quantity = Number(subQuantity) || 1;
+    const total_pieces = pack_size * product_quantity;
+
+    // ✅ PER PIECE PRICES (Individual)
+    const price_per_piece = Number(selectedPackPrice || 0);
+    const lid_price_per_piece = Number(selectedLidPrice || 0);
+    const printing_price_per_piece = Number(selectedOptionPrice || 0);
+    
+    // ✅ TOTAL PRINTING PRICE (Pack Size × Printing Price Per Piece)
+    const total_printing_price = printing_price_per_piece * pack_size; 
+    
+    // ✅ TOTAL LID PRICE (Pack Size × Lid Price Per Piece)
+    const total_lid_price = lid_price_per_piece * pack_size;
+    
+    // ✅ TOTAL BASE PRICE (Pack Size × Base Price Per Piece)
+    const total_base_price = price_per_piece * pack_size;
+    
+    // ✅ PRODUCT TOTAL CALCULATION (PER PIECE METHOD)
+    // Per piece total = base + lid + printing
+    const total_per_piece = price_per_piece + lid_price_per_piece + printing_price_per_piece;
+    // Total for all pieces
+    const product_total = (total_per_piece * total_pieces).toFixed(2);
+    const printing_price = Number(selectedOptionPrice) * Number(selectedPackSize || 1)
+    
+    // ✅ ALTERNATIVE: Calculate using pack totals (same result)
+    // const product_total_alt = (
+    //     (total_base_price + total_lid_price + total_printing_price) * product_quantity
+    // ).toFixed(2);
+
+
+
+    // Apply discount if available
+    let finalTotal = parseFloat(product_total);
+    const discountPercentage = parseFloat(product?.activeDiscount?.discount_percentage);
+    if (!isNaN(discountPercentage) && discountPercentage > 0) {
+        finalTotal = finalTotal - (finalTotal * (discountPercentage / 100));
+    }
+
+    const product_total_final = finalTotal.toFixed(2);
+
+    const product_img = product.image_path;
+    const product_variants = selectedProductVariants;
+    const product_options = productOptions;
+    const product_color = selectedColor || null;
+    const product_size = selectedSize || null;
+    const product_lids = productLid || null;
+    const lid = selectedLidId || null;
+    const lid_Price = lid_price_per_piece; // ✅ Per piece lid price
+    const custom_Note = customizeDetail || null;
+    
+    const option_Price = printing_price_per_piece; // ✅ Per piece printing price
+    const order_limit = product?.order_limit || 1000;
+    const packaging_options = {
+        ...selectedOption,
+        total_price: total_printing_price // ✅ Add total printing price for pack
+    };
+        setPrintingPrice(packaging_options)
+
+    
+    let logo = null;
+    if (uploadedFile) {
+        try {
+            logo = await convertFileToBase64(uploadedFile);
+        } catch (error) {
+            console.error('Error converting logo to Base64:', error);
+        }
+    }
+
+    // ✅ COMPLETE PAYLOAD FOR DEBUGGING
+    const payload = {
+        product_id,
+        product_name,
+        product_quantity,
+        pack_size,
+        total_pieces,
+        printingPrice,
+
+        // Per piece prices
+        price_per_piece,
+        lid_price_per_piece,
+        printing_price_per_piece,
+        // Pack totals
+        total_base_price,
+        total_lid_price,
+        total_printing_price, // 👈 YAHI WOH VALUE HAI JO DISPLAY HOTI HAI
+        // Final
+        product_total: product_total_final,
+        order_limit
     };
 
+
+    // Add to cart
+    addToCart(
+        product_id,
+        product_name,
+        
+        product_quantity,
+        pack_size,
+        total_pieces,
+        price_per_piece,      // Base price per piece
+        product_img,
+        product_total_final,  // Final total with discount
+        product_variants,
+        printing_price,
+        product_color,
+
+        product_size,
+        logo,
+        product_options,
+        product_lids,
+        lid,
+        lid_Price,           // Lid price per piece
+        customizeDetail,
+        option_Price,        // Printing price per piece
+        null,
+        order_limit,
+        packaging_options,   // Packaging options with total_price
+    );
+
+    // Reset form
+    setSelectedSize('');
+    setSelectedColor('');
+    setUploadedFile(null);
+    setCustomizeDetail('');
+    if (document.getElementById('upload-image')) {
+        document.getElementById('upload-image').value = '';
+    }
+    setIsCartModalOpen(true);
+    
+    // Success toast with exact values
+    toast.success(`Added to cart!`);
+};
     const handleSelectedBrand = (data) => {
         setSelectedBrands(data.name);
         setSelectedBrandId(data.id);
@@ -233,8 +335,23 @@ export default function CustomDetails() {
     };
 
     const handleCategoryLink = (item) => {
+      
         router.push(`/customization-category/${item.slug}`);
     };
+    // Close dropdown if clicked outside
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setBrandsOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+    if (isLoading || !productDetail?.product) return <Loader />;
 
     return (
         <div className="relative py-32 px-10 text-white overflow-hidden">
@@ -248,7 +365,7 @@ export default function CustomDetails() {
                     {/* <Link to={`/product-category/${productDetail?.product?.category?.slug}`}> */}
                     {productDetail.product?.category?.name || ""}
                     {/* </Link> */}
-                </span> / {productDetail.product?.subCategory?.name ? <> <Link href='/'> {productDetail.product?.subCategory.name || ''} </Link> /</> : ""} {productDetail.product?.name || 'Product Name'}</p>
+                </span> / {productDetail.product?.subCategory?.name ? <> <Link to='/'> {productDetail.product?.subCategory.name || ''} </Link> /</> : ""} {productDetail.product?.name || 'Product Name'}</p>
                 {/* <h3 className="py-10 font-bazaar md:text-6xl text-5xl">INQUIRY FORM</h3> */}
             </div>
             <main className=''>
@@ -261,7 +378,7 @@ export default function CustomDetails() {
                                 <div className="w-full h-1/4 py-1">
                                     <Image
                                         className="w-full h-full bg-[#32303e] rounded-xl border-2 border-[#1E7773] object-cover cursor-pointer"
-                                        src={`${Image_Url}defaultImage.svg`} // Default image when no products
+                                        src={`${Image_Url}defaultImage.svg`}
                                         alt="Default Product Image"
                                         width={500}
                                         height={500}
@@ -272,12 +389,12 @@ export default function CustomDetails() {
                                 productImages.slice(0, 4).map((prod, index) => (
                                     <div key={index} className="w-full h-1/4 py-1">
                                         <Image
+                                        width={500}
+                                        height={500}
                                             className="w-full h-full bg-[#32303e] rounded-xl border-2 border-[#1E7773] object-cover cursor-pointer"
                                             // If the prod.image array is empty, use the default image; otherwise, use the first image in the array
                                             src={`${Assets_Url}${prod.image}`}
                                             alt={prod?.image_alt || 'Product Image'}
-                                            width={500}
-                                            height={500}
                                             onClick={() => handleImageClick(prod.image)} // Set clicked image (first image in the array)
                                         />
 
@@ -286,14 +403,13 @@ export default function CustomDetails() {
                             )}
                         </div>
                         {/* Large Image Display */}
-                        <div className="w-4/5 rounded-lg bgblack ">
+                        <div className="w-4/5 rounded-lg bgblack relative min-h-[300px]">
                             {selectedImage && (
                                 <Image
-                                    className="w-full h-full object-cover rounded-lg"
-                                    src={`${Assets_Url}${selectedImage}`} // Show selected image
+                                    fill
+                                    className="object-cover rounded-lg"
+                                    src={`${Assets_Url}${selectedImage}`}
                                     alt={productImages[0]?.image_alt || 'Product Image'}
-                                    width={500}
-                                    height={500}
                                 />
                             )}
                         </div>
@@ -304,16 +420,26 @@ export default function CustomDetails() {
                         {/* <h3 className='md:text-xl text-md font-semibold'>
                             Brand : {productDetail.product?.brand_name || 'Brand Name'}
                         </h3> */}
-                        <div onClick={() => setBrandsOpen(!brandsOpen)} className="relative ...">
-                            Brand : {selectedBrands || 'Brand Name'}
-                            <FaAngleDown className={`${brandsOpen ? 'rotate-180' : ''} duration-300`} />
+
+
+                        <div className="relative w-fit" ref={dropdownRef}>
+                            <h3
+                                onClick={() => setBrandsOpen(!brandsOpen)}
+                                className="md:text-xl flex flex-row gap-4 cursor-pointer items-center text-md font-semibold border p-2 rounded-lg px-4"
+                            >
+                                Brand: {selectedBrands || "Brand Name"}
+                                <FaAngleDown
+                                    className={`${brandsOpen ? "rotate-180" : ""} duration-300`}
+                                />
+                            </h3>
+
                             {brandsOpen && (
-                                <div className="absolute top-12 left-0 py-2 overflow-auto rounded-lg z-10 w-full h-32 bg-white">
+                                <div className="absolute top-14 left-0 py-2 overflow-auto rounded-lg z-10 w-75 h-32 bg-white shadow-md border">
                                     {brands.map((data) => (
                                         <div
                                             key={data.id}
                                             onClick={() => handleSelectedBrand(data)}
-                                            className="text-black px-4 py-1 text-md hover:bg-gray-200 duration-100"
+                                            className="text-black px-4 py-2 text-md hover:bg-gray-200 cursor-pointer duration-100"
                                         >
                                             {data.name}
                                         </div>
@@ -322,21 +448,47 @@ export default function CustomDetails() {
                             )}
                         </div>
 
-                        <p className='text-xl font-semibold'>
+
+
+
+
+
+
+                        {/* <div onClick={() => setBrandsOpen(!brandsOpen)}       
+                         className="md:text-xl flex flex-row gap-4 cursor-pointer items-center text-md font-semibold border p-2 rounded-lg px-4">
+  Brand : {selectedBrands || 'Brand Name'}
+  <FaAngleDown className={`${brandsOpen ? 'rotate-180' : ''} duration-300`} />
+  {brandsOpen && (
+    <div className="absolute top-12 left-0 py-2 overflow-auto rounded-lg z-10 w-full h-32 bg-white">
+      {brands.map((data) => (
+        <div
+          key={data.id}
+          onClick={() => handleSelectedBrand(data)}
+          className="text-black px-4 py-1 text-md hover:bg-gray-200 duration-100"
+        >
+          {data.name}
+        </div>
+      ))}
+    </div>
+  )}
+</div> */}
+
+                        <div className='text-xl font-semibold'>
                             {selectedProductVariants && selectedProductVariants.length > 0 ? (
                                 // <>
                                 //     Rs {selectedProductVariants[0].price} - {selectedProductVariants[selectedProductVariants.length - 1].price}
                                 //     {/* ₨ {quantity && selectedVariantPrice && (quantity * subQuantity * selectedVariantPrice)} */}
                                 // </>
-                                <p>
+                                <div>
                                     Rs {selectedProductVariants[0].price}
                                     {selectedProductVariants.length > 1 &&
                                         ` - Rs ${selectedProductVariants[selectedProductVariants.length - 1].price}`}
-                                </p>
+                                </div>
                             ) : (
                                 <span>No variants available</span>
                             )}
-                        </p>
+                            <h3 className="text-center text-[13px] ">Printing Side</h3>
+                        </div>
                         <form onSubmit={handleSubmit} className='w-3/4 flex flex-col gap-5'>
                             <div className="flex mdflex-row flex-wrap gap-3">
                                 {productLid?.length > 0 && (
@@ -345,13 +497,14 @@ export default function CustomDetails() {
                                         <h3
                                             onClick={() => setLidsDropdown(!lidsDropdown)}
                                             className="flex flex-row justify-between items-center text-md gap-3 border p-2 rounded-md md:w-28 w-40 border-[#1E7773]">
-                                            <p>{selectedLid ? selectedLid : 'Lids'} </p> {/* Show selected pack size or default text */}
+                                            <p>{selectedLid ? selectedLid : 'No Lids'} </p> {/* Show selected pack size or default text */}
                                             <p>{lidsDropdown ? <PiCaretUpThin /> : <PiCaretDownThin />}</p>
                                         </h3>
 
                                         {/* Dropdown options for Lid */}
                                         {lidsDropdown && (
                                             <div className="md:w-28 w-40 rounded-md my-2 h-32 absolute z-10 overflow-auto bg-white text-black">
+
                                                 <div
                                                     key={123}
                                                     className="p-2 cursor-pointer hover:bg-gray-200"
@@ -360,7 +513,6 @@ export default function CustomDetails() {
                                                         setSelectedLidPrice(null);
                                                         setSelectedLid(null);
                                                         setSelectedImage(productDetail?.product?.product_image[0]?.image);
-                                                        // console.log(selectedLidPrice);
 
                                                         setLidsDropdown(false); // Close dropdown after selection
                                                     }}>
@@ -375,7 +527,6 @@ export default function CustomDetails() {
                                                             setSelectedLidPrice(lid.price);
                                                             setSelectedLid(lid.name);
                                                             setSelectedImage(lid.image);
-                                                            // console.log(selectedLidPrice);
 
                                                             setLidsDropdown(false); // Close dropdown after selection
                                                         }}>
@@ -386,6 +537,8 @@ export default function CustomDetails() {
                                         )}
                                     </div>
                                 )}
+
+
                                 {/* <div className="relative">
                                     <h3 onClick={() => setPieces(!pieces)} className="flex flex-row justify-between items-center text-md gap-3 border p-2 rounded-md md:w-24 w-40 border-[#1E7773] "><p>Pieces</p><p>{pieces ? <PiCaretUpThin /> : <PiCaretDownThin />}</p></h3>
                                     {pieces && (
@@ -419,6 +572,7 @@ export default function CustomDetails() {
                                             ))}
                                         </div>
                                     )}
+
                                 </div>
                                 {/* <div className="relative">
                                     <h3 onClick={() => setSize(!size)} className="flex flex-row justify-between items-center text-md gap-3 border p-2 rounded-md md:w-24 w-40 border-[#1E7773] "><p>Size</p><p>{size ? <PiCaretUpThin /> : <PiCaretDownThin />}</p></h3>
@@ -452,6 +606,7 @@ export default function CustomDetails() {
                                                     className="p-2 cursor-pointer uppercase hover:bg-gray-200"
                                                     onClick={() => {
                                                         setSelectedOption(variant); // Set selected pack size
+                                                        setSelectedOptionPrice(variant.price);
                                                         setOptionsDropdown(false); // Close dropdown after selection
                                                     }}>
                                                     {variant.side_option
@@ -470,7 +625,7 @@ export default function CustomDetails() {
                             >
                                 <p className="font-bazaar flex flex-row gap-2 pt-1">
                                     <BiSolidImageAdd size={22} />
-                                    {designText} {/* Display the updated text */}
+                                    {designText}
                                 </p>
                                 <input
                                     type="file"
@@ -504,7 +659,8 @@ export default function CustomDetails() {
                                         }}
                                     >+</button>
                                 </div>
-                                <button className='p-2 pt-3 bg-[#1E7773] w-full lg:text-[15px] font-bazaar text-xs rounded-md' onClick={() => handleAddCart(productDetail.product?.id)}>
+                                <button className='p-2 pt-3 bg-[#1E7773] w-full lg:text-[15px] font-bazaar text-xs rounded-md'
+                                    onClick={() => handleAddCart(productDetail.product)}>
                                     ADD TO CART
                                 </button>
                             </div>
@@ -517,23 +673,47 @@ export default function CustomDetails() {
 
                                 / Per Pieces: {(Number(selectedPackPrice || 0) + Number(selectedOptionPrice || 0)) + Number(selectedLidPrice || 0)}
                             </p>
+
+
+                            {/* <h3 className="text-[13px] font-semibold py-2 ">Lid Price :</h3>
+
+                            <p className="text-sm font-medium text-[#1E7773]">
+                                ₨ {Number(selectedLidPrice || 0)}
+                            </p> */}
+                            {Number(selectedLidPrice) > 0 && (
+                                <div className="flex items-center gap-2 py-2">
+                                    <h3 className="text-[13px] font-semibold text-white">
+                                        Lid Price :
+                                    </h3>
+
+                                    <p className="text-[13px] font-semibold text-white">
+                                         {Number(selectedLidPrice)}
+                                    </p>
+                                </div>
+                            )}
+
+
+
+                            {selectedOptionPrice ? (
+                                <p>
+                                    Printing Price: {Number(selectedOptionPrice) * Number(selectedPackSize || 1)}
+                                </p>
+                            ) : (
+
+                                <p className="text-gray-400 text-sm">Select a variant to see price</p>
+                            )}
                             {productDetail.product?.activeDiscount && (<p className='text-sm '>{Number(productDetail.product?.activeDiscount?.discount_percentage)}% OFF ( {productDetail.product?.activeDiscount?.name} )</p>)}
                         </div>
 
                         <div className="flex flex-row md:gap-5 gap-2">
-                            <button
-                                className={`p-2 pt-3 border-b-4 ${isWishlisted ? 'border-red-500 text-red-500' : 'border-[#1E7773]'} w-32 lg:text-[15px] font-bazaar text-xs`}
-                                onClick={handleWishlist}
-                            >
-                                {isWishlisted ? 'REMOVE FROM WISHLIST' : 'ADD TO WISHLIST'}
-                            </button>
-                            <button className='p-3 border flex flex-row justify-between items-center gap-2  border-[#1E7773] w32 lg:text-[15px]  font-bazaar text-xs rounded-md' onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${inquiryMessage}`, '_blank')}><FaWhatsapp className='text-[#1E7773] text-2xl' /> <p className="pt-2">ORDER ON WHATSAPP</p></button>
+                            <button className='p-2 pt-3 border-b-4 border-[#1E7773] w-32 lg:text-[15px] font-bazaar cursor-pointer text-xs' onClick={() => handleWishlist(productDetail.product.id)}>ADD TO WISHLIST</button>
+                            <button className='p-3 border flex flex-row justify-between items-center gap-2  border-[#1E7773] w32 lg:text-[15px]  font-bazaar text-xs rounded-md' onClick={() => window.open(`https://wa.me/${whatsappNumber}?text=${inquiryMessage}`, '_blank')}><FaWhatsapp className='text-[#1E7773] text-2xl' /> <p className="pt-2 cursor-pointer">ORDER ON WHATSAPP</p></button>
                         </div>
                         {/* <button className='p-3 pt-3 bg-[#1E7773] w-52 lg:text-[15px] font-bazaar text-xs rounded-md'>CUSTOMIZED PRINTING</button> */}
                     </div>
                 </section>
                 {/* Product Description and Additional Information */}
-                <section className='flex flex-col gap-8 md:py-20 py-5'>
+                <section className='flex flex-col gap-8 md:py-20 py-5 cursor-pointer'>
                     <div className="flex flexrow w-full border-b border-[#1E7773] justify-center items-center">
                         <div className="flex flex-row justify-center md:gap-5 gap-2 items-center">
                             <h3 onClick={() => setProductTextDetail('Description')} className={`font-bazaar py-2 ${productTextDetail === 'Description' ? ' border-b-2 border-[#1E7773]' : 'text-[#55555F]'} md:text-xl text-xs`}>Product Description </h3>
@@ -554,6 +734,7 @@ export default function CustomDetails() {
                                 ) : (
                                     <p className="text-md">No Description Found</p>
                                 )}
+
                             </div>
                         )}
                         {productTextDetail === 'Additional information' && (
@@ -610,20 +791,20 @@ export default function CustomDetails() {
             </main>
             {/* Background Image */}
             <Image
+            width={500}
+            height={500}
                 data-aos="fade-left"
                 className="absolute top-[44rem] right-0 md:w-28 w-16"
                 src={`${Image_Url}plateRight.svg`}
                 alt="Plate"
-                width={500}
-                height={500}
             />
             <Image
+            width={500}
+            height={500}
                 data-aos="fade-right"
                 className="absolute top-[100rem] left-0 lg:w-16 w-8"
                 src={`${Image_Url}leftCup.svg`}
                 alt="Plate"
-                width={500}
-                height={500}
             />
             {/* <img
                 // data-aos="fade-left"
@@ -632,26 +813,26 @@ export default function CustomDetails() {
                 alt="bgGradient"
             /> */}
             {isCartModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center  z-50 text-black" onClick={() => setIsCartModalOpen(false)}>
+                <div className="fixed inset-0 flex items-center justify-center z-50 text-black" onClick={() => setIsCartModalOpen(false)}>
                     <div className="fixed md:top-36 md:right-4 bg-white shadow-lg p-4 rounded-lg z-50 w-[300px] transition-transform duration-500">
                         <div className='flex justify-between  text-black'>
                             <h4 className="text-md font-bold">Added to Cart</h4>
                             <FiX size={24} onClick={() => setIsCartModalOpen(false)} />
                         </div>
+
                         <CartModal />
                         <div className="flex flex-row gap-2 mt-2">
-                            <Link to='/shop/' className='p-1 flex justify-center items-center pt-2 border text-[#1E7773] border-[#1E7773] w-full lg:text-[15px] font-bazaar text-xs rounded-md'>
+                            <Link href='/shop/' className='p-1 flex justify-center items-center pt-2 border text-[#1E7773] border-[#1E7773] w-full lg:text-[15px] font-bazaar text-xs rounded-md'>
                                 CONTINUE
                             </Link>
-                            <Link to='/cart/' className='p-1 flex justify-center items-center pt-2 bg-[#1E7773] w-full lg:text-[15px] text-white font-bazaar text-xs rounded-md'>
+                            <Link href='/cart/' className='p-1 flex justify-center items-center pt-2 bg-[#1E7773] w-full lg:text-[15px] text-white font-bazaar text-xs rounded-md'>
                                 CART
                             </Link>
                         </div>
                     </div>
                 </div>
             )}
+
         </div>
     )
 }
-
-

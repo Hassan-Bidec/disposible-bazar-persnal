@@ -13,7 +13,6 @@ import CustomPriceRange from "../components/Customizaton/CustomPriceRange";
 import CustomPriceRangeMob from "../components/Customizaton/CustomPriceRangeMob";
 import axios from "../Utils/axios";
 import { Loader } from "../components/Loader";
-import CustomSeo from "../components/CustomSeo";
 import Link from "next/link";
 import { useCart } from "../Context/CartContext";
 
@@ -223,7 +222,6 @@ const isFirstMount = React.useRef(true);
 
   return (
    <div >
-            <CustomSeo id={3} />
             <CustomHeroSection heading='Build Your Perfect Match' path='Customization ' custom="customization" bgImage="HomeAssets/HeroSecton/Banner3.png" hideContent={true} />
             <div className="md:py-20 py-10 lg:px-10 px-0 flex">
                 <section className="hidden lg:flex flex flex-col p-5 text-white hscreen lg:w-1/5">

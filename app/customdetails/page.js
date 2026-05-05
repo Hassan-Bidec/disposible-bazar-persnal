@@ -1,62 +1,36 @@
-// 🟩 Dynamic Metadata Function for Inquiry Form Page
-export async function generateMetadata() {
-  try {
-    const res = await fetch(
-      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/2", 
-      { cache: "no-store" }
-    );
-
-    if (!res.ok) {
-      throw new Error(`API error: ${res.status}`);
-    }
-
-    const data = await res.json();
-
-    return {
-      title: data?.data?.meta_title || "CustomDetails",
-      description: data?.data?.meta_description || "CustomDetails page",
-
-      alternates: {
-        canonical: data?.data?.canonical_url || "",
-      },
-
-      robots: {
-        index: data?.data?.robots_index !== "noindex",
-        follow: data?.data?.robots_follow !== "nofollow",
-
-        googleBot: {
-          index: data?.data?.robots_index !== "noindex",
-          follow: data?.data?.robots_follow !== "nofollow",
-        },
-      },
-    };
-  } catch (error) {
-    console.error("CustomDetails metadata fetch failed:", error);
-
-    return {
-      title: "CustomDetails",
-      description: "CustomDetails page",
-      robots: {
-        index: true,
-        follow: true,
-      },
-    };
-  }
-}
-
-// 🟩 Load InquiryForm Component
-
 import { Suspense } from "react";
 import CustomDetails from "../src/Pages/CustomDetails";
+import {
+  fetchPageDetailById,
+  metadataFromPageDetail,
+  serializeLdJson,
+} from "../lib/seo/pageDetail";
+
 export const dynamic = "force-dynamic";
-export default function Page() {
+
+export async function generateMetadata() {
+  const detail = await fetchPageDetailById(2, { cache: "no-store" });
+  return metadataFromPageDetail(detail, {
+    title: "Custom details",
+    description: "Custom details - Disposable Bazaar",
+  });
+}
+
+export default async function Page() {
+  const detail = await fetchPageDetailById(2, { cache: "no-store" });
+  const schemaLd = serializeLdJson(detail?.schema);
+
   return (
     <>
-    <Suspense fallback={<div>Loading...</div>}>
-   <CustomDetails />
-</Suspense>
-
-     
+      {schemaLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: schemaLd }}
+        />
+      ) : null}
+      <Suspense fallback={<div>Loading...</div>}>
+        <CustomDetails />
+      </Suspense>
     </>
   );
 }

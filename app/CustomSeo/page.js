@@ -1,12 +1,21 @@
+import {
+  fetchPageDetailById,
+  metadataFromPageDetail,
+} from "../lib/seo/pageDetail";
 
-
-import { Suspense } from "react";
-import CustomSeo from "../src/components/CustomSeo";
 export const revalidate = 86400;
+
+export async function generateMetadata() {
+  const detail = await fetchPageDetailById(7, {
+    next: { revalidate: 86400 },
+  });
+  return metadataFromPageDetail(detail, {
+    title: "Disposable Bazaar",
+    description: "Quality disposable products",
+  });
+}
+
+/** Legacy route; placeholder page (no client next/head). */
 export default function Page() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <CustomSeo />
-    </Suspense>
-  );
+  return null;
 }

@@ -14,7 +14,6 @@ import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/f
 import { RiTiktokLine, RiTwitterXLine } from 'react-icons/ri';
 import { LuFacebook } from 'react-icons/lu';
 import { FiYoutube } from 'react-icons/fi';
-import CustomSeo from '../components/CustomSeo';
 
 function ContactUs() {
     const [formData, setFormData] = useState({
@@ -60,7 +59,6 @@ function ContactUs() {
 
     return (
         <div className="relative py-10 flex flex-col justify-center items-center text-white overflow-hidden">
-            <CustomSeo id={9} />
             <CustomHeroSection heading='Contact Us' path='Contact Us '  bgImage="CustomHeroAssets/banners.png" />
            
                {/* <div className="flex justify-start items-center text-black relative min-h-[450px]" style={{

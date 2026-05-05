@@ -6,7 +6,6 @@ import "aos/dist/aos.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useUser } from "../Context/UserContext";
-import CustomSeo from "../components/CustomSeo";
 import "../../globals.css";
 
 // Direct imports — no lazy() to avoid CSR-only rendering
@@ -38,7 +37,6 @@ const Homes = ({ initialPopularProducts = [] }) => {
 
   return (
     <div className="bg-[#20202c] overflow-hidden py-24 md:py-28">
-      <CustomSeo id={7} />
       <ToastContainer autoClose={500} />
       <HeroSlider />
       <Products />

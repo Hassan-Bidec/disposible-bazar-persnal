@@ -1,10 +1,8 @@
 import React from 'react';
-import CustomSeo from '../components/CustomSeo';
 
 function ReturnPolicy() {
     return (
         <div className="min-h-screen my-6 py-10">
-            <CustomSeo id={14} />
             <div className="container mx-auto px-4 lg:px-16">
 
                 <div className="bg-white shadow-md rounded-lg p-8 space-y-6">

@@ -2,7 +2,6 @@
 "use client"
 
 import { useEffect, useState } from 'react';
-import CustomSeo from '../components/CustomSeo';
 
 function TermsAndConditions() {
     const [paddingTop, setPaddingTop] = useState(160);
@@ -16,7 +15,6 @@ function TermsAndConditions() {
 
     return (
         <div className="min-h-screen pb-10" style={{ paddingTop: `${paddingTop}px` }}>
-            <CustomSeo/>
             <div className="container mx-auto px-4 lg:px-16">
                 
                 <div className="bg-white shadow-md rounded-lg p-8 space-y-6">
