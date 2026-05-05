@@ -38,6 +38,22 @@ function stripHtmlToText(html) {
     .slice(0, 320);
 }
 
+/** JSON-stable payload so RSC can serialize props (no cycles / BigInt / etc.). */
+function sanitizeProductForClient(raw) {
+  if (raw == null) return null;
+  try {
+    return JSON.parse(
+      JSON.stringify(raw, (_, v) => {
+        if (typeof v === "bigint") return Number(v);
+        if (v instanceof Date) return v.toISOString();
+        return v;
+      })
+    );
+  } catch {
+    return null;
+  }
+}
+
 // ─── Server-side data fetch ───────────────────────────────────────────────────
 async function getProductData(slug) {
   const key = normalizeProductSlugForApi(slug);
@@ -104,9 +120,16 @@ export default async function Page({ params }) {
   const { slug } = await params;
   const resolvedSlug = slug || "";
   const data = await getProductData(resolvedSlug);
+  const clientData = sanitizeProductForClient(data);
 
   // Inject schema as ld+json in initial HTML if available
-  const schema = data?.seoMetadata?.schema || null;
+  const schemaRaw = data?.seoMetadata?.schema || null;
+  let schema = null;
+  try {
+    schema = schemaRaw ? JSON.stringify(JSON.parse(schemaRaw)) : null;
+  } catch {
+    schema = null;
+  }
 
   return (
     <>
@@ -116,7 +139,7 @@ export default async function Page({ params }) {
           dangerouslySetInnerHTML={{ __html: schema }}
         />
       )}
-      <ShopDetails initialData={data} />
+      <ShopDetails initialData={clientData} />
     </>
   );
 }

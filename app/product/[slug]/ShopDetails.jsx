@@ -40,7 +40,7 @@ function productSlugForApi(raw) {
 function ShopDetails({ initialData = null }) {
     const router = useRouter();
 
-    const [productDetail, setProductDetail] = useState(initialData || []);
+    const [productDetail, setProductDetail] = useState(initialData ?? null);
     const [productVariants, setProductVariants] = useState([]);
     const [selectedProductVariants, setSelectedProductVariants] = useState([]);
     const [productLids, setProductLids] = useState([]);
@@ -144,21 +144,28 @@ function ShopDetails({ initialData = null }) {
             const response = await axios.public.post(`product/s/details`, {
                 slug: id,
             });
-            const resData = response.data.data;
-            const hasChildProducts = productDetail.product?.childProducts?.length > 0;
-          
-            applyProductData(resData);
-            setIsCustomizeable(productDetail.product?.childProducts?.length > 0);
-            setIsLoading(false);
+            const resData = response.data?.data;
+            if (resData) {
+                applyProductData(resData);
+                setIsCustomizeable((resData.product?.childProducts?.length || 0) > 0);
+            }
         } catch (error) {
             console.log('Error fetching product details:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const fetchReviewById = async (id) => {
+    const fetchReviewById = async (slugForApi) => {
+        const slug = slugForApi.replace(/^\/+|\/+$/g, '');
+        if (!slug) return;
         try {
-            const response = await axios.public.get(`product_reviews/${id}`);
-            setProductReview(response.data);
+            const res = await fetch(
+                `/api/product-reviews/${encodeURIComponent(slug)}/`,
+                { credentials: 'same-origin', headers: { Accept: 'application/json' } }
+            );
+            if (!res.ok) return;
+            setProductReview(await res.json());
         } catch (error) {
             console.log('Error fetching product review:', error);
         }
@@ -173,7 +180,7 @@ function ShopDetails({ initialData = null }) {
             // Still fetch reviews client-side (user-generated, not needed for SEO)
             fetchReviewById(id);
         }
-    }, [id]);
+    }, [id, initialData]);
 
     // Check if current variant is in wishlist
     useEffect(() => {
@@ -214,7 +221,7 @@ function ShopDetails({ initialData = null }) {
             return;
         }
         
-        const variantId = productDetail.product.id;
+        const variantId = productDetail?.product?.id;
         if (!variantId) {
             toast.error("No product variant available");
             return;
@@ -340,6 +347,16 @@ function ShopDetails({ initialData = null }) {
     );
 
     if (isLoading) return <Loader />;
+    if (!productDetail?.product) {
+        return (
+            <div className="relative py-32 px-10 text-white">
+                <p>Product not found.</p>
+                <p className="mt-4">
+                    <Link href="/shop/" className="text-[#1E7773] underline">Back to shop</Link>
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="relative py-32 px-10 text-white overflow-hidden">
