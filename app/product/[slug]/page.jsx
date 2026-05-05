@@ -12,6 +12,57 @@ export const revalidate = 600;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
+function siteOrigin() {
+  const u =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "") ||
+    "http://localhost:3000";
+  try {
+    return new URL(u).origin;
+  } catch {
+    return "http://localhost:3000";
+  }
+}
+
+/**
+ * CMS canonical may be slug-only (`my-product/`), relative, or full URL.
+ * Invalid values break Next metadata and can 500 the document.
+ */
+function resolveProductCanonical(rawCanonical, slugSegment) {
+  const origin = siteOrigin();
+  const slug = String(slugSegment || "")
+    .trim()
+    .replace(/^\/+|\/+$/g, "");
+  if (!slug) return undefined;
+
+  const defaultProductHref = `${origin}/product/${slug}/`;
+
+  if (rawCanonical == null) return defaultProductHref;
+  const t = String(rawCanonical).trim();
+  if (!t) return defaultProductHref;
+
+  try {
+    if (/^https?:\/\//i.test(t)) {
+      return new URL(t).href;
+    }
+    let path = t.startsWith("/") ? t : `/${t}`;
+    if (!path.toLowerCase().includes("/product/")) {
+      const inner = path.replace(/^\/+|\/+$/g, "");
+      const slugComparable = slug.replace(/\/$/, "");
+      if (inner === slugComparable || inner.startsWith(`${slugComparable}/`)) {
+        path = `/product/${slugComparable}/`;
+      }
+    }
+    return new URL(path, `${origin}/`).href;
+  } catch {
+    return defaultProductHref;
+  }
+}
+
+function escapeJsonForScript(html) {
+  return html.replace(/</g, "\\u003c");
+}
+
 /**
  * CMS `product/s/details` matches on slug as stored (usually with trailing slash).
  * App route `[slug]` omits the slash; pathname-based client fetches include it.
@@ -76,43 +127,46 @@ async function getProductData(slug) {
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
-  const { slug } = await params;
-  const resolvedSlug = slug || "";
-  const data = await getProductData(resolvedSlug);
-  const seo = data?.seoMetadata;
-  const product = data?.product;
+  try {
+    const { slug } = await params;
+    const resolvedSlug = slug || "";
+    const data = await getProductData(resolvedSlug);
+    const seo = data?.seoMetadata;
+    const product = data?.product;
 
-  const metaDescription =
-    (seo?.meta_description && String(seo.meta_description).trim()) ||
-    stripHtmlToText(product?.description) ||
-    (product?.name ? `Shop ${product.name} at Disposable Bazaar.` : "");
+    const metaDescription =
+      (seo?.meta_description && String(seo.meta_description).trim()) ||
+      stripHtmlToText(product?.description) ||
+      (product?.name ? `Shop ${product.name} at Disposable Bazaar.` : "");
 
-  const canonical =
-    (seo?.canonical_url && String(seo.canonical_url).trim()) || undefined;
+    const canonicalHref = resolveProductCanonical(seo?.canonical_url, resolvedSlug);
 
-  return {
-    title: seo?.meta_title || product?.name || "Product - Disposable Bazar",
-    description: metaDescription,
-    ...(seo?.focus_keyword
-      ? { keywords: String(seo.focus_keyword).trim() }
-      : {}),
-    alternates: canonical ? { canonical } : undefined,
-    openGraph: {
-      title: product?.name || seo?.meta_title || "Product - Disposable Bazar",
-      description:
-        metaDescription ||
-        stripHtmlToText(product?.description) ||
-        undefined,
-      images: product?.product_image?.[0]?.image
-        ? [`https://ecommerce-inventory.thegallerygen.com/${product.product_image[0].image.replace(/^\/+/, "")}`]
-        : [],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
-    },
-  };
+    return {
+      title: seo?.meta_title || product?.name || "Product - Disposable Bazar",
+      description: metaDescription,
+      ...(seo?.focus_keyword
+        ? { keywords: String(seo.focus_keyword).trim() }
+        : {}),
+      alternates: canonicalHref ? { canonical: canonicalHref } : undefined,
+      openGraph: {
+        title: product?.name || seo?.meta_title || "Product - Disposable Bazar",
+        description:
+          metaDescription ||
+          stripHtmlToText(product?.description) ||
+          undefined,
+        images: product?.product_image?.[0]?.image
+          ? [`https://ecommerce-inventory.thegallerygen.com/${product.product_image[0].image.replace(/^\/+/, "")}`]
+          : [],
+      },
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: { index: true, follow: true },
+      },
+    };
+  } catch {
+    return { title: "Product - Disposable Bazar" };
+  }
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -136,7 +190,7 @@ export default async function Page({ params }) {
       {schema && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: schema }}
+          dangerouslySetInnerHTML={{ __html: escapeJsonForScript(schema) }}
         />
       )}
       <ShopDetails initialData={clientData} />

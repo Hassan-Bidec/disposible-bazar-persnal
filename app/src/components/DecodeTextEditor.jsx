@@ -6,15 +6,14 @@ import parse from "html-react-parser";
 import DOMPurify from "isomorphic-dompurify";
 import Image from "next/image";
 
-/** Avoid Chrome lazy-load warnings: lazy <img> should have dimensions. */
-function patchLazyImgDimensions(html) {
+/** Chrome warns when <img loading="lazy"> (or implicitly lazy images) omit width/height. */
+function patchImgDimensions(html) {
   if (!html || typeof html !== "string") return html;
   return html.replace(/<img\b([^>]*)>/gi, (full, attrs) => {
     const a = String(attrs || "").trim();
     const hasW = /\bwidth\s*=/i.test(a);
     const hasH = /\bheight\s*=/i.test(a);
-    const isLazy = /loading\s*=\s*["']lazy["']/i.test(a);
-    if (isLazy && (!hasW || !hasH)) {
+    if (!hasW || !hasH) {
       const extra = [!hasW ? 'width="640"' : "", !hasH ? 'height="480"' : ""]
         .filter(Boolean)
         .join(" ");
@@ -33,10 +32,10 @@ const DecodeTextEditor = ({ body }) => {
   let cleanHtml;
   try {
     cleanHtml = sanitizeFn(body);
-    cleanHtml = patchLazyImgDimensions(cleanHtml);
+    cleanHtml = patchImgDimensions(cleanHtml);
   } catch (err) {
     console.error("Sanitize failed, using raw body:", err);
-    cleanHtml = patchLazyImgDimensions(body);
+    cleanHtml = patchImgDimensions(body);
   }
 
   // const options = {
@@ -91,7 +90,7 @@ const DecodeTextEditor = ({ body }) => {
     return <div className="mb-4 font-poppins">{parse(cleanHtml, options)}</div>;
   } catch (err) {
     console.error("HTML parse error:", err);
-    const fallbackHtml = patchLazyImgDimensions(cleanHtml);
+    const fallbackHtml = patchImgDimensions(cleanHtml);
     return (
       <div className="mb-4 font-poppins" dangerouslySetInnerHTML={{ __html: fallbackHtml }} />
     );
