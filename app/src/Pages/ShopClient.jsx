@@ -244,7 +244,7 @@ export default function ShopClient({ initialProducts = [], initialCategories = [
                   .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                   .map((product) => (
                     <div key={product.id} className="flex justify-center">
-                      <div className="w-full xl:p-4 p-2 border border-[#1E7773] bg-gradient-to-l from-[#403E4A] to-[#32303E] rounded-2xl group flex flex-col">
+                      <div className="w-full xl:p-4 p-2 border border-[#1E7773] bg-gradient-to-l from-[#403E4A] to-[#32303E] rounded-2xl group">
                         <Link href={product.is_customizeable ? `/customization/${product.slug}` : `/product/${product.slug}`}>
                           <div className="relative p-5 flex justify-center items-center">
                             <Image
@@ -265,27 +265,25 @@ export default function ShopClient({ initialProducts = [], initialCategories = [
                             />
                           </div>
                         </Link>
-                        <div className="flex flex-col flex-1">
-                          <h4 className="font-semibold xl:text-lg line-clamp-2 min-h-[3rem]">{product.name}</h4>
-                          <p className="text-md py-3 font-semibold">
-                            {product.product_variants?.length > 0 ? (
-                              <>Rs {product.product_variants[0].price} - Rs {product.product_variants[product.product_variants.length - 1].price}</>
-                            ) : <span>No variants</span>}
-                          </p>
-                          <div className="flex xl:flex-row lg:flex-col justify-center xl:gap-4 gap-1 mt-auto">
-                            <button
-                              className="p-2 bg-[#1E7773] w-full text-[13px] cursor-pointer font-bazaar rounded-lg"
-                              onClick={() => handleAddCartClick(product)}
-                            >
-                              ADD TO CART
-                            </button>
-                            <Link
-                              className="p-2 border border-[#1E7773] text-center w-full font-bazaar rounded-lg"
-                              href={product.is_customizeable ? `/customization/${product.slug}` : `/product/${product.slug}`}
-                            >
-                              BUY NOW
-                            </Link>
-                          </div>
+                        <h4 className="font-semibold xl:text-lg">{product.name}</h4>
+                        <p className="text-md py-3 font-semibold">
+                          {product.product_variants?.length > 0 ? (
+                            <>Rs {product.product_variants[0].price} - Rs {product.product_variants[product.product_variants.length - 1].price}</>
+                          ) : <span>No variants</span>}
+                        </p>
+                        <div className="flex xl:flex-row lg:flex-col justify-center xl:gap-4 gap-1">
+                          <button
+                            className="p-2 bg-[#1E7773] w-full text-[13px] cursor-pointer font-bazaar rounded-lg"
+                            onClick={() => handleAddCartClick(product)}
+                          >
+                            ADD TO CART
+                          </button>
+                          <Link
+                            className="p-2 border border-[#1E7773] text-center w-full font-bazaar rounded-lg"
+                            href={product.is_customizeable ? `/customization/${product.slug}` : `/product/${product.slug}`}
+                          >
+                            BUY NOW
+                          </Link>
                         </div>
                       </div>
                     </div>

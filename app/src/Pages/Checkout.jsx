@@ -584,7 +584,7 @@ formData.forEach((value, key) => {
            <div className="border-b border-gray-300 py-3">
     <p className="text-xs mb-2">Delivery Location</p>
 
-    <div className="h-72 w-full rounded-lg overflow-hidden relative z-0">
+    <div className="h-72 w-full rounded-lg overflow-hidden">
         <MapContainer 
             center={[24.8607, 67.0011]} 
             zoom={13} 
