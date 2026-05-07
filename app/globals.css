@@ -5,6 +5,9 @@
     font-display: swap;
 }
 
+body {
+  background: red !important;
+}
 
 .font-bazaar {
     font-family: 'Lalezar';
