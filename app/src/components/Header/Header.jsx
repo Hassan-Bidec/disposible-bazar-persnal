@@ -658,6 +658,52 @@ useEffect(() => {
                     </button>
                 </form>
 
+                {/* Mobile Category Dropdown */}
+                <div className="relative w-full">
+                    <button
+                        onClick={() => setIsDropdown(!isDropdown)}
+                        className="w-full flex justify-between items-center bg-white text-black rounded-lg p-2 px-4"
+                    >
+                        <span>{category === "null" || !category ? "Select a Category" : category?.name}</span>
+                        <PiCaretDownThin size={20} className={`transition-transform duration-300 ${isDropdown ? "rotate-180" : ""}`} />
+                    </button>
+                    {isDropdown && (
+                        <div className="absolute z-50 w-full rounded-lg top-12 left-0 overflow-y-auto max-h-56 bg-white border border-gray-200 shadow-lg">
+                            {Array.isArray(categories) && categories.map((cat) => (
+                                <div key={cat.id}>
+                                    <div
+                                        className="text-black p-2 px-4 cursor-pointer hover:bg-gray-100 flex justify-between items-center"
+                                        onClick={() => { handleCategoryLink(cat); setIsDropdown(false); setMobMenu(false); }}
+                                    >
+                                        <span className="text-sm">{cat.name}</span>
+                                        {cat.subCategories?.length > 0 && (
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); toggleSubcategories(cat.id); }}
+                                                className="text-gray-500 text-2xl hover:text-black"
+                                            >
+                                                {expandedCategories.includes(cat.id) ? "−" : "+"}
+                                            </button>
+                                        )}
+                                    </div>
+                                    {expandedCategories.includes(cat.id) && (
+                                        <div className="pl-6">
+                                            {cat.subCategories.map((subCat) => (
+                                                <div
+                                                    key={subCat.id}
+                                                    className="text-zinc-900 p-2 px-4 cursor-pointer hover:bg-gray-200 text-xs"
+                                                    onClick={() => { handleCategoryLink(subCat, cat.slug); setIsDropdown(false); setMobMenu(false); }}
+                                                >
+                                                    {subCat.name}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
                 <ul className="flex flex-row items-center justify-center gap-5 text-sm cursor-pointer">
                     <li>
                         {user && (

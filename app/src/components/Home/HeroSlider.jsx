@@ -117,14 +117,13 @@ function HeroSlider() {
 
     <div
       key={index}
-      className={` 2xl-w[2300px] absolute bgcontain 3xl:h-[900px] 4xl:h-[1200px]  pt-16 lg: bg-cover lg:bg-right bg-center top-0 left-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
+      className={`absolute top-0 left-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
         index === currentSlide ? "opacity-100 z-20" : "opacity-0 z-10"
       }`}
       style={{
-       
         backgroundImage: `url('${Image_Url}${slide.img}')`,
-        backgroundPosition: "right top 22px",
-        backgroundSize: "contain",
+        backgroundPosition: "center",
+        backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
       }}
     ></div>
@@ -134,7 +133,7 @@ function HeroSlider() {
   ))}
 
   {/* Overlay text (stays on top) */}
-  <div className="absolute inset-0 flex flex-col justify-center items-center lg:items-start z-30 lg:w-[800px] p-6 md:p-12 lg:p-24 text-white">
+  <div className="absolute inset-0 flex flex-col justify-center items-center lg:items-start z-30 lg:w-[800px] p-6 md:p-12 lg:p-24 text-white bg-black/30 lg:bg-transparent">
     <h3 className="text-3xl md:text-5xl lg:text-6xl font-bazaar font-bold mb-6 text-center lg:text-left">
       {slides[currentSlide].heading1Part1} <br /> {slides[currentSlide].heading1Part2}
     </h3>

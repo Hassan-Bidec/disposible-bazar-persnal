@@ -29,25 +29,16 @@ function CustomHeroSection({
 
     return (
         <div className={`w-full flex items-center text-black relative 
-    h-[400px] md:h-[700px] overflow-hidden 
+    h-[250px] md:h-[500px] overflow-hidden 
     ${custom == "customization" ? "2xl:h-[600px]" : "2xl:h-[500px]"}`}
 
             style={{
                 backgroundImage: `url('${backgroundImageUrl}')`,
                 backgroundRepeat: "no-repeat",
-                backgroundSize: "contain",
-                marginTop:"40px",
-                backgroundPosition: "center",
+                backgroundSize: "cover",
+                marginTop:"140px",
+                backgroundPosition: "top center",
             }}
-        // style={{
-        //  background: `url('${backgroundImageUrl}')`,
-        //   backgroundSize: 'auto',
-        //   backgroundRepeat: 'no-repeat',
-        //   // backgroundRepeat: 'no-repeat',
-        //   // backgroundPosition: 'center',
-        //   // width: '100%',
-        //   // height: '29rem',
-        // }}
         >
             {/* Left text content */}
             {hideContent ? null : (
