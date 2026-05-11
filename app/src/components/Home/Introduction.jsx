@@ -43,9 +43,9 @@ function Introduction() {
     ]
 
     return (
-        <div className="overflow-hidden relative  text-white md:pt-20 p-5">
+        <div className="overflow-hidden relative text-white md:pt-8 p-5">
             <div data-aos='fade-up' data-aos-duration='3000' className="flex flex-col justify-center items-center sm:gap-5 gap-2 ">
-                <h3 className='md:pt-20 pt-0 md:text-6xl text-4xl font-bazaar md:w-3/2 w-11/12 text-center'>Welcome to Disposable Bazaar <br /> Buy Disposable Items Online karachi
+                <h3 className='md:pt-4 pt-0 md:text-6xl text-4xl font-bazaar md:w-3/2 w-11/12 text-center'>Welcome to Disposable Bazaar <br /> Buy Disposable Items Online karachi
                 </h3>
 
             
