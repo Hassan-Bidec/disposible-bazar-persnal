@@ -8,7 +8,7 @@ import Image from 'next/image';
 function Deals() {
     return (
         <div className="flex justify-center md:py-20">
-            <div className="flex md:items-start items-center  md:py-24 md:w-[85%] w-[95%] md:h-[75vh] h-[250px]  justify-end relative rounded-2xl" style={{
+            <div className="flex md:items-start items-center md:py-24 md:w-[85%] w-[95%] md:h-[75vh] md:max-h-[600px] h-[250px] justify-end relative rounded-2xl" style={{
                 backgroundImage: `url('${Image_Url}HomeAssets/Deals/Banner.png')`,
                 backgroundSize: 'cover',        // Cover the entire element
                 backgroundRepeat: 'no-repeat',  // Prevent repeating the image
