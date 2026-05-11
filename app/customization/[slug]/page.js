@@ -1,6 +1,8 @@
 import CustomizationSlugClient from "./CustomizationSlugClient";
 import { serializeLdJson } from "../../lib/seo/pageDetail";
 
+export const revalidate = 600;
+
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
 /** @param {string} slug */
