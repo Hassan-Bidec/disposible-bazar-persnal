@@ -33,7 +33,7 @@ function Quality() {
   return (
     <div className="pt-10 relative">
       <div
-        className="flex items-center md:h-screen"
+        className="flex items-center min-h-[400px] md:min-h-[500px]"
         style={{
           backgroundImage: visibleItems ? `url('${Image_Url}${visibleItems}')` : 'none',
           backgroundSize: "cover",
@@ -44,7 +44,7 @@ function Quality() {
       >
         <div
           data-aos="fade-right"
-          className="flex flex-col text-white md:pl-20 pl-5 gap-3 md:py-60 pt-16 pb-8 md:w-1/2 w-[70%]"
+          className="flex flex-col text-white md:pl-20 pl-5 gap-3 md:py-20 pt-16 pb-8 md:w-1/2 w-[70%]"
         >
           <h3 className="md:text-6xl text-4xl font-bazaar">
             Sip Fresh, Stay Stylish!
