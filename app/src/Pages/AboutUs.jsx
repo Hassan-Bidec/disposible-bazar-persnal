@@ -40,11 +40,11 @@ useEffect(() => {
                     <p className='md:text-5xl text-4xl font-bazaar text-white'>Redefining Disposable Excellence</p>
                     <p className='text-lg text-white'><Link href='/'> Home </Link> / About Us</p>
                 </div>
-                <Image data-aos='fade-left' src={`${Image_Url}CustomHeroAssets/rightCup.svg`} className='absolute hidden md:block -bottom-60 right-0 w-35' alt="" width={500} height={500} />
-                <Image data-aos='fade-down' src={`${Image_Url}CustomHeroAssets/glass.svg`} className='absolute top-6 md:right-36 right-0 w-35' alt="" width={500} height={500} />
-                <Image data-aos='fade-left' src={`${Image_Url}CustomHeroAssets/shopper.svg`} className='absolute md:bottom-16 bottom-8 right-0 w-35' alt="" width={500} height={500} />
-                <Image data-aos='fade-up' src={`${Image_Url}CustomHeroAssets/basket.svg`} className='absolute hidden md:block bottom-16 right-[30rem] w-35' alt="" width={500} height={500} />
-                <Image data-aos='fade-right' src={`${Image_Url}CustomHeroAssets/shoper.svg`} className='absolute hidden md:block -bottom-44 left-24 w-25' alt="" width={500} height={500} />
+                <Image data-aos='fade-left' src={`${Image_Url}CustomHeroAssets/rightCup.svg`} className='absolute hidden md:block -bottom-60 right-0 w-35' alt="" width={200} height={200} />
+                <Image data-aos='fade-down' src={`${Image_Url}CustomHeroAssets/glass.svg`} className='absolute top-6 md:right-36 right-0 w-35' alt="" width={200} height={200} />
+                <Image data-aos='fade-left' src={`${Image_Url}CustomHeroAssets/shopper.svg`} className='absolute md:bottom-16 bottom-8 right-0 w-35' alt="" width={200} height={200} />
+                <Image data-aos='fade-up' src={`${Image_Url}CustomHeroAssets/basket.svg`} className='absolute hidden md:block bottom-16 right-[30rem] w-35' alt="" width={200} height={200} />
+                <Image data-aos='fade-right' src={`${Image_Url}CustomHeroAssets/shoper.svg`} className='absolute hidden md:block -bottom-44 left-24 w-25' alt="" width={200} height={200} />
             </div>
             <div className='w-full mt-20 text-white'>
                 {/* About Section */}
