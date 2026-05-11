@@ -100,10 +100,10 @@ useEffect(() => {
                     backgroundSize: 'cover',
                     backgroundRepeat: 'no-repeat',
                 }}>
-                    <Image data-aos='fade-right' src={`${Image_Url}AboutUs/plate.svg`} className='absolute hidden md:block top-0 left-0 w-18' alt="" width={500} height={500} />
-                    <Image data-aos='fade-left' src={`${Image_Url}AboutUs/cup.svg`} className='absolute hidden md:block top-0 right-4 w-18' alt="" width={500} height={500} />
-                    <Image data-aos='fade-left' src={`${Image_Url}AboutUs/platter1.svg`} className='absolute hidden md:block bottom-0 right-0 w-18' alt="" width={500} height={500} />
-                    <Image data-aos='fade-right' src={`${Image_Url}AboutUs/platter2.svg`} className='absolute hidden md:block -bottom-80 left-0 w-18' alt="" width={500} height={500} />
+                    <Image data-aos='fade-right' src={`${Image_Url}AboutUs/plate.svg`} className='absolute hidden md:block top-0 left-0 w-18' alt="" width={150} height={150} />
+                    <Image data-aos='fade-left' src={`${Image_Url}AboutUs/cup.svg`} className='absolute hidden md:block top-0 right-4 w-18' alt="" width={150} height={150} />
+                    <Image data-aos='fade-left' src={`${Image_Url}AboutUs/platter1.svg`} className='absolute hidden md:block bottom-0 right-0 w-18' alt="" width={150} height={500} />
+                    <Image data-aos='fade-right' src={`${Image_Url}AboutUs/platter2.svg`} className='absolute hidden md:block -bottom-80 left-0 w-18' alt="" width={150} height={500} />
                     <h2 className="text-2xl text-center my-4 text-[#1E7773] font-bazaar">Why Choose Us</h2>
                     <h3 className="text-3xl text-center md:text-6xl text-white font-bazaar">Experience the Disposable <br /> Bazaar Difference</h3>
 
