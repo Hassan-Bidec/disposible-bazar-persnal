@@ -109,7 +109,7 @@ function HeroSlider() {
   //   ))}
   // </div>
 <div
-  className="relative w-screen h-[90vh] overflow-hidden"
+  className="relative w-screen h-[500px] md:h-[600px] overflow-hidden"
 >
   {slides.map((slide, index) => (
     
