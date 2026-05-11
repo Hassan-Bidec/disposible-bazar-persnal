@@ -89,7 +89,7 @@ export default async function Page() {
         />
       )}
 
-      <div className="pt-20 md:pt-16">
+      <div className="pt-1 md:pt-4">
         <Suspense fallback={<div className="h-64 bg-[#20202c]" />}>
           <CustomHeroSection
             heading="Shop All"
