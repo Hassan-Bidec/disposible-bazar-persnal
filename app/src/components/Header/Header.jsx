@@ -454,15 +454,15 @@ useEffect(() => {
                                             }, 500);
                                         }}
                                     >
-                                        <span
-                                            onClick={() => handleCategoryLink(kraftCategory)}
+                                        <Link
+                                            href={`/product-category/${kraftCategory.slug}/`}
                                             className={`hover:text-[#1E7773] duration-300 ${pathname.includes(kraftCategory.slug)
                                                 ? "text-[#1E7773]"
                                                 : "text-black"
                                                 }`}
                                         >
                                             {kraftCategory.name}
-                                        </span>
+                                        </Link>
 
                                         <span className="text-[11px] font-semibold px-2 py-[2px] rounded bg-red-700 text-white animate-pulse">
                                             NEW
@@ -473,12 +473,13 @@ useEffect(() => {
                                         {showKraftDropdown && kraftCategory.subCategories?.length > 0 && (
                                             <ul className="absolute top-full left-0 mt-2 bg-white text-black shadow-lg rounded-md w-56 z-50">
                                                 {kraftCategory.subCategories.map((sub) => (
-                                                    <li
-                                                        key={sub.id}
-                                                        onClick={() => handleCategoryLink(sub, kraftCategory.slug)}
-                                                        className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-                                                    >
-                                                        {sub.name}
+                                                    <li key={sub.id}>
+                                                        <Link
+                                                            href={`/product-category/${kraftCategory.slug}/${sub.slug}/`}
+                                                            className="block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                                                        >
+                                                            {sub.name}
+                                                        </Link>
                                                     </li>
                                                 ))}
                                             </ul>

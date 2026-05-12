@@ -58,7 +58,8 @@ async function getPageData(slug) {
 
 // ─── 🔥 ONLY SEO IMPROVED (IMPORTANT PART) ───
 export async function generateMetadata({ params }) {
-  const slug = params?.slug || "";
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug || "";
 
   const data = await getPageData(slug);
   const seo = data?.cat?.categorySeoMetadata;
@@ -88,10 +89,16 @@ export async function generateMetadata({ params }) {
 
 // ─── PAGE (UNCHANGED) ───────────────────────
 export default async function Page({ params }) {
-  const slug = params?.slug || "";
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug || "";
   const data = await getPageData(slug);
 
-  const schema = data?.cat?.categorySeoMetadata?.schema || null;
+  // Safe schema: validate JSON before injecting
+  let schema = null;
+  try {
+    const raw = data?.cat?.categorySeoMetadata?.schema;
+    if (raw) { JSON.parse(raw); schema = raw; }
+  } catch { schema = null; }
 
   const initialData = data
     ? {
