@@ -81,7 +81,9 @@ export default async function Page() {
       </noscript>
 
       <Suspense fallback={null}>
-        <BundleShop initialBundles={bundles} />
+        <div className="pt-20 md:pt-10">
+          <BundleShop initialBundles={bundles} />
+        </div>
       </Suspense>
     </>
   );
