@@ -36,7 +36,7 @@ function CustomHeroSection({
                 backgroundImage: `url('${backgroundImageUrl}')`,
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "cover",
-                marginTop:"140px",
+                marginTop:"90px",
                 backgroundPosition: "top center",
             }}
         >

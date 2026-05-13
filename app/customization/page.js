@@ -87,7 +87,9 @@ export default async function Page() {
         />
       ) : null}
       <Suspense fallback={null}>
-        <Customization initialProducts={products} initialCategories={categories} />
+        <div className="pt-20 md:pt-10">
+          <Customization initialProducts={products} initialCategories={categories} />
+        </div>
       </Suspense>
     </>
   );
