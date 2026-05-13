@@ -28,7 +28,7 @@ function Header() {
 
     const [categories, setCategories] = useState([]);
     const kraftCategory = categories.find(
-        (cat) => cat.slug === "kraft-paper-products"
+        (cat) => cat.slug === "kraft-paper/"
     );
 
 

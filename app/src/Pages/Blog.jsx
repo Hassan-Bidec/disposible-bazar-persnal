@@ -46,14 +46,19 @@ function Blog({ initialBlogs = [], initialCategories = [] }) {
     // Fetch blogs with pagination
     const fetchData = async (page = 1, category = selectedCategory) => {
         setIsLoading(true);
-        setHasError(false); // Reset error state
+        setHasError(false);
         try {
-            const url = category ? `blogs/category_wise/${category}` : "blogs/index";
-            const response = await axios.public.get(url, {
-                params: { page, category },
-            });
+            let response;
+            if (category) {
+                response = await axios.public.get(`blogs/category_wise/${category}`, {
+                    params: { page, category },
+                });
+            } else {
+                response = await axios.public.get("blogs/index", {
+                    params: { page },
+                });
+            }
 
-            // ✅ Check if API response contains warning/error
             if (
                 response.data.status === "error" ||
                 response.data.status === "warning"
@@ -65,7 +70,8 @@ function Blog({ initialBlogs = [], initialCategories = [] }) {
             }
 
             setBlogs(response.data.data);
-            setTotalPages(response.data.pagination.last_page);
+            // category_wise API may not have pagination — handle gracefully
+            setTotalPages(response.data.pagination?.last_page || 1);
         } catch (error) {
             console.log("Error fetching blogs:", error);
             setHasError(true);
@@ -77,9 +83,9 @@ function Blog({ initialBlogs = [], initialCategories = [] }) {
     };
 
     useEffect(() => {
-        // Skip initial fetch if SSR data was provided
+        // Skip initial fetch only if SSR data provided AND no category selected AND on page 1
         if (initialBlogs.length > 0 && currentPage === 1 && !selectedCategory) return;
-        fetchData(currentPage);
+        fetchData(currentPage, selectedCategory);
     }, [selectedCategory, currentPage]);
 
     const toggleSidebar = () => {
@@ -88,7 +94,8 @@ function Blog({ initialBlogs = [], initialCategories = [] }) {
 
     const handleCategoryChange = (category) => {
         setSelectedCategory(category);
-        navigateToPage(1);
+        console.log("categoriescategories" , category)
+        setCurrentPage(1);
         setIsSidebarOpen(false);
     };
 
@@ -132,7 +139,15 @@ function Blog({ initialBlogs = [], initialCategories = [] }) {
                             blogs.map((data) => (
                                 <div className='max-w-[380px] w-[270px] md:w-[350px]' key={data.id}>
                                     <Link href={`/${data.slug}`} data-aos="fade-up" className="flex flex-col gap-2 py-4 justify-center items-start" aria-label={`Read ${data.title}`}>
-                        <Image className="rounded-xl w-[270px] h-[270px] md:w-[350px] md:h-[350px] object-cover" src={`${Assets_Url}${data.main_image}`} alt={data.title} width={500} height={500} />
+                        <Image className="rounded-xl w-[270px] h-[270px] md:w-[350px] md:h-[350px] object-cover" 
+                                            src={
+                                                data.main_image 
+                                                    ? `${Assets_Url}${data.main_image}` 
+                                                    : data.image 
+                                                    ? `${Assets_Url}${data.image}` 
+                                                    : `${Assets_Url}/storage/blog_images/default.png`
+                                            } 
+                                            alt={data.title} width={500} height={500} />
                                         <p className="md:text-md text-[12px] md:text-sm text-start text-[#898989]">{data.category} | {new Date(data.date).toDateString()}</p>
                                         <p className="md:text-xl text-xs text-start font-semibold">{data.title}</p>
                                     </Link>
