@@ -113,7 +113,7 @@ async function getProductData(slug) {
     const res = await fetch(`${API_BASE}/product/s/details`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug: key }),
+        body: JSON.stringify({ slug: key }),
       next: { revalidate: 600 },
     });
     if (!res.ok) return null;
@@ -133,7 +133,7 @@ export async function generateMetadata({ params }) {
     const data = await getProductData(resolvedSlug);
     const seo = data?.seoMetadata;
     const product = data?.product;
-    // console.log("METADATA SLUG:", seo);
+
     const metaDescription =
       (seo?.meta_description && String(seo.meta_description).trim()) ||
       stripHtmlToText(product?.description) ||
@@ -187,12 +187,12 @@ export default async function Page({ params }) {
 
   return (
     <>
-      {/* {schema && (
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: escapeJsonForScript(schema) }}
-            />
-          )} */}
+      {schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: escapeJsonForScript(schema) }}
+        />
+      )}
       <ShopDetails initialData={clientData} />
     </>
   );
