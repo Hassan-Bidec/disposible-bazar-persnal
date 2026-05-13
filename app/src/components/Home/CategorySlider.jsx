@@ -59,28 +59,26 @@ function CategorySlider({ products }) {
                                     <div className=" flex justify-center items-center w-[150px] h-[150px] md:w-[250px] md:h-[250px]">
                                         <Image
                                             className="w-full h-full block group-hover:hidden rounded-xl object-cover"
-                                            src={`${Assets_Url}${data.product_image[0]?.image}`}
+                                            src={data.product_image[0]?.image ? `${Assets_Url}${data.product_image[0].image}` : Image_Not_Found}
                                             alt={data.name}
                                             style={{ transition: 'opacity 0.5s ease 0.3s' }}
                                             loading='lazy'
-                                            onError={(e) => {
-                                                e.currentTarget.src = Image_Not_Found; // Path to your dummy image
-                                            }}
+                                            onError={(e) => { e.currentTarget.src = Image_Not_Found; }}
                                             width={500}
                                             height={500}
                                         />
-                                        <Image
-                                            className="w-full h-full hidden group-hover:block rounded-xl object-cover"
-                                            src={`${Assets_Url}${data.product_image[1]?.image}`}  // Replace with hover image if available
-                                            alt={data.name}
-                                            style={{ transition: 'opacity 0.5s ease 0.3s' }}
-                                            loading='lazy'
-                                            onError={(e) => {
-                                                e.currentTarget.src = Image_Not_Found; // Path to your dummy image
-                                            }}
-                                            width={500}
-                                            height={500}
-                                        />
+                                        {data.product_image[1]?.image && (
+                                            <Image
+                                                className="w-full h-full hidden group-hover:block rounded-xl object-cover"
+                                                src={`${Assets_Url}${data.product_image[1].image}`}
+                                                alt={data.name}
+                                                style={{ transition: 'opacity 0.5s ease 0.3s' }}
+                                                loading='lazy'
+                                                onError={(e) => { e.currentTarget.src = Image_Not_Found; }}
+                                                width={500}
+                                                height={500}
+                                            />
+                                        )}
                                     </div>
                                 </Link>
                                 <h3 className="font-bold w-full text-center text-sm md:text-xl mt-3">{data.name}</h3>

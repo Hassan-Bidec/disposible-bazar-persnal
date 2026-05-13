@@ -353,23 +353,25 @@ useEffect(() => {
                                 </div>
 
                                 {isDropdown && (
-                                    <div className="absolute z-10 sm:col-span-6 col-span-full w-full  rounded-lg top-10 left-0 overflow-y-auto h-56 bg-white border border-gray-200">
+                                    <div className="absolute z-10 sm:col-span-6 col-span-full w-full rounded-lg top-10 left-0 overflow-y-auto h-56 bg-white border border-gray-200">
                                         {Array.isArray(categories) &&
-
                                             categories.map((cat) => (
                                                 <div key={cat.id}>
-                                                    <div
-                                                        className="text-black p-2 px-4 cursor-pointer hover:bg-gray-100 flex justify-between items-center"
-                                                        onClick={() => handleCategoryLink(cat)}
-                                                    >
-                                                        <span className="text-sm">{cat.name}</span>
+                                                    <div className="flex justify-between items-center hover:bg-gray-100">
+                                                        <Link
+                                                            href={`/product-category/${cat.slug}/`}
+                                                            className="text-black text-sm p-2 px-4 flex-1 cursor-pointer"
+                                                            onClick={() => setCategory(cat)}
+                                                        >
+                                                            {cat.name}
+                                                        </Link>
                                                         {cat.subCategories?.length > 0 && (
                                                             <button
                                                                 onClick={(e) => {
-                                                                    e.stopPropagation(); // Prevent parent click
+                                                                    e.stopPropagation();
                                                                     toggleSubcategories(cat.id);
                                                                 }}
-                                                                className="text-gray-500 text-3xl hover:text-black"
+                                                                className="text-gray-500 text-3xl hover:text-black px-3"
                                                             >
                                                                 {expandedCategories.includes(cat.id) ? "-" : "+"}
                                                             </button>
@@ -378,26 +380,19 @@ useEffect(() => {
                                                     {expandedCategories.includes(cat.id) && (
                                                         <div className="pl-8">
                                                             {cat.subCategories.map((subCat) => (
-                                                                <div
+                                                                <Link
                                                                     key={subCat.id}
-                                                                    className="text-zinc-900 p-2 px-4 cursor-pointer hover:bg-gray-200 text-xs"
-                                                                    onClick={() => handleCategoryLink(subCat, cat.slug)}
+                                                                    href={`/product-category/${cat.slug}/${subCat.slug}/`}
+                                                                    className="block text-zinc-900 p-2 px-4 hover:bg-gray-200 text-xs cursor-pointer"
+                                                                    onClick={() => setCategory(subCat)}
                                                                 >
                                                                     {subCat.name}
-                                                                </div>
+                                                                </Link>
                                                             ))}
                                                         </div>
                                                     )}
                                                 </div>
-
                                             ))}
-                                        {/* {subCategories.length === 0 ? (
-                                            <div className="">{subCategories.map((data, index) => (
-                                                <div className="">
-                                                    {data}
-                                                </div>
-                                            ))}</div>
-                                        ) : null} */}
                                     </div>
                                 )}
                             </div>
