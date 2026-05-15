@@ -33,7 +33,7 @@ export async function generateMetadata() {
     title: meta?.meta_title || "Bundle Shop - Disposable Bazar",
     description: meta?.meta_description || "Special bundles and deals on disposable products.",
     ...(meta?.focus_keyword ? { keywords: meta.focus_keyword } : {}),
-    alternates: { canonical: meta?.canonical_url || "" },
+    alternates: meta?.canonical_url ? { canonical: meta.canonical_url } : undefined,
     robots: {
       index: meta?.robots_index !== "noindex",
       follow: meta?.robots_follow !== "nofollow",

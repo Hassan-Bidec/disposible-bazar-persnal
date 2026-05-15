@@ -59,7 +59,7 @@ export async function generateMetadata() {
       pageData?.meta_description ||
       "Browse our full collection of disposable products.",
     ...(pageData?.focus_keyword ? { keywords: pageData.focus_keyword } : {}),
-    alternates: { canonical: pageData?.canonical_url || "" },
+    alternates: pageData?.canonical_url ? { canonical: pageData.canonical_url } : undefined,
     robots: {
       index: pageData?.robots_index !== "noindex",
       follow: pageData?.robots_follow !== "nofollow",

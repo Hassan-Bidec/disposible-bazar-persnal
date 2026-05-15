@@ -39,9 +39,7 @@ export async function generateMetadata() {
     title: meta?.meta_title || "Blog - Disposable Bazar",
     description: meta?.meta_description || "Read our latest blog posts.",
     ...(meta?.focus_keyword ? { keywords: meta.focus_keyword } : {}),
-    alternates: {
-      canonical: meta?.canonical_url || "",
-    },
+    ...(meta?.canonical_url ? { alternates: { canonical: meta.canonical_url } } : {}),
     robots: {
       index: meta?.robots_index !== "noindex",
       follow: meta?.robots_follow !== "nofollow",

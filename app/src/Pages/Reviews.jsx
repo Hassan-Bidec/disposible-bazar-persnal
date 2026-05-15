@@ -155,7 +155,7 @@ function ReviewStatement({ filteredReviews, setFilteredReviews }) {
                     <div className="flex justify-start items-center">
                         <Image
                             className='w-16 h-16 rounded-full'
-                            src={review.user ? `${Profile_Assets_Url}/${review.user.photo}` : `https://static.vecteezy.com/system/resources/previews/018/765/757/original/user-profile-icon-in-flat-style-member-avatar-illustration-on-isolated-background-human-permission-sign-business-concept-vector.jpg`} alt={`${review.name}`}
+                            src={review.user?.photo ? `${Profile_Assets_Url}/${review.user.photo}` : `https://static.vecteezy.com/system/resources/previews/018/765/757/original/user-profile-icon-in-flat-style-member-avatar-illustration-on-isolated-background-human-permission-sign-business-concept-vector.jpg`} alt={`${review.name}`}
                             width={500} height={500} />
                         <div className="ml-4 text-white">
                             <h2 className="text-2xl">{review.name}</h2>

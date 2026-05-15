@@ -18,9 +18,9 @@ export async function generateMetadata() {
         ? { keywords: data.data.focus_keyword }
         : {}),
 
-      alternates: {
-        canonical: data?.data?.canonical_url || "",
-      },
+      ...(data?.data?.canonical_url
+        ? { alternates: { canonical: data.data.canonical_url } }
+        : {}),
 
       robots: {
         index: data?.data?.robots_index !== "noindex",
