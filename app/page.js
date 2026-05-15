@@ -67,9 +67,7 @@ async function getPlasticContainersProducts() {
     );
     if (!res.ok) return [];
     const json = await res.json();
-    const all = json?.data || [];
-    const filtered = all.filter((p) => p.category_id === 28);
-    return filtered.length > 0 ? filtered : all;
+    return json?.data || [];
   } catch {
     return [];
   }

@@ -27,15 +27,32 @@ const DecodeTextEditor = ({ body }) => {
   // if no body, render nothing
   if (!body) return null;
 
+  // Decode HTML entities first (API sometimes returns &lt;p&gt; instead of <p>)
+  let decodedBody = body;
+  if (typeof body === "string" && body.includes("&lt;")) {
+    try {
+      const txt = document.createElement("textarea");
+      txt.innerHTML = body;
+      decodedBody = txt.value;
+    } catch {
+      decodedBody = body
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&amp;/g, "&")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
+    }
+  }
+
   // prefer sanitize if available, otherwise passthrough
   const sanitizeFn = typeof DOMPurify?.sanitize === "function" ? DOMPurify.sanitize : (s) => s;
   let cleanHtml;
   try {
-    cleanHtml = sanitizeFn(body);
+    cleanHtml = sanitizeFn(decodedBody);
     cleanHtml = patchImgDimensions(cleanHtml);
   } catch (err) {
     console.error("Sanitize failed, using raw body:", err);
-    cleanHtml = patchImgDimensions(body);
+    cleanHtml = patchImgDimensions(decodedBody);
   }
 
   // const options = {

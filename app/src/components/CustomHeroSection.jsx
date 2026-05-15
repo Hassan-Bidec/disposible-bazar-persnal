@@ -30,15 +30,16 @@ function CustomHeroSection({
 
     return (
         <div className={`w-full flex items-center text-black relative 
-    h-[250px] md:h-[500px] overflow-hidden 
-    ${custom == "customization" ? "2xl:h-[600px]" : "2xl:h-[500px]"}`}
+    ${custom === "shop" || custom === "customization" ? "h-auto" : "h-[250px] md:h-[500px] overflow-hidden"}
+    ${custom === "customization" || custom === "shop" ? "" : "2xl:h-[500px]"}`}
 
             style={{
                 backgroundImage: `url('${backgroundImageUrl}')`,
                 backgroundRepeat: "no-repeat",
-                backgroundSize: "cover",
+                backgroundSize: custom === "shop" || custom === "customization" ? "100% auto" : "cover",
                 marginTop: "90px",
-                backgroundPosition: "top center",
+                backgroundPosition: "center",
+                ...(custom === "shop" || custom === "customization" ? { aspectRatio: "3 / 1" } : {}),
             }}
         >
             {/* Dark overlay for text readability */}

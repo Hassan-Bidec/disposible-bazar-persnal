@@ -64,7 +64,7 @@ function CircleSlider() {
                 backgroundSize: 'cover', // or 'cover' depending on your design
                 backgroundRepeat: 'no-repeat',
             }}>
-                <Image style={{ transform: `rotate(${rotation}deg)` }} className='md:w-60 w-32 ' src={`${Image_Url}CircleSliderAssets/circleLogo.svg`} alt="" width={240} height={240} />
+                <Image style={{ transform: `rotate(${rotation}deg)` }} className='md:w-60 w-32 ' src={`/DBloader.svg`} alt="" width={240} height={240} />
                 {/* <img style={{
                     transform: `translateX(${translateLeft}px)`,
                     transition: 'transform 0.2s ease-out',

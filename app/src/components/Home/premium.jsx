@@ -63,9 +63,7 @@ function Slider({ initialProducts = [] }) {
                 const response = await axios.public.get('home/category/28/product');
                 const data = response?.data?.data;
                 if (!cancelled && Array.isArray(data)) {
-                    // Filter strictly to Plastic Containers (category_id: 28)
-                    const filtered = data.filter((p) => p.category_id === 28);
-                    setProducts(filtered.length > 0 ? filtered : data);
+                    setProducts(data);
                 }
             } catch (error) {
                 console.log(error);
