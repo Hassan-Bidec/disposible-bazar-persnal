@@ -1,4 +1,6 @@
 // 🟩 Dynamic Metadata Function for Customization Page
+import { buildCanonical } from "../lib/seo/pageDetail";
+
 export async function generateMetadata() {
   try {
     const res = await fetch(
@@ -6,27 +8,23 @@ export async function generateMetadata() {
       { next: { revalidate: 600 } }
     );
 
-    if (!res.ok) {
-      throw new Error(`API returned status ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`API returned status ${res.status}`);
 
     const data = await res.json();
+    const cmsCanonical = data?.data?.canonical_url;
+    const canonical =
+      (cmsCanonical && cmsCanonical.trim())
+        ? cmsCanonical
+        : buildCanonical("/customization/");
 
     return {
       title: data?.data?.meta_title || "Customization - Disposable Bazar",
       description: data?.data?.meta_description || "Customization services for all your disposal needs.",
-      ...(data?.data?.focus_keyword
-        ? { keywords: data.data.focus_keyword }
-        : {}),
-
-      ...(data?.data?.canonical_url
-        ? { alternates: { canonical: data.data.canonical_url } }
-        : {}),
-
+      ...(data?.data?.focus_keyword ? { keywords: data.data.focus_keyword } : {}),
+      ...(canonical ? { alternates: { canonical } } : {}),
       robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
-
         googleBot: {
           index: data?.data?.robots_index !== "noindex",
           follow: data?.data?.robots_follow !== "nofollow",
@@ -38,10 +36,8 @@ export async function generateMetadata() {
     return {
       title: "Customization - Disposable Bazar",
       description: "Customization Services",
-      robots: {
-        index: true,
-        follow: true,
-      },
+      alternates: { canonical: buildCanonical("/customization/") ?? undefined },
+      robots: { index: true, follow: true },
     };
   }
 }

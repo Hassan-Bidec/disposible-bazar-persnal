@@ -1,4 +1,6 @@
 // 🟩 Dynamic Metadata Function
+import { buildCanonical } from "./lib/seo/pageDetail";
+
 export async function generateMetadata() {
   try {
     const res = await fetch(
@@ -7,17 +9,17 @@ export async function generateMetadata() {
     );
 
     const data = await res.json();
+    const cmsCanonical = data?.data?.canonical_url;
+    const canonical =
+      (cmsCanonical && cmsCanonical.trim())
+        ? cmsCanonical
+        : buildCanonical("/");
 
     return {
-      title: data?.data?.meta_title || "Default Title",
-      
-      description: data?.data?.meta_description || "Default Description",
-      ...(data?.data?.focus_keyword
-        ? { keywords: data.data.focus_keyword }
-        : {}),
-      ...(data?.data?.canonical_url
-        ? { alternates: { canonical: data.data.canonical_url } }
-        : {}),
+      title: data?.data?.meta_title || "Disposable Bazaar",
+      description: data?.data?.meta_description || "Quality disposable products",
+      ...(data?.data?.focus_keyword ? { keywords: data.data.focus_keyword } : {}),
+      ...(canonical ? { alternates: { canonical } } : {}),
       robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
@@ -30,8 +32,9 @@ export async function generateMetadata() {
   } catch (error) {
     console.error("Metadata fetch failed:", error);
     return {
-      title: "Default Title",
-      description: "Default Description",
+      title: "Disposable Bazaar",
+      description: "Quality disposable products",
+      alternates: { canonical: buildCanonical("/") ?? undefined },
       robots: { index: true, follow: true },
     };
   }

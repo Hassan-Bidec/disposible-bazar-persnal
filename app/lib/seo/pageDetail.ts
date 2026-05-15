@@ -79,19 +79,41 @@ function validateCanonical(raw: string | undefined | null): string | null {
   }
 }
 
+/**
+ * Build a canonical URL from the current page path when CMS doesn't provide one.
+ * Pass the pathname like "/product/my-slug/" or "/about-us/".
+ * Returns a full https URL using SITE_ORIGIN, or null if origin is unknown.
+ */
+export function buildCanonical(pathname: string): string | null {
+  if (!SITE_ORIGIN) return null;
+  try {
+    const origin = new URL(SITE_ORIGIN).origin;
+    // Ensure pathname starts with / and ends with /
+    const clean = "/" + pathname.replace(/^\/+|\/+$/g, "") + "/";
+    return `${origin}${clean}`;
+  } catch {
+    return null;
+  }
+}
+
 export function metadataFromPageDetail(
   detail: PageDetailData | null,
-  fallback: { title: string; description: string }
+  fallback: { title: string; description: string; path?: string }
 ): Metadata {
   if (!detail) {
+    const canonical = fallback.path ? buildCanonical(fallback.path) : null;
     return {
       title: fallback.title,
       description: fallback.description,
+      alternates: canonical ? { canonical } : undefined,
       robots: { index: true, follow: true },
     };
   }
 
-  const canonical = validateCanonical(detail.canonical_url);
+  // Use CMS canonical if valid, otherwise build from path
+  const canonical =
+    validateCanonical(detail.canonical_url) ??
+    (fallback.path ? buildCanonical(fallback.path) : null);
 
   const meta: Metadata = {
     title: detail.meta_title || fallback.title,

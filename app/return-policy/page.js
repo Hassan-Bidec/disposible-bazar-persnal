@@ -15,6 +15,7 @@ export async function generateMetadata() {
   return metadataFromPageDetail(detail, {
     title: "Return Policy",
     description: "Return policy - Disposable Bazaar",
+    path: "/return-policy/",
   });
 }
 

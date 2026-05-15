@@ -139,7 +139,9 @@ export async function generateMetadata({ params }) {
       stripHtmlToText(product?.description) ||
       (product?.name ? `Shop ${product.name} at Disposable Bazaar.` : "");
 
-    const canonicalHref = resolveProductCanonical(seo?.canonical_url, resolvedSlug);
+    const canonicalHref =
+      resolveProductCanonical(seo?.canonical_url, resolvedSlug) ||
+      resolveProductCanonical(null, resolvedSlug);
 
     return {
       title: seo?.meta_title || product?.name || "Product - Disposable Bazar",

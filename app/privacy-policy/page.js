@@ -15,6 +15,7 @@ export async function generateMetadata() {
   return metadataFromPageDetail(detail, {
     title: "Privacy Policy",
     description: "Privacy policy - Disposable Bazaar",
+    path: "/privacy-policy/",
   });
 }
 

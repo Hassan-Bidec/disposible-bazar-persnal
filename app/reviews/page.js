@@ -1,32 +1,30 @@
 // 🟩 Dynamic Metadata Function for Reviews Page
+import { buildCanonical } from "../lib/seo/pageDetail";
+
 export async function generateMetadata() {
   try {
     const res = await fetch(
-      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/4", // API page ID for Reviews
+      "https://ecommerce-inventory.thegallerygen.com/api/page/detail/4",
       { next: { revalidate: 3600 } }
     );
 
-    if (!res.ok) {
-      throw new Error(`API error: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
 
     const data = await res.json();
- 
+    const cmsCanonical = data?.data?.canonical_url;
+    const canonical =
+      (cmsCanonical && cmsCanonical.trim())
+        ? cmsCanonical
+        : buildCanonical("/reviews/");
+
     return {
       title: data?.data?.meta_title || "Reviews",
       description: data?.data?.meta_description || "Reviews page",
-      ...(data?.data?.focus_keyword
-        ? { keywords: data.data.focus_keyword }
-        : {}),
-
-      ...(data?.data?.canonical_url
-        ? { alternates: { canonical: data.data.canonical_url } }
-        : {}),
-
+      ...(data?.data?.focus_keyword ? { keywords: data.data.focus_keyword } : {}),
+      ...(canonical ? { alternates: { canonical } } : {}),
       robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
-
         googleBot: {
           index: data?.data?.robots_index !== "noindex",
           follow: data?.data?.robots_follow !== "nofollow",
@@ -35,14 +33,11 @@ export async function generateMetadata() {
     };
   } catch (error) {
     console.error("Reviews metadata fetch failed:", error);
-
     return {
       title: "Reviews",
       description: "Reviews page",
-      robots: {
-        index: true,
-        follow: true,
-      },
+      alternates: { canonical: buildCanonical("/reviews/") ?? undefined },
+      robots: { index: true, follow: true },
     };
   }
 }

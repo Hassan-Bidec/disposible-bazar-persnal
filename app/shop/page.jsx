@@ -51,15 +51,22 @@ async function fetchCategories() {
     return [];
   }
 }
+import { buildCanonical } from "../lib/seo/pageDetail";
+
 export async function generateMetadata() {
   const pageData = await getPageData();
+  const cmsCanonical = pageData?.canonical_url;
+  const canonical =
+    (cmsCanonical && cmsCanonical.trim())
+      ? cmsCanonical
+      : buildCanonical("/shop/");
   return {
     title: pageData?.meta_title || "Shop - Disposable Bazar",
     description:
       pageData?.meta_description ||
       "Browse our full collection of disposable products.",
     ...(pageData?.focus_keyword ? { keywords: pageData.focus_keyword } : {}),
-    alternates: pageData?.canonical_url ? { canonical: pageData.canonical_url } : undefined,
+    alternates: canonical ? { canonical } : undefined,
     robots: {
       index: pageData?.robots_index !== "noindex",
       follow: pageData?.robots_follow !== "nofollow",

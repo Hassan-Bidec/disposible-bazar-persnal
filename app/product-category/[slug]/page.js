@@ -71,6 +71,11 @@ export async function generateMetadata({ params }) {
 
   const data = await getPageData(slug);
   const seo = data?.cat?.categorySeoMetadata;
+  const cmsCanonical = seo?.canonical_url;
+  const canonical =
+    (cmsCanonical && cmsCanonical.trim())
+      ? cmsCanonical
+      : `${process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")}/product-category/${slug}/`;
 
   return {
     title:
@@ -80,9 +85,7 @@ export async function generateMetadata({ params }) {
 
     description: seo?.meta_description || "",
 
-    alternates: {
-      canonical: seo?.canonical_url || "",
-    },
+    alternates: canonical ? { canonical } : undefined,
 
     robots: {
       index: true,

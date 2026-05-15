@@ -27,13 +27,20 @@ async function getPageData() {
   }
 }
 
+import { buildCanonical } from "../lib/seo/pageDetail";
+
 export async function generateMetadata() {
   const { meta } = await getPageData();
+  const cmsCanonical = meta?.canonical_url;
+  const canonical =
+    (cmsCanonical && cmsCanonical.trim())
+      ? cmsCanonical
+      : buildCanonical("/bundles/");
   return {
     title: meta?.meta_title || "Bundle Shop - Disposable Bazar",
     description: meta?.meta_description || "Special bundles and deals on disposable products.",
     ...(meta?.focus_keyword ? { keywords: meta.focus_keyword } : {}),
-    alternates: meta?.canonical_url ? { canonical: meta.canonical_url } : undefined,
+    alternates: canonical ? { canonical } : undefined,
     robots: {
       index: meta?.robots_index !== "noindex",
       follow: meta?.robots_follow !== "nofollow",
