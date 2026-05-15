@@ -55,7 +55,7 @@ export async function generateMetadata() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page() {
-  const { blogs } = await getPageData();
+  const { blogs, totalPages } = await getPageData();
 
   // Also fetch categories for sidebar — avoids client-side fetch
   let categories = [];
@@ -105,7 +105,7 @@ export default async function Page() {
 
       {/* ✅ Client component — receives SSR data as props */}
       <Suspense fallback={null}>
-        <BlogClient initialBlogs={blogs} initialCategories={categories} />
+        <BlogClient initialBlogs={blogs} initialCategories={categories} initialTotalPages={totalPages} />
       </Suspense>
     </>
   );

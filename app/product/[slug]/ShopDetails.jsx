@@ -683,7 +683,7 @@ function ShopDetails({ initialData = null }) {
                             <h2 onClick={() => setProductTextDetail('Watch Product Video')} className={`font-bazaar cursor-pointer py-2 ${productTextDetail === 'Watch Product Video' ? ' border-b-2 border-[#1E7773]' : 'text-[#55555F]'} md:text-xl text-xs`}>Watch Product Video</h2>
                         </div>
                     </div>
-                    <div>
+                    <div className="text-white">
                         {productTextDetail === 'Description' && (
                             <div className="flex flex-col gap-2">
                                 {productDetail?.product?.description ? (

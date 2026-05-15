@@ -13,7 +13,7 @@ import { GrNext, GrPrevious } from "react-icons/gr";
 import ErrorPage from './ErrorPage';
 import { useParams, useRouter } from 'next/navigation';
 
-function Blog({ initialBlogs = [], initialCategories = [] }) {
+function Blog({ initialBlogs = [], initialCategories = [], initialTotalPages = 1 }) {
     const params = useParams();
     const router = useRouter();
     const pageFromRoute = params.page ? parseInt(params.page) : 1;
@@ -22,7 +22,7 @@ function Blog({ initialBlogs = [], initialCategories = [] }) {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(pageFromRoute);
-    const [totalPages, setTotalPages] = useState(1);
+    const [totalPages, setTotalPages] = useState(initialTotalPages);
     // No loading on first render if SSR data provided
     const [isLoading, setIsLoading] = useState(false);
     const [hasError, setHasError] = useState(false);
@@ -130,12 +130,12 @@ function Blog({ initialBlogs = [], initialCategories = [] }) {
                 </button>
             </div>
             <div className='flex w-full gap-4 text-white'>
-                {/* Sidebar — hidden on desktop, overlay on mobile */}
-                <div className='lg:ml-10 w-0 lg:w-0 flex-shrink-0'>
+                {/* Sidebar — overlay on mobile, visible on desktop */}
+                <div className='lg:ml-4 w-0 lg:w-64 flex-shrink-0'>
                 <BlogSidebar blogs={blogs} onCategorySelect={handleCategoryChange} toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} initialCategories={initialCategories} />
                 </div>
-                <section className="flex-1 min-w-0 px-6">
-                    <div className='w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'>
+                <section className="flex-1 min-w-0 px-4">
+                    <div className='w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
                         {blogs.length > 0 ? (
                             blogs.map((data) => (
                                 <div className='w-full' key={data.id}>
@@ -159,39 +159,56 @@ function Blog({ initialBlogs = [], initialCategories = [] }) {
                             <p className="text-gray-400">No blogs found</p>
                         )}
                     </div>
-                    {/* Pagination Controls */}
-                    {/* {blogs.length > 0 && (
-                        <div className='flex justify-center items-center space-x-2 mt-4'>
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex justify-center items-center gap-2 mt-10 mb-6 text-white">
+                            {/* Prev */}
                             <button
                                 onClick={handlePreviousPage}
                                 disabled={currentPage === 1}
-                                className={`text-white px-4 py-2 rounded-lg transition duration-300 ${currentPage === 1 ? ' cursor-not-allowed' : ''}`}
+                                className={`px-3 py-1 text-lg transition-colors ${currentPage === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:text-white text-gray-400 cursor-pointer'}`}
                             >
-                                <GrPrevious />
+                                &larr;
                             </button>
 
-                            
-                            <div className='flex space-x-1'>
-                                {[...Array(totalPages)].map((_, index) => (
+                            {/* Page numbers with ellipsis */}
+                            {(() => {
+                                let pages = [];
+                                if (totalPages <= 7) {
+                                    pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+                                } else if (currentPage <= 4) {
+                                    pages = [1, 2, 3, 4, 5, '...', totalPages];
+                                } else if (currentPage > totalPages - 4) {
+                                    pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+                                } else {
+                                    pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+                                }
+                                return pages.map((page, index) => (
                                     <button
                                         key={index}
-                                        onClick={() => navigateToPage(index + 1)}
-                                        className={`px-3 py-1 rounded-lg transition duration-300 ${currentPage === index + 1 ? 'text-white' : 'text-gray-300'}`}
+                                        onClick={() => { if (page !== '...') navigateToPage(page); }}
+                                        disabled={page === '...'}
+                                        className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${
+                                            page === '...' ? 'cursor-default text-gray-500'
+                                            : currentPage === page ? 'bg-white text-[#2a2833] font-bold'
+                                            : 'cursor-pointer hover:bg-white/10 text-gray-400'
+                                        }`}
                                     >
-                                        {index + 1}
+                                        {page}
                                     </button>
-                                ))}
-                            </div>
+                                ));
+                            })()}
 
+                            {/* Next */}
                             <button
                                 onClick={handleNextPage}
                                 disabled={currentPage === totalPages}
-                                className={`text-white px-4 py-2 rounded-lg transition duration-300 ${currentPage === totalPages ? ' cursor-not-allowed' : ''}`}
+                                className={`px-3 py-1 text-lg transition-colors ${currentPage === totalPages ? 'opacity-30 cursor-not-allowed' : 'hover:text-white text-gray-400 cursor-pointer'}`}
                             >
-                                <GrNext />
+                                &rarr;
                             </button>
                         </div>
-                    )} */}
+                    )}
                 </section>
             </div>
         </div>

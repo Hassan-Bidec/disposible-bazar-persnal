@@ -104,12 +104,12 @@ const DecodeTextEditor = ({ body }) => {
 
 
   try {
-    return <div className="mb-4 font-poppins">{parse(cleanHtml, options)}</div>;
+    return <div className="mb-4 font-poppins [&_*]:text-inherit [&_h1]:text-inherit [&_h2]:text-inherit [&_h3]:text-inherit [&_h4]:text-inherit [&_p]:text-inherit [&_li]:text-inherit [&_span]:text-inherit">{parse(cleanHtml, options)}</div>;
   } catch (err) {
     console.error("HTML parse error:", err);
     const fallbackHtml = patchImgDimensions(cleanHtml);
     return (
-      <div className="mb-4 font-poppins" dangerouslySetInnerHTML={{ __html: fallbackHtml }} />
+      <div className="mb-4 font-poppins [&_*]:text-inherit" dangerouslySetInnerHTML={{ __html: fallbackHtml }} />
     );
   }
 };
