@@ -6,7 +6,7 @@ import PriceRange from "../../src/components/Shop/PriceRange";
 import PriceRangeMob from "../../src/components/Shop/PriceRangeMob";
 import { Assets_Url, Image_Not_Found } from "../../src/const";
 import { RiFilter3Line } from "react-icons/ri";
-import { useSearchParams, useParams } from "next/navigation";
+import { useSearchParams, useParams, useRouter, usePathname } from "next/navigation";
 import axios from "../../src/Utils/axios";
 import { Loader } from "../../src/components/Loader";
 import { useCart } from "../../src/Context/CartContext";
@@ -20,11 +20,14 @@ import Image from "next/image";
 
 // initialData is passed from the Server Component (SSR pre-fetch)
 export default function CategoryPageClient({ initialData }) {
-  const queryParams = useSearchParams();
-  const paramsObj = useParams();
-  const category = paramsObj["category-slug"] || paramsObj.slug || "";
-  const categoryIdFromURL = queryParams.get("id");
-  const searchTermFromURL = queryParams.get("q") || "";
+  const searchParams = useSearchParams();
+  const params = useParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const category = params["category-slug"] || params.slug || "";
+  const categoryIdFromURL = searchParams.get("id");
+  const searchTermFromURL = searchParams.get("q") || "";
+  const pageFromURL = searchParams.get("product-page");
   const [showQtyModal, setShowQtyModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -62,7 +65,7 @@ export default function CategoryPageClient({ initialData }) {
     } else {
       params.set("product-page", String(newPage));
     }
-    const newUrl = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}`;
+    const newUrl = `${pathname}${params.toString() ? "?" + params.toString() : ""}`;
     window.history.pushState({ ...window.history.state, as: newUrl, url: newUrl }, "", newUrl);
     window.scrollTo({ top: 400, behavior: "smooth" });
   };
@@ -80,6 +83,12 @@ export default function CategoryPageClient({ initialData }) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Sync currentPage when URL changes
+  useEffect(() => {
+    const page = searchParams.get("product-page");
+    setCurrentPage(page ? parseInt(page) : 1);
+  }, [searchParams]);
 
   // ─── Scroll on slug change ────────────────────────────────────────────────
   useEffect(() => {
@@ -275,12 +284,11 @@ export default function CategoryPageClient({ initialData }) {
               </div>
             ) : (
               <>
-                <div className={`py-10 grid ${
-                  grid === 4 ? "grid-cols-4"
+                <div className={`py-10 grid ${grid === 4 ? "grid-cols-4"
                   : grid === 3 ? "grid-cols-3"
-                  : grid === 2 ? "grid-cols-2"
-                  : "grid-cols-1"
-                } gap-4`}>
+                    : grid === 2 ? "grid-cols-2"
+                      : "grid-cols-1"
+                  } gap-4`}>
                   {filteredProduct
                     .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                     .map((product, index) => (
@@ -341,11 +349,10 @@ export default function CategoryPageClient({ initialData }) {
                       <button
                         key={index}
                         onClick={() => { if (page !== "...") goToPage(page); }}
-                        className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${
-                          page === "..." ? "cursor-default text-gray-500"
+                        className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${page === "..." ? "cursor-default text-gray-500"
                           : currentPage === page ? "bg-white text-[#2a2833] font-bold"
-                          : "cursor-pointer hover:bg-white/10 text-gray-400"
-                        }`}
+                            : "cursor-pointer hover:bg-white/10 text-gray-400"
+                          }`}
                         disabled={page === "..."}
                       >
                         {page}

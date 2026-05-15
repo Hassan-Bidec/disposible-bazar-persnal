@@ -4,7 +4,7 @@ import PriceRange from "../components/Shop/PriceRange";
 import { Assets_Url, Image_Not_Found, Image_Url } from "../const";
 import { RiFilter3Line } from "react-icons/ri";
 import PriceRangeMob from "../components/Shop/PriceRangeMob";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import axios from "../Utils/axios";
 import { Loader } from "../components/Loader";
@@ -19,15 +19,10 @@ export default function ShopClient({ initialProducts = [], initialCategories = [
   const params = useParams();
   const category = params?.category;
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const searchTermFromURL = searchParams.get("q");
-
-  // Read initial page from URL path e.g. /shop/3
-  const getInitialPage = () => {
-    if (typeof window === "undefined") return 1;
-    const segments = window.location.pathname.replace(/\/$/, "").split("/");
-    const last = segments[segments.length - 1];
-    return last && /^\d+$/.test(last) ? parseInt(last) : 1;
-  };
+  const pageFromURL = searchParams.get("product-page");
 
   const [grid, setGrid] = useState(3);
   const [loading, setLoading] = useState(false);
@@ -50,10 +45,11 @@ export default function ShopClient({ initialProducts = [], initialCategories = [
   const [quantity, setQuantity] = useState(1);
   const [hoveredProductId, setHoveredProductId] = useState(null);
 
-  // Set initial page from URL on mount
+  // Sync currentPage when URL changes
   useEffect(() => {
-    setCurrentPage(getInitialPage());
-  }, []);
+    const page = searchParams.get("product-page");
+    setCurrentPage(page ? parseInt(page) : 1);
+  }, [searchParams]);
 
   // ─── URL update — ?product-page=2 format, no remount ────────────────────
   const goToPage = (newPage) => {
@@ -64,7 +60,7 @@ export default function ShopClient({ initialProducts = [], initialCategories = [
     } else {
       params.set("product-page", String(newPage));
     }
-    const newUrl = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}`;
+    const newUrl = `${pathname}${params.toString() ? "?" + params.toString() : ""}`;
     window.history.pushState({ ...window.history.state, as: newUrl, url: newUrl }, "", newUrl);
     window.scrollTo({ top: 450, behavior: "smooth" });
   };
@@ -237,9 +233,8 @@ export default function ShopClient({ initialProducts = [], initialCategories = [
             </div>
           ) : (
             <>
-              <div className={`py-10 grid ${
-                grid === 4 ? "grid-cols-4" : grid === 3 ? "grid-cols-3" : grid === 2 ? "grid-cols-2" : "grid-cols-1"
-              } gap-4`}>
+              <div className={`py-10 grid ${grid === 4 ? "grid-cols-4" : grid === 3 ? "grid-cols-3" : grid === 2 ? "grid-cols-2" : "grid-cols-1"
+                } gap-4`}>
                 {filteredProduct
                   .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                   .map((product) => (
@@ -253,8 +248,8 @@ export default function ShopClient({ initialProducts = [], initialCategories = [
                                 hoveredProductId === product.id && product.product_image?.[1]
                                   ? `${Assets_Url}${product.product_image[1]?.image}`
                                   : product.product_image?.[0]
-                                  ? `${Assets_Url}${product.product_image[0]?.image}`
-                                  : `${Image_Url}defaultImage.svg`
+                                    ? `${Assets_Url}${product.product_image[0]?.image}`
+                                    : `${Image_Url}defaultImage.svg`
                               }
                               alt={product.product_image?.[0]?.image_alt || product.name || "Product Image"}
                               width={500}
@@ -305,11 +300,10 @@ export default function ShopClient({ initialProducts = [], initialCategories = [
                     <button
                       key={index}
                       onClick={() => { if (page !== "...") goToPage(page); }}
-                      className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${
-                        page === "..." ? "cursor-default text-gray-500"
+                      className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${page === "..." ? "cursor-default text-gray-500"
                         : currentPage === page ? "bg-white text-[#2a2833] font-bold"
-                        : "cursor-pointer hover:bg-white/10 text-gray-400"
-                      }`}
+                          : "cursor-pointer hover:bg-white/10 text-gray-400"
+                        }`}
                       disabled={page === "..."}
                     >
                       {page}

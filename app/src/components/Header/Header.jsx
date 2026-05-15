@@ -44,9 +44,9 @@ function Header() {
     let dropdownTimeout = useRef(null);
     const [isMounted, setIsMounted] = useState(false);
 
-useEffect(() => {
-  setIsMounted(true);
-}, []);
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
 
     const dropdownRef = useRef(null);
@@ -73,7 +73,7 @@ useEffect(() => {
     }, [pathname, params]);
 
     const calculateSubtotal = () => {
-  if (!isMounted) return 0;
+        if (!isMounted) return 0;
         return cartItems.reduce(
             (total, item) => total + Number(item.product_total),
             0
@@ -218,7 +218,7 @@ useEffect(() => {
                             <Link href="mailto:info@disposablebazaar.com">
                                 info@disposablebazaar.com
                             </Link>
-                         
+
 
                         </li>
                         <li className="p-2 flex items-center text-white gap-2 md:text-[12px] text-[8px] duration-300">
@@ -232,7 +232,7 @@ useEffect(() => {
                                 className="flex items-center text-white gap-2 cursor-pointer"
                                 onClick={() =>
                                     window.open(
-                                        "https://disposablebazaar.com/wp-content/uploads/2024/07/Disposable-Price-List-18072024.pdf",
+                                        `/resources/catalogue-21042026.pdf`,
                                         "_blank"
                                     )
                                 }
@@ -249,13 +249,13 @@ useEffect(() => {
                     <li className="flex">
                         <Link href="/cart/">
                             <RiShoppingBasket2Line className="bg-[#1E7773] rounded-lg text-white p-1 text-3xl" />
-                          <p className="text-xs px-2 text-black">
-  <span className="text-[15px] font-semibold">
-    My Cart
-  </span>
-  <br />
-  {isMounted ? `${totalItems} items - Rs ${subtotal}` : "0 items - Rs 0"}
-</p>
+                            <p className="text-xs px-2 text-black">
+                                <span className="text-[15px] font-semibold">
+                                    My Cart
+                                </span>
+                                <br />
+                                {isMounted ? `${totalItems} items - Rs ${subtotal}` : "0 items - Rs 0"}
+                            </p>
                         </Link>
                     </li>
                 </ul>
@@ -626,12 +626,12 @@ useEffect(() => {
                             <div className="flex">
                                 <RiShoppingBasket2Line className="bg-[#1E7773] rounded-lg text-white p-1 text-3xl" />
                                 <p className="text-xs px-2 text-zinc-950">
-  <span className="text-[15px] font-semibold">
-    My Cart
-  </span>
-  <br />
-  {isMounted ? `${totalItems} items - Rs ${subtotal}` : "0 items - Rs 0"}
-</p>
+                                    <span className="text-[15px] font-semibold">
+                                        My Cart
+                                    </span>
+                                    <br />
+                                    {isMounted ? `${totalItems} items - Rs ${subtotal}` : "0 items - Rs 0"}
+                                </p>
                             </div>
 
                         </Link>

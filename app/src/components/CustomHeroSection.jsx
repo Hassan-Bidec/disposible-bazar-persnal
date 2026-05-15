@@ -13,13 +13,13 @@ function CustomHeroSection({
     bgImage,
     heroImage,
     custom,
-    hideContent
+    hideContent,
 }) {
     useEffect(() => {
         Aos.init({ duration: "2000", delay: "0" });
     }, []);
 
-    const backgroundImageUrl = heroImage
+    const backgroundImageUrl = custom === "customization" ? "/images/customization-banner.jpeg" : custom === "shop" ? "/images/shop-all-banner.jpeg" : heroImage
         ? `${Assets_Url}${heroImage}`
         : bgImage
             ? bgImage.startsWith("http") || bgImage.startsWith("/")
@@ -27,7 +27,6 @@ function CustomHeroSection({
                 : `${Image_Url}${bgImage}`
             : `${Assets_Url}CustomHeroAssets/CustomHeroBgImg.svg`;
 
-    
 
     return (
         <div className={`w-full flex items-center text-black relative 
@@ -38,7 +37,7 @@ function CustomHeroSection({
                 backgroundImage: `url('${backgroundImageUrl}')`,
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "cover",
-                marginTop:"90px",
+                marginTop: "90px",
                 backgroundPosition: "top center",
             }}
         >
