@@ -213,14 +213,14 @@ function ShopDetails({ initialData = null }) {
         }
     }, [user, selectedVariantId, selectedProductVariants, productVariants]);
 
-  
+
 
     const handleWishlist = async () => {
         if (!user) {
             router.push("/login");
             return;
         }
-        
+
         const variantId = productDetail?.product?.id;
         if (!variantId) {
             toast.error("No product variant available");
@@ -525,7 +525,7 @@ function ShopDetails({ initialData = null }) {
                                             </p>
                                             <div className="flex-1 p-1 px-2">
                                                 <select
-                                                    className="w-full h-full py-1.5 px-2 outline-none text-white cursor-pointer"
+                                                    className="w-full h-full py-1.5 px-2 bg-transparent outline-none cursor-pointer"
                                                     value={selectedSize || ''}
                                                     onChange={(e) => setSelectedSize(e.target.value)}
                                                 >

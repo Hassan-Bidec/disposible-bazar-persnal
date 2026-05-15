@@ -181,7 +181,7 @@ const PriceRange = ({ onFilter, isCategoryShown, initialCategories = [] }) => {
                         <div>
                             <h3 className="text-[#9F9F9F] text-xl font-bazaar mt-4">Product Categories</h3>
                             <div className="relative">
-                                <input type="text" value={searchTerm} onChange={handleSearch} className="w-full p-1.5 text-white rounded my-2" placeholder="Product name" />
+                                <input type="text" value={searchTerm} onChange={handleSearch} className="w-full p-1.5 text-black rounded my-2" placeholder="Product name" />
                                 <button type="button">
                                     <CiSearch className="absolute text-xl text-[#606060] top-4 right-2" />
                                 </button>

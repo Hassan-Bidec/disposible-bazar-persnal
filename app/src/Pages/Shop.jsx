@@ -95,7 +95,7 @@ function Shop() {
     });
   };
 
-  
+
   const fetchData = async () => {
     setLoading(true);
 
@@ -113,14 +113,14 @@ function Shop() {
 
       let data = response.data?.data || [];
 
-    
+
       if (Array.isArray(data)) {
         data = data;
       } else if (data?.is_customizeable) {
         data = data.is_customizeable;
       }
 
-    
+
       const sorted = sortProducts(data, filter.sort_by);
 
       setFilteredProduct(sorted);
@@ -228,7 +228,8 @@ function Shop() {
       <ToastContainer autoClose={500} />
       <CustomHeroSection
         heading="Shop All"
-        path="Shop "
+        path="Shop"
+        custom="shop"
         bgImage="CustomHeroAssets/shopbanner.png"
         hideContent={true}
       />

@@ -93,7 +93,8 @@ export default async function Page() {
         <Suspense fallback={<div className="h-64 bg-[#20202c]" />}>
           <CustomHeroSection
             heading="Shop All"
-            path="Shop "
+            path="Shop"
+            custom="shop"
             bgImage="CustomHeroAssets/shopbanner.png"
             hideContent={true}
           />
@@ -104,7 +105,7 @@ export default async function Page() {
           <ul className="sr-only">
             {products.slice(0, 12).map((p) => (
               <li key={p.id}>
-                <a  
+                <a
                   href={
                     p.is_customizeable
                       ? `/customization/${p.slug}`

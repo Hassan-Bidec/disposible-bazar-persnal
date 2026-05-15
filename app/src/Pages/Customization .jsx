@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
 import Image from 'next/image';
@@ -23,14 +23,14 @@ export default function Customization() {
   const router = useRouter();
   const searchTermFromURL = searchParams.get("q");
   const category = searchParams.get("category");
-const  addToCart  = useCart();
+  const addToCart = useCart();
 
- const [disabledButtons, setDisabledButtons] = useState({});
-const [selectedProduct, setSelectedProduct] = useState(null);
-const [quantity, setQuantity] = useState(1);
-const [showQtyModal, setShowQtyModal] = useState(false);
-const [isCartModalOpen, setIsCartModalOpen] = useState(false);
-const isFirstMount = React.useRef(true);
+  const [disabledButtons, setDisabledButtons] = useState({});
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [showQtyModal, setShowQtyModal] = useState(false);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const isFirstMount = React.useRef(true);
 
   const [isFilter, setIsFilter] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -185,109 +185,106 @@ const isFirstMount = React.useRef(true);
 
 
 
-    const handleLoadMore = () => {
-        // setCurrentPage((prev) => prev + 1); // Not used anymore but left for safety if needed temporarily
-    };
+  const handleLoadMore = () => {
+    // setCurrentPage((prev) => prev + 1); // Not used anymore but left for safety if needed temporarily
+  };
 
-    const handleAddCart = (product) => {
-        const product_id = product.id;
-        const product_name = product.name;
-        const pack_size = Number(product.product_variants[0].pack_size);
-        const product_quantity = 1;
-        const total_pieces = pack_size;
-        const price_per_piece = Number(product.product_variants[0].price_per_piece);
-        const product_total = (price_per_piece * total_pieces).toFixed(2);
-        const product_img = product.product_image[0].image;
-        const product_variants = product.product_variants;
+  const handleAddCart = (product) => {
+    const product_id = product.id;
+    const product_name = product.name;
+    const pack_size = Number(product.product_variants[0].pack_size);
+    const product_quantity = 1;
+    const total_pieces = pack_size;
+    const price_per_piece = Number(product.product_variants[0].price_per_piece);
+    const product_total = (price_per_piece * total_pieces).toFixed(2);
+    const product_img = product.product_image[0].image;
+    const product_variants = product.product_variants;
 
-        
 
-          setSelectedProduct(product);
+
+    setSelectedProduct(product);
     setQuantity(1);
     setShowQtyModal(true);
 
-        addToCart(
-            product_id,
-            product_name,
-            product_quantity,
-            pack_size,
-            total_pieces,
-            price_per_piece,
-            product_img,
-            product_total,
-            product_variants,
-        );
-        setIsCartModalOpen(true);
-    };
+    addToCart(
+      product_id,
+      product_name,
+      product_quantity,
+      pack_size,
+      total_pieces,
+      price_per_piece,
+      product_img,
+      product_total,
+      product_variants,
+    );
+    setIsCartModalOpen(true);
+  };
 
   return (
-   <div >
-            <CustomHeroSection heading='Build Your Perfect Match' path='Customization ' custom="customization" bgImage="HomeAssets/HeroSecton/Banner3.png" hideContent={true} />
-            <div className="md:py-20 py-10 lg:px-10 px-0 flex">
-                <section className="hidden lg:flex flex flex-col p-5 text-white hscreen lg:w-1/5">
-                    <CustomPriceRange onFilter={handleFilter} />
-                </section>
-                <div className="">
-                    <CustomPriceRangeMob onFilter={handleFilter} isFilter={isFilter} setIsFilter={setIsFilter} />
-                </div>
+    <div >
+      <CustomHeroSection heading='Build Your Perfect Match' path='Customization ' custom="customization" heroImage={"/Customization/customization-banner.jpeg"} hideContent={true} />
+      <div className="md:py-20 py-10 lg:px-10 px-0 flex">
+        <section className="hidden lg:flex flex flex-col p-5 text-white hscreen lg:w-1/5">
+          <CustomPriceRange onFilter={handleFilter} />
+        </section>
+        <div className="">
+          <CustomPriceRangeMob onFilter={handleFilter} isFilter={isFilter} setIsFilter={setIsFilter} />
+        </div>
         <section className="flex p-5 hscreen lg:w-4/5 w-full">
-            <div className="py-4 w-full flex flex-col gap2 text-white rounded-lg">
-              <div className="flex flex-col gap-2">
-                <div className="flex justify-between">
-                  <p className="text-4xl font-bazaar">Shop All</p>
+          <div className="py-4 w-full flex flex-col gap2 text-white rounded-lg">
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between">
+                <p className="text-4xl font-bazaar">Shop All</p>
 
-                  <div>
-                    <button onClick={() => setIsFilter(true)}>
-                      <RiFilter3Line className="lg:hidden block text-4xl rounded-full p-2 bg-[#1E7773]" />
-                    </button>
+                <div>
+                  <button onClick={() => setIsFilter(true)}>
+                    <RiFilter3Line className="lg:hidden block text-4xl rounded-full p-2 bg-[#1E7773]" />
+                  </button>
 
-                    {/* Grid Buttons */}
-                    <div className="hidden lg:flex justify-between gap-3 items-center">
-                      <h4 className="text-md font-bazaar">View</h4>
+                  {/* Grid Buttons */}
+                  <div className="hidden lg:flex justify-between gap-3 items-center">
+                    <h4 className="text-md font-bazaar">View</h4>
 
-                      <Image
-                        onClick={() => setGrid(4)}
-                        className="cursor-pointer"
-                        src={`${Image_Url}${
-                          grid === 4
-                            ? "ShopAssets/4greenGridImg.svg"
-                            : "ShopAssets/4gridImg.svg"
+                    <Image
+                      onClick={() => setGrid(4)}
+                      className="cursor-pointer"
+                      src={`${Image_Url}${grid === 4
+                        ? "ShopAssets/4greenGridImg.svg"
+                        : "ShopAssets/4gridImg.svg"
                         }`}
-                        alt=""
-                        width={40} height={40}
-                      />
+                      alt=""
+                      width={40} height={40}
+                    />
 
-                      <Image
-                        onClick={() => setGrid(3)}
-                        className="cursor-pointer"
-                        src={`${Image_Url}${
-                          grid === 3
-                            ? "ShopAssets/3greenGridImg.svg"
-                            : "ShopAssets/3gridImg.svg"
+                    <Image
+                      onClick={() => setGrid(3)}
+                      className="cursor-pointer"
+                      src={`${Image_Url}${grid === 3
+                        ? "ShopAssets/3greenGridImg.svg"
+                        : "ShopAssets/3gridImg.svg"
                         }`}
-                        alt=""
-                        width={40} height={40}
-                      />
+                      alt=""
+                      width={40} height={40}
+                    />
 
-                      <Image
-                        onClick={() => setGrid(2)}
-                        className="cursor-pointer"
-                        src={`${Image_Url}${
-                          grid === 2
-                            ? "ShopAssets/2greenGridImg.svg"
-                            : "ShopAssets/2gridImg.svg"
+                    <Image
+                      onClick={() => setGrid(2)}
+                      className="cursor-pointer"
+                      src={`${Image_Url}${grid === 2
+                        ? "ShopAssets/2greenGridImg.svg"
+                        : "ShopAssets/2gridImg.svg"
                         }`}
-                        alt=""
-                        width={40} height={40}
-                      />
-                    </div>
+                      alt=""
+                      width={40} height={40}
+                    />
                   </div>
                 </div>
-                {/* Breadcrumbs */}
-                <p className="text-sm text-gray-400">
-                  <Link href="/">Home</Link> / <Link href="/shop">Shop</Link> / Customization
-                </p>
               </div>
+              {/* Breadcrumbs */}
+              <p className="text-sm text-gray-400">
+                <Link href="/">Home</Link> / <Link href="/shop">Shop</Link> / Customization
+              </p>
+            </div>
 
             {/* Loader */}
             {loading ? (
@@ -302,26 +299,24 @@ const isFirstMount = React.useRef(true);
               <>
                 {/* Product Cards */}
                 <div
-                  className={`py-10 grid ${
-                    grid === 4
-                      ? "grid-cols-4"
-                      : grid === 3
+                  className={`py-10 grid ${grid === 4
+                    ? "grid-cols-4"
+                    : grid === 3
                       ? "grid-cols-3"
                       : grid === 2
-                      ? "grid-cols-2"
-                      : "grid-cols-1"
-                  } gap-4 justify-center w-full`}
+                        ? "grid-cols-2"
+                        : "grid-cols-1"
+                    } gap-4 justify-center w-full`}
                 >
                   {filteredProduct
-                   ?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                    ?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                     .map((product, index) => (
                       <Link key={index} href={`/customization/${product.slug}`}>
                         <div
-                          className={`flex ${
-                            grid === 2 && index % 2 === 0
-                              ? "justify-end"
-                              : "justify-start"
-                          }`}
+                          className={`flex ${grid === 2 && index % 2 === 0
+                            ? "justify-end"
+                            : "justify-start"
+                            }`}
                         >
                           <div className="w-full xl:p-4 p-2 flex flex-col border border-[#1E7773] bg-[#32303e] rounded-2xl group">
                             <div className="relative p-5 flex flex-col justify-center items-center">
@@ -374,7 +369,7 @@ const isFirstMount = React.useRef(true);
                                 <span>No variants available</span>
                               )}
                             </p>
-                             {/* <div className="flex xl:flex-row lg:flex-col justify-center xl:gap-4 gap-1">
+                            {/* <div className="flex xl:flex-row lg:flex-col justify-center xl:gap-4 gap-1">
   <button
     className="p-2 bg-[#1E7773] w-full font-bazaar cursor-pointer rounded-lg"
     onClick={() => handleAddCart(product)}
@@ -398,57 +393,57 @@ const isFirstMount = React.useRef(true);
                 </div>
 
                 {/* Pagination */}
-                  {filteredProduct.length > itemsPerPage && (
-                    <div className="flex justify-center items-center mt-10 gap-2 text-white">
-                      
-                      {(() => {
-                        const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
-                        let pages = [];
-                        if (totalPages <= 7) {
-                          for (let i = 1; i <= totalPages; i++) { pages.push(i); }
+                {filteredProduct.length > itemsPerPage && (
+                  <div className="flex justify-center items-center mt-10 gap-2 text-white">
+
+                    {(() => {
+                      const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
+                      let pages = [];
+                      if (totalPages <= 7) {
+                        for (let i = 1; i <= totalPages; i++) { pages.push(i); }
+                      } else {
+                        if (currentPage <= 4) {
+                          pages = [1, 2, 3, 4, 5, '...', totalPages];
+                        } else if (currentPage > totalPages - 4) {
+                          pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
                         } else {
-                          if (currentPage <= 4) {
-                            pages = [1, 2, 3, 4, 5, '...', totalPages];
-                          } else if (currentPage > totalPages - 4) {
-                            pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
-                          } else {
-                            pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
-                          }
+                          pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
                         }
+                      }
 
-                        return pages.map((page, index) => (
-                          <button
-                            key={index}
-                            onClick={() => {
-                              if (page !== '...') {
-                                updatePageQuery(page);
-                              }
-                            }}
-                            className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${page === '...'
-                              ? 'cursor-default text-gray-500'
-                              : currentPage === page
-                                ? 'bg-white text-[#2a2833] font-bold'
-                                : 'cursor-pointer hover:bg-white/10 text-gray-400'
-                              }`}
-                            disabled={page === '...'}
-                          >
-                            {page}
-                          </button>
-                        ));
-                      })()}
+                      return pages.map((page, index) => (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            if (page !== '...') {
+                              updatePageQuery(page);
+                            }
+                          }}
+                          className={`h-10 w-10 flex items-center justify-center rounded-full transition-all duration-300 text-lg ${page === '...'
+                            ? 'cursor-default text-gray-500'
+                            : currentPage === page
+                              ? 'bg-white text-[#2a2833] font-bold'
+                              : 'cursor-pointer hover:bg-white/10 text-gray-400'
+                            }`}
+                          disabled={page === '...'}
+                        >
+                          {page}
+                        </button>
+                      ));
+                    })()}
 
-                      <button
-                        onClick={() => {
-                          const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
-                          updatePageQuery(Math.min(totalPages, currentPage + 1));
-                        }}
-                        disabled={currentPage === Math.ceil(filteredProduct.length / itemsPerPage)}
-                        className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === Math.ceil(filteredProduct.length / itemsPerPage) ? 'opacity-30 cursor-not-allowed' : 'hover:text-white text-gray-400'}`}
-                      >
-                        &rarr;
-                      </button>
-                    </div>
-                  )}
+                    <button
+                      onClick={() => {
+                        const totalPages = Math.ceil(filteredProduct.length / itemsPerPage);
+                        updatePageQuery(Math.min(totalPages, currentPage + 1));
+                      }}
+                      disabled={currentPage === Math.ceil(filteredProduct.length / itemsPerPage)}
+                      className={`px-3 py-1 text-lg cursor-pointer transition-colors ${currentPage === Math.ceil(filteredProduct.length / itemsPerPage) ? 'opacity-30 cursor-not-allowed' : 'hover:text-white text-gray-400'}`}
+                    >
+                      &rarr;
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>
