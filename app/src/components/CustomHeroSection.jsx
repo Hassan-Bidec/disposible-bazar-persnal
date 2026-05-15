@@ -22,7 +22,9 @@ function CustomHeroSection({
     const backgroundImageUrl = heroImage
         ? `${Assets_Url}${heroImage}`
         : bgImage
-            ? `${Image_Url}${bgImage}`
+            ? bgImage.startsWith("http") || bgImage.startsWith("/")
+                ? bgImage
+                : `${Image_Url}${bgImage}`
             : `${Assets_Url}CustomHeroAssets/CustomHeroBgImg.svg`;
 
     
@@ -40,9 +42,12 @@ function CustomHeroSection({
                 backgroundPosition: "top center",
             }}
         >
+            {/* Dark overlay for text readability */}
+            <div className="absolute inset-0 bg-black/50" />
+
             {/* Left text content */}
             {hideContent ? null : (
-                <div className="md:w-[40%] md:pl-20 pl-10">
+                <div className="md:w-[40%] md:pl-20 pl-10 relative z-10">
                     <h1 className="md:text-6xl text-5xl font-bazaar text-white">
                         {heading}
                     </h1>

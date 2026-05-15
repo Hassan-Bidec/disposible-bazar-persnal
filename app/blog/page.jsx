@@ -19,6 +19,7 @@ async function getPageData() {
 
     const meta = metaRes.ok ? await metaRes.json() : null;
     const blogs = blogsRes.ok ? await blogsRes.json() : null;
+    console.log("blogs data",blogs);
 
     return {
       meta: meta?.data || null,

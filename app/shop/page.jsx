@@ -94,7 +94,7 @@ export default async function Page() {
           <CustomHeroSection
             heading="Shop All"
             path="Shop "
-            bgImage="CustomHeroAssets/shopbanner.png"
+            bgImage="/CustomHeroAssets/shopbanner.jpeg"
             hideContent={true}
           />
         </Suspense>

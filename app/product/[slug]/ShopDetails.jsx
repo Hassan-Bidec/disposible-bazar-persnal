@@ -123,12 +123,18 @@ function ShopDetails({ initialData = null }) {
             );
         }
 
-        const firstVariant = resData?.product?.product_variants?.find(i => i.brand_id === seletedBrandId);
+        const firstVariant = resData?.product?.product_variants?.find(i => i.brand_id === seletedBrandId)
+            ?? resData?.product?.product_variants?.[0];
         if (firstVariant) {
             setQuantity(firstVariant.pack_size);
             setSelectedVariantId(firstVariant.id);
             setSelectedVariant(firstVariant.pack_size);
             setSelectedVariantPrice(Number(firstVariant.price_per_piece ?? firstVariant.price ?? 0));
+        }
+
+        // If no brand, still populate selectedProductVariants with all variants
+        if (!seletedBrandId) {
+            setSelectedProductVariants(resData?.product?.product_variants || []);
         }
     };
 
@@ -478,7 +484,7 @@ function ShopDetails({ initialData = null }) {
                         </div>
 
                         <p className='text-xl font-semibold'>
-                            Rs {selectedProductVariants[0]?.price}
+                            Rs {selectedVariantPrice > 0 ? selectedVariantPrice : (selectedProductVariants[0]?.price_per_piece ?? selectedProductVariants[0]?.price ?? 0)}
                         </p>
 
                         <form onSubmit={handleSubmit} className='max-w-130 w-full flex flex-col gap-5'>

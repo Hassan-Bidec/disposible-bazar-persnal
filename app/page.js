@@ -58,16 +58,18 @@ async function getPageData() {
   }
 }
 
-// Fetch popular products on the server — SSR
-async function getPopularProducts() {
+// Fetch plastic containers products on the server — SSR
+async function getPlasticContainersProducts() {
   try {
     const res = await fetch(
-      `${API_BASE}/home/popular/product/get`,
+      `${API_BASE}/home/category/28/product`,
       { next: { revalidate: 300 } }
     );
     if (!res.ok) return [];
     const json = await res.json();
-    return json?.data || [];
+    const all = json?.data || [];
+    const filtered = all.filter((p) => p.category_id === 28);
+    return filtered.length > 0 ? filtered : all;
   } catch {
     return [];
   }
@@ -76,7 +78,7 @@ async function getPopularProducts() {
 export default async function Page() {
   const [pageData, popularProducts] = await Promise.all([
     getPageData(),
-    getPopularProducts(),
+    getPlasticContainersProducts(),
   ]);
   const schema = pageData?.schema || null;
 

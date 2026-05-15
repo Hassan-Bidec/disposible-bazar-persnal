@@ -46,9 +46,9 @@ function Quality() {
           data-aos="fade-right"
           className="flex flex-col text-white md:pl-20 pl-5 gap-3 md:py-20 pt-16 pb-8 md:w-1/2 w-[70%]"
         >
-          <h3 className="md:text-6xl text-4xl font-bazaar">
+          <p className="md:text-6xl text-4xl font-bazaar">
             Sip Fresh, Stay Stylish!
-          </h3>
+          </p>
           <p className="md:text-xl text-sm font-semibold">
             Discover high-quality juice cups crafted for freshness, durability, and unbeatable value.
           </p>

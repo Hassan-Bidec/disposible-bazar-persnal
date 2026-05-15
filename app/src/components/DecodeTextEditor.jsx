@@ -2,7 +2,7 @@
 "use client";
 
 import React from "react";
-import parse from "html-react-parser";
+import parse, { domToReact } from "html-react-parser";
 import DOMPurify from "isomorphic-dompurify";
 import Image from "next/image";
 
@@ -57,13 +57,13 @@ const DecodeTextEditor = ({ body }) => {
       if (!domNode?.name) return;
 
       if (domNode.name === "h2")
-        return <h2 className="text-3xl font-semibold my-4">{domNode.children[0].data}</h2>;
+        return <h2 className="text-3xl font-semibold my-4">{domToReact(domNode.children, options)}</h2>;
 
       if (domNode.name === "h3")
-        return <h3 className="text-2xl font-semibold my-3">{domNode.children[0].data}</h3>;
+        return <h3 className="text-2xl font-semibold my-3">{domToReact(domNode.children, options)}</h3>;
 
       if (domNode.name === "h4")
-        return <h4 className="text-xl font-medium my-2">{domNode.children[0].data}</h4>;
+        return <h4 className="text-xl font-medium my-2">{domToReact(domNode.children, options)}</h4>;
 
       if (domNode?.name === "img") {
         const rawW = domNode?.attribs?.width;

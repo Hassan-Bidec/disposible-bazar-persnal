@@ -28,7 +28,7 @@ function Header() {
 
     const [categories, setCategories] = useState([]);
     const kraftCategory = categories.find(
-        (cat) => cat.slug === "kraft-paper/"
+        (cat) => cat.slug?.toLowerCase().replace(/\/$/, "") === "kraft-paper"
     );
 
 

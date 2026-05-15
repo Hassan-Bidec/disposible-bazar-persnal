@@ -59,19 +59,20 @@ function Categories() {
   }, []);
 
   const fetchCategoryProducts = async (categoryId) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const response = await axios.public.get(`home/category/${categoryId}/product`);
-      setCategoryList(response.data.data);  // Set the products for the selected category
+      const allProducts = response.data.data || [];
+      // Filter strictly by category_id
+      const filtered = allProducts.filter((p) => p.category_id === categoryId);
+      setCategoryList(filtered.length > 0 ? filtered : allProducts);
     } catch (error) {
       console.log(error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
-  useEffect(() => {
-    fetchCategoryProducts(18);
-  }, []);
+
   const handleCategory = (selectedCategory) => {
     fetchCategoryProducts(selectedCategory.id);  // Fetch products for the clicked category
     setCategory(selectedCategory.name.trim().toLowerCase());  // Set the selected category

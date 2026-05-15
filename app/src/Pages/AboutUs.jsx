@@ -50,7 +50,7 @@ useEffect(() => {
                 {/* About Section */}
 
                 <div className='flex flex-wrap justify-center items-center'>
-                    <Image src={`${Image_Url}AboutUs/About1.png`} alt="About Image" className='w-4/5 md:w-[500px] mb-8 md:mb-0' width={500} height={500} />
+                    <Image src="/aboutus1.jpeg" alt="About Image" className='w-4/5 md:w-[500px] mb-8 md:mb-0' width={500} height={500} />
                     <div className='lg:m-12 m-4 lg:w-2/5 text-center flex flex-col justify-center lg:items-start items-center lg:text-left'>
                         <h1 className="text-2xl my-4 text-[#1E7773] font-bazaar">About Us</h1>
                         <h2 className="text-3xl md:text-5xl mb-4 text-white font-bazaar">Everyone Deserves Great Quality</h2>
@@ -124,7 +124,7 @@ useEffect(() => {
                         <p className='md:w-3/4'>Being associated with the plastic industry for 35+ years, we find high-quality and sustainably manufactured plastic products to ensure complete safety for consumers. Industry experience is what we now celebrate with you by providing premium products at an affordable price range. Our vision is to entail Disposable Bazar as the biggest disposable items online store in Pakistan with the most low-priced and highest-quality products.</p>
 
                     </div>
-                    <Image src={`${Image_Url}AboutUs/About3.png`} alt="About Image" className='w-4/5 md:w-3/5 lg:w-[500px]' width={500} height={500} />
+                    <Image src="/aboutus2.jpeg" alt="About Image" className='w-4/5 md:w-3/5 lg:w-[500px]' width={500} height={500} />
                 </div>
 
                 <Blogs />

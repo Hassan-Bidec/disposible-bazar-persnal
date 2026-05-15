@@ -25,7 +25,27 @@ async function getBlogData(slug) {
     if (!res.ok) return null;
     const json = await res.json();
     if (json.status !== "success") return null;
-    return json.data || null;
+
+    const data = json.data || null;
+
+    // blogs/s/details doesn't return image — fetch it from listing API
+    if (data?.blog && !data.blog.main_image) {
+      try {
+        const listRes = await fetch(
+          `${API_BASE}/blogs/index`,
+          { next: { revalidate: 600 } }
+        );
+        if (listRes.ok) {
+          const listJson = await listRes.json();
+          const match = listJson?.data?.find?.(
+            (b) => b.slug === `${slug}/` || b.slug === slug
+          );
+          if (match?.main_image) data.blog.main_image = match.main_image.replace(/\/+$/, '');
+        }
+      } catch { /* ignore */ }
+    }
+
+    return data;
   } catch {
     return null;
   }

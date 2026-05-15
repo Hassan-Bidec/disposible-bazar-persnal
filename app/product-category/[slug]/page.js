@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { notFound } from "next/navigation";
 import CategoryPageClient from "./CategoryPageClient";
 
 export const revalidate = 600;
@@ -56,10 +57,17 @@ async function getPageData(slug) {
   }
 }
 
+// ─── BLOCKED SLUGS ─────────────────────────
+const BLOCKED_SLUGS = ["kraft-paper-rectangular-bowl"];
+
 // ─── 🔥 ONLY SEO IMPROVED (IMPORTANT PART) ───
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug || "";
+
+  if (BLOCKED_SLUGS.includes(slug.replace(/\/+$/, ""))) {
+    return { robots: { index: false, follow: false } };
+  }
 
   const data = await getPageData(slug);
   const seo = data?.cat?.categorySeoMetadata;
@@ -91,7 +99,16 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug || "";
+
+  // Block specific slugs — redirect to 404
+  if (BLOCKED_SLUGS.includes(slug.replace(/\/+$/, ""))) {
+    notFound();
+  }
+
   const data = await getPageData(slug);
+
+  // If category not found in API, show 404 instead of blank page
+  if (!data) notFound();
 
   // Safe schema: validate JSON before injecting
   let schema = null;

@@ -134,15 +134,15 @@ function HeroSlider() {
 
   {/* Overlay text (stays on top) */}
   <div className="absolute inset-0 flex flex-col justify-center items-center lg:items-start z-30 lg:w-[800px] p-6 md:p-12 lg:p-24 text-white bg-black/30 lg:bg-transparent">
-    <h3 className="text-3xl md:text-5xl lg:text-6xl font-bazaar font-bold mb-6 text-center lg:text-left">
+    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bazaar font-bold mb-6 text-center lg:text-left">
       {slides[currentSlide].heading1Part1} <br /> {slides[currentSlide].heading1Part2}
-    </h3>
-    <h2 className="font-semibold text-md md:text-xl lg:text-xl text-center lg:text-left">
+    </h1>
+    <p className="font-semibold text-md md:text-xl lg:text-xl text-center lg:text-left">
       {slides[currentSlide].heading2}
-    </h2>
-    <h2 className="text-xs lg:text-lg lg:w-3/4 my-4 text-center lg:text-left">
+    </p>
+    <p className="text-xs lg:text-lg lg:w-3/4 my-4 text-center lg:text-left">
       {slides[currentSlide].heading3}
-    </h2>
+    </p>
   </div>
 </div>
 

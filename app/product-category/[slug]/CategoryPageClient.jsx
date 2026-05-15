@@ -388,7 +388,7 @@ export default function CategoryPageClient({ initialData }) {
         <div className="flex flex-wrap justify-start gap-4 w-full p-5 items-start md:px-24">
           <div>
             <Image
-              src={Category?.image ? `${Assets_Url}${Category.image}` : null}
+              src={Category?.image ? `${Assets_Url}${Category.image}` : Image_Not_Found}
               alt={Category?.name || "Category Image"}
               className="w-96 h-96 object-contain rounded-lg"
               onError={(e) => { e.currentTarget.src = Image_Not_Found; }}

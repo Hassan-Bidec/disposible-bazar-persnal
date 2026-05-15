@@ -20,7 +20,7 @@ function InstaFeed() {
 
     return (
         <div className="overflow-hidden w-full py-10 pb-32 ">
-            <h3 className='text-center text-white pb-10 font-bazaar md:text-6xl text-4xl'>Instagram Feed</h3>
+            <h2 className='text-center text-white pb-10 font-bazaar md:text-6xl text-4xl'>Instagram Feed</h2>
             <div className="relative group">
                 <div className="flex w-full animate-slide">
                     {Sliders.concat(Sliders).map((Slide, index) => (

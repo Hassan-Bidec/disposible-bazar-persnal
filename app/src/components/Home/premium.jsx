@@ -26,7 +26,7 @@ function Premium({ initialProducts = [] }) {
 
         <div className="md:p-20 md:pb-0 py-10 relative">
             <div className="flex md:flex-row md:flex-row flex-col justify-start md:gap-10 gap-2 my-16 text-white items-center">
-                <h3 data-aos='fade-right' className='md:w-1/2 w-11/12 md:text-start text-center font-bazaar md:text-6xl text-4xl'>Plastic Containers</h3>
+                <p data-aos='fade-right' className='md:w-1/2 w-11/12 md:text-start text-center font-bazaar md:text-6xl text-4xl text-white'>Plastic Containers</p>
                 <p data-aos='fade-left' className='md:w-1/3 w-11/12 md:text-start text-center md:text-lg text-sm'>Discover our versatile range of high-quality plastic containers. Perfect for all your storage needs, combining style and functionality.</p>
             </div>
             <Image data-aos='fade-left' src={`${Image_Url}HomeAssets/PremiumAssets/shoper.svg`} className='absolute hidden md:block top-0 right-0 w-32' alt="" width={500} height={500} />
@@ -60,9 +60,13 @@ function Slider({ initialProducts = [] }) {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.public.get('home/popular/product/get');
+                const response = await axios.public.get('home/category/28/product');
                 const data = response?.data?.data;
-                if (!cancelled && Array.isArray(data)) setProducts(data);
+                if (!cancelled && Array.isArray(data)) {
+                    // Filter strictly to Plastic Containers (category_id: 28)
+                    const filtered = data.filter((p) => p.category_id === 28);
+                    setProducts(filtered.length > 0 ? filtered : data);
+                }
             } catch (error) {
                 console.log(error);
             } finally {
@@ -148,7 +152,7 @@ function Slider({ initialProducts = [] }) {
                                 </div>
                                 </Link>
                             </div>
-                            <h2 className="font-bold text-center text-sm md:text-lg ">{product.name}</h2>
+                            <h4 className="font-bold text-center text-sm md:text-lg ">{product.name}</h4>
                             <Link
                                 href={`/product/${product.slug}`}
                                 className="transform scale-0 flex justify-center opacity-0 group-hover:opacity-100 group-hover:scale-100 duration-500 bg-[#1E7773] p-3 w-4/5 rounded-xl md:my-4 text-xs md:text-xl"

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { Image_Url } from '../src/const';
+import { Image_Url, Assets_Url } from '../src/const';
 import { RiFilter3Line } from 'react-icons/ri';
 import { RxCross2 } from 'react-icons/rx';
 import BlogSlider from '../src/components/BlogSlider';
@@ -35,7 +35,8 @@ const BlogDetail = ({ initialBlog = null, initialRecommended = [] }) => {
         setBlog(null);
         setErrorMessage(response.data.message);
       } else if (response.data.status === "success") {
-        setBlog(response.data.data.blog);
+        const blogData = response.data.data.blog;
+        setBlog(blogData);
         setRecomendedBlogs(response.data.data.recommended_blogs);
       }
     } catch (error) {
@@ -68,6 +69,17 @@ const BlogDetail = ({ initialBlog = null, initialRecommended = [] }) => {
   useEffect(() => {
     if (!initialBlog && blogId) {
       fetchBlogById(blogId);
+    } else if (initialBlog && !initialBlog.main_image && blogId) {
+      // SSR data missing main_image — fetch from listing to get image
+      fetch(`https://ecommerce-inventory.thegallerygen.com/api/blogs/index`)
+        .then(r => r.json())
+        .then(json => {
+          const match = json?.data?.find(b => b.slug === `${blogId}/` || b.slug === blogId);
+          if (match?.main_image) {
+            setBlog(prev => ({ ...prev, main_image: match.main_image.replace(/\/+$/, '') }));
+          }
+        })
+        .catch(() => {});
     }
   }, [blogId]);
 
@@ -102,14 +114,16 @@ const BlogDetail = ({ initialBlog = null, initialRecommended = [] }) => {
         <div
           className="flex items-end relative min-h-[550px] text-white w-full"
           style={{
-            background: `url('${Image_Url}BlogsSection/BlogCover.svg')`,
+            background: `url('${blog.main_image ? `${Assets_Url}${blog.main_image}`.replace(/\/+$/, '') : Image_Url + "BlogsSection/BlogCover.svg"}')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             width: '100%',
             height: '25rem',
           }}
         >
-          <div className='pl-2 md:pl-32 pb-24'>
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-black/55" />
+          <div className='pl-2 md:pl-32 pb-24 relative z-10'>
             <div className='flex gap-2'>
               <p>Categories: {blog.category} -</p>
               <p>{blog.date}</p>

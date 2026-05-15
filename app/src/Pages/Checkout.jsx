@@ -2,8 +2,20 @@
 import Image from 'next/image';
 import ReactDOM from "react-dom";
 // import "leaflet/dist/leadistflet.css";
-import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer } from "react-leaflet";
+// leaflet.css is imported globally in globals.css to avoid Turbopack image path issues
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import L from "leaflet";
+
+// Fix Leaflet default marker icon in Next.js
+const defaultIcon = L.icon({
+    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+    iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+});
 import React, { useEffect, useRef, useState } from "react";
 import Hamburger from "../components/Hamburger";
 import { PiCaretDownThin } from "react-icons/pi";
@@ -358,12 +370,37 @@ formData.forEach((value, key) => {
         return new Blob([byteArray], { type: contentType });
     };
 
+    const [mapCenter, setMapCenter] = useState([24.8607, 67.0011]);
+    const [markerPos, setMarkerPos] = useState(null);
+
+    // Geocode a text query using Nominatim (free, no API key needed)
+    const geocodeQuery = async (query) => {
+        if (!query || query.trim().length < 3) return;
+        try {
+            const res = await fetch(
+                `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + ', Karachi, Pakistan')}&format=json&limit=1`,
+                { headers: { 'Accept-Language': 'en' } }
+            );
+            const data = await res.json();
+            if (data && data[0]) {
+                const lat = parseFloat(data[0].lat);
+                const lon = parseFloat(data[0].lon);
+                setMapCenter([lat, lon]);
+                setMarkerPos([lat, lon]);
+            }
+        } catch (e) {
+            console.log('Geocode error:', e);
+        }
+    };
+
     const handleAreaChange = (area) => {
         setSelectedArea(area.area_name);
         setSelectedAreaId(area.id);
         setAreaDeliveryCharges(area.shipping_rate);
         setIsDropdown(!isDropdown);
         setErrors(prev => ({ ...prev, selectedAreaId: '' }));
+        // Geocode the selected area
+        geocodeQuery(area.area_name);
     };
     // const downloadInvoice = async (orderDetails) => {
     //     setLoading(true);
@@ -545,6 +582,12 @@ formData.forEach((value, key) => {
                                 onChange={(e) => {
                                     setBillingAddress(e.target.value);
                                     setErrors(prev => ({ ...prev, billing_address: '' }));
+                                    // Debounced geocode on address input
+                                    clearTimeout(window._addrGeoTimer);
+                                    window._addrGeoTimer = setTimeout(() => {
+                                        const query = e.target.value + (selectedArea !== 'Select Area' ? ', ' + selectedArea : '');
+                                        geocodeQuery(query);
+                                    }, 800);
                                 }}
                                 required
                             ></textarea>
@@ -586,7 +629,7 @@ formData.forEach((value, key) => {
 
     <div className="h-72 w-full rounded-lg overflow-hidden relative z-0">
   <MapContainer
-    center={[24.8607, 67.0011]}
+    center={mapCenter}
     zoom={13}
     scrollWheelZoom={false}
     className="h-full w-full z-0"
@@ -595,6 +638,12 @@ formData.forEach((value, key) => {
       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       attribution="© OpenStreetMap"
     />
+    <MapCenterUpdater center={mapCenter} />
+    {markerPos && (
+      <Marker position={markerPos} icon={defaultIcon}>
+        <Popup>{selectedArea !== 'Select Area' ? selectedArea : 'Delivery Location'}</Popup>
+      </Marker>
+    )}
   </MapContainer>
 </div>
 </div>
@@ -855,3 +904,14 @@ formData.forEach((value, key) => {
 }
 
 export default Checkout;
+
+// Helper: updates map center when markerPos changes
+function MapCenterUpdater({ center }) {
+    const map = useMap();
+    useEffect(() => {
+        if (center) {
+            map.flyTo(center, 15, { duration: 1.2 });
+        }
+    }, [center, map]);
+    return null;
+}

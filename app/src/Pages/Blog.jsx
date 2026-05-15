@@ -129,27 +129,29 @@ function Blog({ initialBlogs = [], initialCategories = [] }) {
                     <RiFilter3Line />
                 </button>
             </div>
-            <div className='flex w-full  text-white'>
-                <div className='lg:ml-10 md:w-1/4 w-3/2'>
+            <div className='flex w-full gap-4 text-white'>
+                {/* Sidebar — hidden on desktop, overlay on mobile */}
+                <div className='lg:ml-10 w-0 lg:w-0 flex-shrink-0'>
                 <BlogSidebar blogs={blogs} onCategorySelect={handleCategoryChange} toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} initialCategories={initialCategories} />
                 </div>
-                <section>
-                    <div className='w-full flex flex-wrap justify-center gap-10'>
+                <section className="flex-1 min-w-0 px-6">
+                    <div className='w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'>
                         {blogs.length > 0 ? (
                             blogs.map((data) => (
-                                <div className='max-w-[380px] w-[270px] md:w-[350px]' key={data.id}>
-                                    <Link href={`/${data.slug}`} data-aos="fade-up" className="flex flex-col gap-2 py-4 justify-center items-start" aria-label={`Read ${data.title}`}>
-                        <Image className="rounded-xl w-[270px] h-[270px] md:w-[350px] md:h-[350px] object-cover" 
+                                <div className='w-full' key={data.id}>
+                                    <Link href={`/${data.slug}`} data-aos="fade-up" className="flex flex-col gap-3 py-4 justify-center items-start" aria-label={`Read ${data.title}`}>
+                                        <Image
+                                            className="rounded-xl w-full h-[220px] md:h-[260px] object-cover"
                                             src={
-                                                data.main_image 
-                                                    ? `${Assets_Url}${data.main_image}` 
-                                                    : data.image 
-                                                    ? `${Assets_Url}${data.image}` 
+                                                data.main_image
+                                                    ? `${Assets_Url}${data.main_image}`
+                                                    : data.image
+                                                    ? `${Assets_Url}${data.image}`
                                                     : `${Assets_Url}/storage/blog_images/default.png`
-                                            } 
-                                            alt={data.title} width={500} height={500} />
-                                        <p className="md:text-md text-[12px] md:text-sm text-start text-[#898989]">{data.category} | {new Date(data.date).toDateString()}</p>
-                                        <p className="md:text-xl text-xs text-start font-semibold">{data.title}</p>
+                                            }
+                                            alt={data.title} width={800} height={500} />
+                                        <p className="text-sm text-start text-[#898989]">{data.category} | {new Date(data.date).toDateString()}</p>
+                                        <p className="text-lg text-start font-semibold leading-snug">{data.title}</p>
                                     </Link>
                                 </div>
                             ))
