@@ -60,7 +60,7 @@ const SITE_ORIGIN =
  * - If it points to a different origin (e.g. staging/preview domain), discard it
  * Returns the canonical string if valid, otherwise null.
  */
-function validateCanonical(raw: string | undefined | null): string | null {
+export function validateCanonical(raw: string | undefined | null): string | null {
   if (!raw || typeof raw !== "string") return null;
   const t = raw.trim();
   if (!t) return null;
