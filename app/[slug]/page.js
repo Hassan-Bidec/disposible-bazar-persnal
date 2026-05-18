@@ -8,6 +8,7 @@
 import { Suspense } from "react";
 import BlogDetailPage from "./BlogDetailPage";
 import { Loader } from "../src/components/Loader";
+import { resolveCanonical } from "../lib/getCanonicalUrl";
 
 export const revalidate = 600;
 
@@ -57,15 +58,14 @@ export async function generateMetadata({ params }) {
   const data = await getBlogData(slug || "");
   const seo = data?.blog?.blogSeoMetadata;
 
+  const fallbackPath = slug ? `/${slug.replace(/^\/+|\/+$/g, "")}/` : "/";
+  const canonical = resolveCanonical(seo?.canonical_url, fallbackPath);
+
   return {
     title: seo?.meta_title || data?.blog?.title || "Blog - Disposable Bazar",
     description: seo?.meta_description || "",
     keywords: seo?.focus_keyword || "",
-    ...(seo?.canonical_url && seo.canonical_url.trim()
-      ? { alternates: { canonical: seo.canonical_url } }
-      : slug
-      ? { alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")}/${slug}/` } }
-      : {}),
+    ...(canonical ? { alternates: { canonical } } : {}),
     robots: {
       index: true,
       follow: true,

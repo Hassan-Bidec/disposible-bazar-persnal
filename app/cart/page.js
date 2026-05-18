@@ -1,3 +1,5 @@
+import { resolveCanonical, getCanonicalUrl } from "../lib/getCanonicalUrl";
+
 // 🟩 Dynamic Metadata Function for Cart Page
 export async function generateMetadata() {
   try {
@@ -18,7 +20,8 @@ export async function generateMetadata() {
         : {}),
 
       alternates: {
-        canonical: data?.data?.canonical_url || "",
+        canonical:
+          resolveCanonical(data?.data?.canonical_url, "/cart/") ?? undefined,
       },
 
       robots: {
@@ -36,6 +39,7 @@ export async function generateMetadata() {
     return {
       title: "Your Cart | Shop",
       description: "View and manage your cart items",
+      alternates: { canonical: getCanonicalUrl("/cart/") ?? undefined },
     };
   }
 }

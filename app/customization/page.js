@@ -1,5 +1,5 @@
 // 🟩 Dynamic Metadata Function for Customization Page
-import { buildCanonical } from "../lib/seo/pageDetail";
+import { resolveCanonical, getCanonicalUrl } from "../lib/getCanonicalUrl";
 
 export async function generateMetadata() {
   try {
@@ -11,11 +11,10 @@ export async function generateMetadata() {
     if (!res.ok) throw new Error(`API returned status ${res.status}`);
 
     const data = await res.json();
-    const cmsCanonical = data?.data?.canonical_url;
-    const canonical =
-      (cmsCanonical && cmsCanonical.trim())
-        ? cmsCanonical
-        : buildCanonical("/customization/");
+    const canonical = resolveCanonical(
+      data?.data?.canonical_url,
+      "/customization/"
+    );
 
     return {
       title: data?.data?.meta_title || "Customization - Disposable Bazar",
@@ -36,7 +35,7 @@ export async function generateMetadata() {
     return {
       title: "Customization - Disposable Bazar",
       description: "Customization Services",
-      alternates: { canonical: buildCanonical("/customization/") ?? undefined },
+      alternates: { canonical: getCanonicalUrl("/customization/") ?? undefined },
       robots: { index: true, follow: true },
     };
   }

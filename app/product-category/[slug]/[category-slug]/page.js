@@ -5,6 +5,7 @@
 
 import { Suspense } from "react";
 import CategoryPageClient from "../CategoryPageClient";
+import { resolveCanonical } from "../../../lib/getCanonicalUrl";
 
 export const revalidate = 600;
 
@@ -57,9 +58,20 @@ async function getPageData(categorySlug) {
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
-  const categorySlug = resolvedParams?.["category-slug"] || "";
+  const parentSlug = (resolvedParams?.slug || "").replace(/^\/+|\/+$/g, "");
+  const categorySlug = (resolvedParams?.["category-slug"] || "").replace(
+    /^\/+|\/+$/g,
+    ""
+  );
   const data = await getPageData(categorySlug);
   const seo = data?.cat?.categorySeoMetadata;
+  const fallbackPath =
+    parentSlug && categorySlug
+      ? `/product-category/${parentSlug}/${categorySlug}/`
+      : categorySlug
+        ? `/product-category/${categorySlug}/`
+        : "/product-category/";
+  const canonical = resolveCanonical(seo?.canonical_url, fallbackPath);
 
   return {
     title:
@@ -67,9 +79,7 @@ export async function generateMetadata({ params }) {
       data?.cat?.name ||
       "Product Category - Disposable Bazar",
     description: seo?.meta_description || "",
-    alternates: {
-      canonical: seo?.canonical_url || "",
-    },
+    alternates: canonical ? { canonical } : undefined,
     robots: {
       index: true,
       follow: true,

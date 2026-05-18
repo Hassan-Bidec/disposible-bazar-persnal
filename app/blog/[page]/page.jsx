@@ -6,7 +6,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import BlogClient from "../../src/Pages/Blog";
-import { buildCanonical } from "../../lib/seo/pageDetail";
+import { getCanonicalUrl } from "../../lib/getCanonicalUrl";
 
 export const revalidate = 300;
 
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }) {
   if (pageNum < 2) notFound();
 
   const { meta } = await getPageData(pageNum);
-  const canonical = buildCanonical(`/blog/${pageNum}/`);
+  const canonical = getCanonicalUrl(`/blog/${pageNum}/`);
 
   return {
     title: meta?.meta_title

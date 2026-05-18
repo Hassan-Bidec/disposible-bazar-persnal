@@ -1,5 +1,6 @@
 import CustomizationSlugClient from "./CustomizationSlugClient";
 import { serializeLdJson } from "../../lib/seo/pageDetail";
+import { resolveCanonical } from "../../lib/getCanonicalUrl";
 
 export const revalidate = 600;
 
@@ -47,12 +48,16 @@ export async function generateMetadata(props) {
     typeof firstImg === "string"
       ? `https://ecommerce-inventory.thegallerygen.com/${firstImg.replace(/^\/+/, "")}`
       : undefined;
+  const canonical = resolveCanonical(
+    seo?.canonical_url,
+    `/customization/${slug}/`
+  );
 
   return {
     title,
     description,
     ...(seo?.focus_keyword ? { keywords: seo.focus_keyword } : {}),
-    alternates: seo?.canonical_url ? { canonical: seo.canonical_url } : undefined,
+    ...(canonical ? { alternates: { canonical } } : {}),
     openGraph: {
       title: product?.name || title,
       description: product?.description || description,

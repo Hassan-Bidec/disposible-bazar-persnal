@@ -1,7 +1,13 @@
 
+import { getCanonicalUrl } from "../lib/getCanonicalUrl";
 
-
-
+export async function generateMetadata() {
+  return {
+    title: "Login - Disposable Bazaar",
+    alternates: { canonical: getCanonicalUrl("/login/") ?? undefined },
+    robots: { index: false, follow: true },
+  };
+}
 
 import React, { Suspense } from "react";
 import Login from '../src/Pages/Login'

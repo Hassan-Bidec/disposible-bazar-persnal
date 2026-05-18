@@ -1,3 +1,5 @@
+import { resolveCanonical, getCanonicalUrl } from "../lib/getCanonicalUrl";
+
 // 🟩 Dynamic Metadata Function for Account Settings Page
 export async function generateMetadata() {
   try {
@@ -17,7 +19,9 @@ export async function generateMetadata() {
       description: data?.data?.meta_description || "Manage your account settings",
 
       alternates: {
-        canonical: data?.data?.canonical_url || "",
+        canonical:
+          resolveCanonical(data?.data?.canonical_url, "/profile/") ??
+          undefined,
       },
 
       robots: {
@@ -36,6 +40,7 @@ export async function generateMetadata() {
     return {
       title: "Account Settings",
       description: "Manage your account settings",
+      alternates: { canonical: getCanonicalUrl("/profile/") ?? undefined },
       robots: {
         index: true,
         follow: true,

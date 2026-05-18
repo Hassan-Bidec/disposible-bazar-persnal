@@ -1,4 +1,5 @@
-import { buildCanonical, validateCanonical } from "../lib/seo/pageDetail";
+// 🟩 Dynamic Metadata Function for Contact Page
+import { resolveCanonical, getCanonicalUrl } from "../lib/getCanonicalUrl";
 
 export async function generateMetadata() {
   try {
@@ -10,7 +11,10 @@ export async function generateMetadata() {
     if (!res.ok) throw new Error(`API error: ${res.status}`);
 
     const data = await res.json();
-    const canonical = validateCanonical(data?.data?.canonical_url) ?? buildCanonical("/contact-us/") ?? undefined;
+    const canonical = resolveCanonical(
+      data?.data?.canonical_url,
+      "/contact-us/"
+    );
 
     return {
       title: data?.data?.meta_title || "Contact Us",
@@ -31,7 +35,7 @@ export async function generateMetadata() {
     return {
       title: "Contact Us",
       description: "Contact Us page",
-      alternates: { canonical: buildCanonical("/contact-us/") ?? undefined },
+      alternates: { canonical: getCanonicalUrl("/contact-us/") ?? undefined },
       robots: { index: true, follow: true },
     };
   }

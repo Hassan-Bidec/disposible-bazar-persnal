@@ -1,5 +1,5 @@
 
-
+import { resolveCanonical, getCanonicalUrl } from "../lib/getCanonicalUrl";
 
 // 🟩 Dynamic Metadata Function for Wishlist Page
 export async function generateMetadata() {
@@ -23,7 +23,9 @@ export async function generateMetadata() {
         : {}),
 
       alternates: {
-        canonical: data?.data?.canonical_url || "",
+        canonical:
+          resolveCanonical(data?.data?.canonical_url, "/wishlist/") ??
+          undefined,
       },
 
       robots: {
@@ -42,6 +44,7 @@ export async function generateMetadata() {
     return {
       title: "Wishlist",
       description: "Your Wishlist",
+      alternates: { canonical: getCanonicalUrl("/wishlist/") ?? undefined },
       robots: {
         index: true,
         follow: true,

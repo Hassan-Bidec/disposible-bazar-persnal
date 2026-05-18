@@ -1,5 +1,5 @@
 // 🟩 Dynamic Metadata Function
-import { buildCanonical } from "./lib/seo/pageDetail";
+import { resolveCanonical, getCanonicalUrl } from "./lib/getCanonicalUrl";
 
 export async function generateMetadata() {
   try {
@@ -9,11 +9,7 @@ export async function generateMetadata() {
     );
 
     const data = await res.json();
-    const cmsCanonical = data?.data?.canonical_url;
-    const canonical =
-      (cmsCanonical && cmsCanonical.trim())
-        ? cmsCanonical
-        : buildCanonical("/");
+    const canonical = resolveCanonical(data?.data?.canonical_url, "/");
 
     return {
       title: data?.data?.meta_title || "Disposable Bazaar",
@@ -34,7 +30,7 @@ export async function generateMetadata() {
     return {
       title: "Disposable Bazaar",
       description: "Quality disposable products",
-      alternates: { canonical: buildCanonical("/") ?? undefined },
+      alternates: { canonical: getCanonicalUrl("/") ?? undefined },
       robots: { index: true, follow: true },
     };
   }

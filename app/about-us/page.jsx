@@ -1,4 +1,4 @@
-import { buildCanonical, validateCanonical } from "../lib/seo/pageDetail";
+import { resolveCanonical, getCanonicalUrl } from "../lib/getCanonicalUrl";
 
 export async function generateMetadata() {
   try {
@@ -10,7 +10,8 @@ export async function generateMetadata() {
     if (!res.ok) throw new Error(`API error: ${res.status}`);
 
     const data = await res.json();
-    const canonical = validateCanonical(data?.data?.canonical_url) ?? buildCanonical("/about-us/") ?? undefined;
+    const canonical =
+      resolveCanonical(data?.data?.canonical_url, "/about-us/") ?? undefined;
 
     return {
       title: data?.data?.meta_title || "About Us",
@@ -31,7 +32,7 @@ export async function generateMetadata() {
     return {
       title: "About Us",
       description: "About Us page",
-      alternates: { canonical: buildCanonical("/about-us/") ?? undefined },
+      alternates: { canonical: getCanonicalUrl("/about-us/") ?? undefined },
       robots: { index: true, follow: true },
     };
   }

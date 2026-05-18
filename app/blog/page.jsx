@@ -31,12 +31,12 @@ async function getPageData() {
   }
 }
 
-import { buildCanonical, validateCanonical } from "../lib/seo/pageDetail";
+import { resolveCanonical } from "../lib/getCanonicalUrl";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata() {
   const { meta } = await getPageData();
-  const canonical = validateCanonical(meta?.canonical_url) ?? buildCanonical("/blog/") ?? undefined;
+  const canonical = resolveCanonical(meta?.canonical_url, "/blog/");
 
   return {
     title: meta?.meta_title || "Blog - Disposable Bazar",
