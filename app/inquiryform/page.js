@@ -1,3 +1,4 @@
+import { resolveCanonical, getCanonicalUrl } from "../lib/getCanonicalUrl";
 
 // 🟩 Dynamic Metadata Function for Inquiry Form Page
 export async function generateMetadata() {
@@ -21,7 +22,9 @@ export async function generateMetadata() {
         : {}),
 
       alternates: {
-        canonical: data?.data?.canonical_url || "",
+        canonical:
+          resolveCanonical(data?.data?.canonical_url, "/inquiryform/") ??
+          undefined,
       },
 
       robots: {
@@ -40,6 +43,7 @@ export async function generateMetadata() {
     return {
       title: "Inquiry Form",
       description: "Inquiry form page",
+      alternates: { canonical: getCanonicalUrl("/inquiryform/") ?? undefined },
       robots: {
         index: true,
         follow: true,

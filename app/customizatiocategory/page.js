@@ -1,6 +1,13 @@
+import { getCanonicalUrl } from "../lib/getCanonicalUrl";
 
-
-
+export async function generateMetadata() {
+  return {
+    title: "Customization Category - Disposable Bazaar",
+    alternates: {
+      canonical: getCanonicalUrl("/customizatiocategory/") ?? undefined,
+    },
+  };
+}
 
 import React, { Suspense } from "react";
 import CustomizationCategory from "../../app/product-category/[slug]/page"

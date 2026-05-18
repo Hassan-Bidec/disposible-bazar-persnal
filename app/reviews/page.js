@@ -1,5 +1,5 @@
 // 🟩 Dynamic Metadata Function for Reviews Page
-import { buildCanonical } from "../lib/seo/pageDetail";
+import { resolveCanonical, getCanonicalUrl } from "../lib/getCanonicalUrl";
 
 export async function generateMetadata() {
   try {
@@ -11,11 +11,7 @@ export async function generateMetadata() {
     if (!res.ok) throw new Error(`API error: ${res.status}`);
 
     const data = await res.json();
-    const cmsCanonical = data?.data?.canonical_url;
-    const canonical =
-      (cmsCanonical && cmsCanonical.trim())
-        ? cmsCanonical
-        : buildCanonical("/reviews/");
+    const canonical = resolveCanonical(data?.data?.canonical_url, "/reviews/");
 
     return {
       title: data?.data?.meta_title || "Reviews",
@@ -36,7 +32,7 @@ export async function generateMetadata() {
     return {
       title: "Reviews",
       description: "Reviews page",
-      alternates: { canonical: buildCanonical("/reviews/") ?? undefined },
+      alternates: { canonical: getCanonicalUrl("/reviews/") ?? undefined },
       robots: { index: true, follow: true },
     };
   }

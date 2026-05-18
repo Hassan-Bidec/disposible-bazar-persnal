@@ -2,6 +2,7 @@
 import { Suspense } from "react";
 import CustomHeroSection from "../../src/components/CustomHeroSection";
 import ShopClient from "../../src/Pages/ShopClient";
+import { resolveCanonical } from "../../lib/getCanonicalUrl";
 
 export const revalidate = 300;
 
@@ -43,8 +44,10 @@ export async function generateMetadata({ params }) {
   const pageData = await getPageData();
 
   const baseTitle = pageData?.meta_title || "Shop - Disposable Bazar";
-  const baseCanonical =
-    pageData?.canonical_url || "https://disposablebazaar.com/shop";
+  const canonical = resolveCanonical(
+    pageData?.canonical_url,
+    `/shop/${page}/`
+  );
 
   return {
     title: `${baseTitle} - Page ${page}`,
@@ -52,7 +55,7 @@ export async function generateMetadata({ params }) {
       pageData?.meta_description ||
       "Browse our full collection of disposable products.",
     ...(pageData?.focus_keyword ? { keywords: pageData.focus_keyword } : {}),
-    alternates: { canonical: `${baseCanonical}/${page}` },
+    alternates: canonical ? { canonical } : undefined,
     robots: {
       index: pageData?.robots_index !== "noindex",
       follow: pageData?.robots_follow !== "nofollow",

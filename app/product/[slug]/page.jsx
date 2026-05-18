@@ -7,57 +7,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import ShopDetails from "./ShopDetails";
+import { resolveProductCanonical } from "../../lib/getCanonicalUrl";
 
 export const revalidate = 600;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
-
-function siteOrigin() {
-  const u =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "") ||
-    "http://localhost:3000";
-  try {
-    return new URL(u).origin;
-  } catch {
-    return "http://localhost:3000";
-  }
-}
-
-/**
- * CMS canonical may be slug-only (`my-product/`), relative, or full URL.
- * Invalid values break Next metadata and can 500 the document.
- */
-function resolveProductCanonical(rawCanonical, slugSegment) {
-  const origin = siteOrigin();
-  const slug = String(slugSegment || "")
-    .trim()
-    .replace(/^\/+|\/+$/g, "");
-  if (!slug) return undefined;
-
-  const defaultProductHref = `${origin}/product/${slug}/`;
-
-  if (rawCanonical == null) return defaultProductHref;
-  const t = String(rawCanonical).trim();
-  if (!t) return defaultProductHref;
-
-  try {
-    if (/^https?:\/\//i.test(t)) {
-      return new URL(t).href;
-    }
-    let path = t.startsWith("/") ? t : `/${t}`;
-    if (!path.toLowerCase().includes("/product/")) {
-      const inner = path.replace(/^\/+|\/+$/g, "");
-      const slugComparable = slug.replace(/\/$/, "");
-      if (inner === slugComparable || inner.startsWith(`${slugComparable}/`)) {
-        path = `/product/${slugComparable}/`;
-      }
-    }
-    return new URL(path, `${origin}/`).href;
-  } catch {
-    return defaultProductHref;
-  }
-}
 
 function escapeJsonForScript(html) {
   return html.replace(/</g, "\\u003c");

@@ -1,3 +1,5 @@
+import { resolveCanonical, getCanonicalUrl } from "../../lib/getCanonicalUrl";
+
 // Dynamic route for paginated bundles pages: /bundles/2, /bundles/3, etc.
 // Page 1 is served by /bundles/page.jsx (no page number in URL)
 
@@ -14,14 +16,15 @@ export async function generateMetadata({ params }) {
     const data = await res.json();
     const baseTitle = data?.data?.meta_title || "Bundle Shop - Disposable Bazar";
     const baseDesc = data?.data?.meta_description || "Special bundles and deals on disposable products.";
-    const baseCanonical = data?.data?.canonical_url || "https://disposablebazar.com/bundles";
+    const canonical = resolveCanonical(
+      data?.data?.canonical_url,
+      `/bundles/${page}/`
+    );
 
     return {
       title: `${baseTitle} - Page ${page}`,
       description: baseDesc,
-      alternates: {
-        canonical: `${baseCanonical}/${page}`,
-      },
+      alternates: canonical ? { canonical } : undefined,
       robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
@@ -37,7 +40,7 @@ export async function generateMetadata({ params }) {
       title: `Bundle Shop - Page ${page} - Disposable Bazar`,
       description: "Special bundles and deals on disposable products.",
       alternates: {
-        canonical: `https://disposablebazar.com/bundles/${page}`,
+        canonical: getCanonicalUrl(`/bundles/${page}/`) ?? undefined,
       },
       robots: { index: true, follow: true },
     };

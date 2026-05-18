@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import CategoryPageClient from "./CategoryPageClient";
+import { resolveCanonical } from "../../lib/getCanonicalUrl";
 
 export const revalidate = 600;
 
@@ -71,11 +72,11 @@ export async function generateMetadata({ params }) {
 
   const data = await getPageData(slug);
   const seo = data?.cat?.categorySeoMetadata;
-  const cmsCanonical = seo?.canonical_url;
-  const canonical =
-    (cmsCanonical && cmsCanonical.trim())
-      ? cmsCanonical
-      : `${process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")}/product-category/${slug}/`;
+  const slugClean = slug.replace(/^\/+|\/+$/g, "");
+  const canonical = resolveCanonical(
+    seo?.canonical_url,
+    `/product-category/${slugClean}/`
+  );
 
   return {
     title:

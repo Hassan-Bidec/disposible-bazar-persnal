@@ -13,6 +13,7 @@ export async function generateMetadata() {
   return metadataFromPageDetail(detail, {
     title: "Custom details",
     description: "Custom details - Disposable Bazaar",
+    path: "/customdetails/",
   });
 }
 

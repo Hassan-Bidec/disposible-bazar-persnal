@@ -31,16 +31,12 @@ async function getPageData() {
   }
 }
 
-import { buildCanonical } from "../lib/seo/pageDetail";
+import { resolveCanonical } from "../lib/getCanonicalUrl";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata() {
   const { meta } = await getPageData();
-  const cmsCanonical = meta?.canonical_url;
-  const canonical =
-    (cmsCanonical && cmsCanonical.trim())
-      ? cmsCanonical
-      : buildCanonical("/blog/");
+  const canonical = resolveCanonical(meta?.canonical_url, "/blog/");
 
   return {
     title: meta?.meta_title || "Blog - Disposable Bazar",
