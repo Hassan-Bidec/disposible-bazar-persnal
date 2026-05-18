@@ -22,9 +22,18 @@ async function getPageDetail() {
 export async function generateMetadata() {
   const detail = await getPageDetail();
 
-  const canonical = detail?.canonical_url?.trim()
-    ? detail.canonical_url.trim()
-    : `${SITE_URL}/privacy-policy/`;
+  // Use API canonical but replace domain with our SITE_URL
+  // API returns: https://ecommerce-inventory.thegallerygen.com/privacy-policy/
+  // We want:     https://disposablebazaar.com/privacy-policy/
+  let canonical = `${SITE_URL}/privacy-policy/`;
+  if (detail?.canonical_url?.trim()) {
+    try {
+      const apiUrl = new URL(detail.canonical_url.trim());
+      canonical = `${SITE_URL}${apiUrl.pathname}`;
+    } catch {
+      canonical = `${SITE_URL}/privacy-policy/`;
+    }
+  }
 
   return {
     title: detail?.meta_title || "Privacy Policy - Disposable Bazaar",
