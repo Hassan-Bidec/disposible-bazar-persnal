@@ -1,6 +1,7 @@
-export const Image_Url = "https://ecommerce-inventory.thegallerygen.com/public/Frontend/Assets/";
-export const Assets_Url = "https://ecommerce-inventory.thegallerygen.com";
-// export const Image_Url = 'http://localhost/ecommerce-inventory/public/frontend/assets/';
-// export const Assets_Url = 'http://localhost/ecommerce-inventory';
-export const Profile_Assets_Url = "https://ecommerce-inventory.thegallerygen.com/storage/app/public";
-export const Image_Not_Found = 'https://ecommerce-inventory.thegallerygen.com/public/Frontend/Assets/defaultImage.svg';
+export const Image_Url = process.env.NEXT_PUBLIC_IMAGE_URL;
+
+export const Assets_Url = process.env.NEXT_PUBLIC_ASSETS_URL;
+
+export const Profile_Assets_Url = process.env.NEXT_PUBLIC_PROFILE_ASSETS_URL;
+
+export const Image_Not_Found = process.env.NEXT_PUBLIC_IMAGE_NOT_FOUND;
