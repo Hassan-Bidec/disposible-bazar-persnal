@@ -66,13 +66,13 @@ export function validateCanonical(raw: string | undefined | null): string | null
   if (!t) return null;
   try {
     const url = new URL(t);
-    // Only allow https
-    if (url.protocol !== "https:") return null;
-    // If we know our own origin, reject canonicals pointing elsewhere
+    if (!url.pathname) return null;
+    // Replace CMS domain with our own SITE_ORIGIN
     if (SITE_ORIGIN) {
       const ownOrigin = new URL(SITE_ORIGIN).origin;
-      if (url.origin !== ownOrigin) return null;
+      return `${ownOrigin}${url.pathname}`;
     }
+    // No SITE_ORIGIN set — return as-is
     return url.href;
   } catch {
     return null;
