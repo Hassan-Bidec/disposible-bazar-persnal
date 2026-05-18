@@ -38,7 +38,7 @@ function Categories() {
         // Fetch categories from the API
         const response = await axios.public.get("product/category?sectionName=productsSliderTop");
         const categoryData = response.data.data;
-
+        
         setCategories(categoryData);
 
         // Set default category as the first one and fetch its products
