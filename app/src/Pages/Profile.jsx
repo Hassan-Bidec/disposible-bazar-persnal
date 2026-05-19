@@ -6,6 +6,7 @@ import { LiaUserEditSolid } from "react-icons/lia";
 import { useUser } from "../Context/UserContext";
 import axios from "../Utils/axios";
 import { Profile_Assets_Url } from "../const";
+import { buildAssetUrl } from "../../lib/assetUrl";
 import { Loader } from "../components/Loader";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -37,7 +38,7 @@ export const Profile = () => {
 
   useEffect(() => {
     if (client?.photo) {
-      setProfilePicture(`${Profile_Assets_Url}/${client.photo}`);
+      setProfilePicture(buildAssetUrl(Profile_Assets_Url, client.photo));
     }
     if (client) {
       setFormData({

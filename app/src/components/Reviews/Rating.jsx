@@ -5,6 +5,7 @@ import { PiStarFill, PiStarThin } from 'react-icons/pi';
 import '../../Pages/Pages.css';
 import axios from '../../Utils/axios';
 import { Assets_Url, Image_Url, Profile_Assets_Url } from '../../const';
+import { buildAssetUrl } from '../../../lib/assetUrl';
 
 export const Rating = ({ productReview }) => {
     const [getRating, setGetRating] = useState(null);
@@ -79,7 +80,7 @@ export const Rating = ({ productReview }) => {
                             {data.image ? (
                                 <Image
                                     className='w-16 h-12 m-1'
-                                    src={`${Profile_Assets_Url}/${data.image}`}
+                                    src={buildAssetUrl(Profile_Assets_Url, data.image)}
                                     alt={data.name || 'Image'}
                                     width={500}
                                     height={500}
