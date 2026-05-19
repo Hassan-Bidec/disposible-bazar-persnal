@@ -7,8 +7,12 @@ export async function generateMetadata() {
   const canonical = SITE_URL ? `${new URL(SITE_URL).origin}/checkout/` : undefined;
   return {
     title: "Checkout - Disposable Bazaar",
-    alternates: canonical ? { canonical } : undefined,
-    robots: { index: false, follow: true },
+    alternates: { canonical: getCanonicalUrl("/checkout/") ?? undefined },
+    robots: { 
+      index: true, 
+      follow: true ,
+      googleBot: { index: true, follow: true }
+    },
   };
 }
 
