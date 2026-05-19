@@ -105,6 +105,45 @@ export function resolveCanonical(cmsValue, fallbackPath) {
 }
 
 /**
+ * Bundle pages: CMS often sends slug-only (e.g. picnic-bundle-1/) without /bundle/ prefix.
+ */
+export function resolveBundleCanonical(rawCanonical, slugSegment) {
+  const slug = String(slugSegment || "")
+    .trim()
+    .replace(/^\/+|\/+$/g, "");
+  const fallbackPath = slug ? `/bundle/${slug}/` : "/bundles/";
+
+  if (rawCanonical == null || !String(rawCanonical).trim()) {
+    return getCanonicalUrl(fallbackPath);
+  }
+
+  const t = String(rawCanonical).trim().split("?")[0].split("#")[0];
+  if (!t) return getCanonicalUrl(fallbackPath);
+
+  if (/^https?:\/\//i.test(t)) {
+    try {
+      const validated = validateCanonical(t);
+      if (validated && new URL(validated).pathname.toLowerCase().includes("/bundle/")) {
+        return validated;
+      }
+    } catch {
+      /* use fallback */
+    }
+    return getCanonicalUrl(fallbackPath);
+  }
+
+  let path = t.startsWith("/") ? t : `/${t}`;
+  if (!path.toLowerCase().includes("/bundle/")) {
+    const inner = path.replace(/^\/+|\/+$/g, "");
+    if (inner === slug || inner.startsWith(`${slug}/`)) {
+      path = `/bundle/${slug}/`;
+    }
+  }
+
+  return getCanonicalUrl(path) ?? getCanonicalUrl(fallbackPath);
+}
+
+/**
  * Product pages: CMS may send slug-only, relative, or /product/... paths.
  */
 export function resolveProductCanonical(rawCanonical, slugSegment) {
