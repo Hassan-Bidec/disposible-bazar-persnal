@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import BundleDetailClient from "./BundleDetailClient";
-import { resolveCanonical } from "../../lib/getCanonicalUrl";
+import { resolveBundleCanonical } from "../../lib/getCanonicalUrl";
 
 export const revalidate = 300;
 
@@ -36,10 +36,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const bundle = await getBundleData(slug || "");
   const slugClean = (slug || "").replace(/^\/+|\/+$/g, "");
-  const canonical = resolveCanonical(
-    bundle?.canonical_url,
-    `/bundle/${slugClean}/`
-  );
+  const canonical = resolveBundleCanonical(bundle?.canonical_url, slugClean);
   return {
     title: bundle?.meta_title || (bundle?.name ? `${bundle.name} - Disposable Bazar` : "Bundle - Disposable Bazar"),
     description: bundle?.description
