@@ -4,7 +4,11 @@ export async function generateMetadata() {
   return {
     title: "Checkout - Disposable Bazaar",
     alternates: { canonical: getCanonicalUrl("/checkout/") ?? undefined },
-    robots: { index: false, follow: true },
+    robots: { 
+      index: true, 
+      follow: true ,
+      googleBot: { index: true, follow: true }
+    },
   };
 }
 

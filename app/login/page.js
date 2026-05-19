@@ -5,7 +5,11 @@ export async function generateMetadata() {
   return {
     title: "Login - Disposable Bazaar",
     alternates: { canonical: getCanonicalUrl("/login/") ?? undefined },
-    robots: { index: false, follow: true },
+    robots: {
+       index: true,
+        follow: true,
+        googleBot: { index: true, follow: true }, 
+      },
   };
 }
 
