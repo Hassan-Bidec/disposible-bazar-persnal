@@ -9,6 +9,7 @@ import 'swiper/css/autoplay';
 import 'swiper/css/pagination';
 import { Autoplay } from 'swiper/modules';
 import { Profile_Assets_Url } from '../../const';
+import { buildAssetUrl } from '../../../lib/assetUrl';
 import axios from '../../Utils/axios';
 import { PiStarFill } from 'react-icons/pi';
 
@@ -54,7 +55,7 @@ const ReviewSlider = ({ initialReviews = [] }) => {
               <div className="relative w-full h-[200px] bg-[#2a2a2a]">
                 {review.image ? (
                   <Image
-                    src={`${Profile_Assets_Url}/${review.image}`}
+                    src={buildAssetUrl(Profile_Assets_Url, review.image)}
                     alt={review.name || 'Review image'}
                     fill
                     className="object-cover"
@@ -72,7 +73,11 @@ const ReviewSlider = ({ initialReviews = [] }) => {
                 <div className="flex items-center gap-3">
                   <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                     <Image
-                      src={review.user?.photo ? `${Profile_Assets_Url}/${review.user.photo}` : FALLBACK_AVATAR}
+                      src={
+                        review.user?.photo
+                          ? buildAssetUrl(Profile_Assets_Url, review.user.photo)
+                          : FALLBACK_AVATAR
+                      }
                       alt={review.name || 'User'}
                       width={10}
                       height={10}

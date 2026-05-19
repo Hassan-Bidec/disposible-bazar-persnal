@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Assets_Url, Image_Url, Profile_Assets_Url } from "../../const";
+import { buildAssetUrl } from "../../../lib/assetUrl";
 import { LuFacebook } from "react-icons/lu";
 import { FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import { FiYoutube } from "react-icons/fi";
@@ -606,7 +607,7 @@ function Header() {
                             <Link href="/profile">
                                 <Image
                                     // src={user ? `${Profile_Assets_Url}${user.photo}` : dummyProfilePic}
-                                    src={user?.photo ? `${Profile_Assets_Url}/${user.photo}` : dummyProfilePic}
+                                    src={user?.photo ? buildAssetUrl(Profile_Assets_Url, user.photo) : dummyProfilePic}
                                     alt="Profile"
                                     className="w-10 h-10 rounded-full object-cover"
                                     width={500}
