@@ -16,6 +16,7 @@ import { useParams, useRouter } from 'next/navigation';
 function Blog({ initialBlogs = [], initialCategories = [], initialTotalPages = 1 }) {
     const params = useParams();
     const router = useRouter();
+    // /blog/page/[page] route se page param aata hai
     const pageFromRoute = params.page ? parseInt(params.page) : 1;
 
     const [blogs, setBlogs] = useState(initialBlogs);
@@ -34,12 +35,13 @@ function Blog({ initialBlogs = [], initialCategories = [], initialTotalPages = 1
     }, [pageFromRoute]);
 
     // Navigate to a new page using clean dynamic routes
+    // URL structure: /blog/ for page 1, /blog/page/2/ for page 2+
     const navigateToPage = (newPage) => {
         setCurrentPage(newPage);
         if (newPage <= 1) {
             router.push(`/blog`);
         } else {
-            router.push(`/blog/${newPage}`);
+            router.push(`/blog/page/${newPage}`);
         }
     };
 
