@@ -13,10 +13,8 @@ import '../Custom.css'
 
 
 import { Pagination, Navigation } from 'swiper/modules';
-import { Assets_Url, Image_Not_Found, Image_Url } from '../../const';
 import axios from '../../Utils/axios';
 import { Loader } from '../Loader';
-// import { Link } from 'react-router-dom';
 import Link from 'next/link';
 
 
@@ -41,7 +39,15 @@ function Premium({ initialProducts = [] }) {
 export default Premium
 
 
-// Slider Component — fetches ALL products from /product-category/plastic/
+const FALLBACK_IMG = "https://ecommerce-inventory.thegallerygen.com/public/Frontend/Assets/defaultImage.svg";
+const BASE_URL = "https://ecommerce-inventory.thegallerygen.com";
+
+function getProductImage(product, index = 0) {
+    const img = product?.product_image?.[index]?.image;
+    if (!img) return FALLBACK_IMG;
+    if (img.startsWith("http")) return img;
+    return `${BASE_URL}${img.startsWith("/") ? "" : "/"}${img}`;
+}
 // SSR `initialProducts` se seed hota hai; client-side fallback bhi hai.
 
 function Slider({ initialProducts = [] }) {
@@ -145,24 +151,18 @@ function Slider({ initialProducts = [] }) {
                                 <div className="relative p-5 flex justify-center items-center w-[150px] h-[150px] md:w-[250px] md:h-[250px]">
                                     <Image
                                         className=" w-full h-full block group-hover:hidden rounded-xl object-cover"
-                                        src={`${Assets_Url}${product.product_image[0]?.image}`}
-                                        alt={product.name}
+                                        src={getProductImage(product, 0)}
+                                        alt={product.name || "Product"}
                                         style={{ transition: 'opacity 0.5s ease 0.3s' }}
                                         loading='lazy'
-                                        onError={(e) => {
-                                            e.currentTarget.src = Image_Not_Found; // Path to your dummy image
-                                          }}
                                         width={500} height={500}
                                     />
                                     <Image
                                         className=" w-full h-full hidden group-hover:block rounded-xl object-cover"
-                                        src={`${Assets_Url}${product.product_image[1]?.image}`}  // Replace with hover image if available
-                                        alt={product.name}
+                                        src={getProductImage(product, 1) || getProductImage(product, 0)}
+                                        alt={product.name || "Product"}
                                         style={{ transition: 'opacity 0.5s ease 0.3s' }}
                                         loading='lazy'
-                                        onError={(e) => {
-                                            e.currentTarget.src = Image_Not_Found; // Path to your dummy image
-                                          }}
                                         width={500} height={500}
                                     />
                                 </div>
