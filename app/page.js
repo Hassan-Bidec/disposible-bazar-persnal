@@ -57,29 +57,11 @@ async function getPageData() {
   }
 }
 
-// Fetch ALL products from /product-category/plastic/ for the Premium slider — SSR
+// Fetch ALL products from plastic category (ID: 28) for the Premium slider — SSR
 async function getPlasticContainersProducts() {
   try {
-    // First get category list to find 'plastic' category ID
-    const catRes = await fetch(`${API_BASE}/product/category`, { next: { revalidate: 3600 } });
-    if (!catRes.ok) return [];
-    const catJson = await catRes.json();
-    const normalize = (s) => (s || '').toLowerCase().replace(/\/+$/, '');
-    const findCat = (cats, slug) => {
-      for (const c of cats) {
-        if (normalize(c.slug) === normalize(slug)) return c;
-        if (c.subCategories?.length) {
-          const found = findCat(c.subCategories, slug);
-          if (found) return found;
-        }
-      }
-      return null;
-    };
-    const cat = findCat(catJson?.data || [], 'plastic');
-    if (!cat) return [];
-
     const res = await fetch(
-      `${API_BASE}/search/product?category_id=${cat.id}&sort_by=1`,
+      `${API_BASE}/search/product?category_id=28&sort_by=1`,
       { next: { revalidate: 300 } }
     );
     if (!res.ok) return [];
