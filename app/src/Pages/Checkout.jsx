@@ -710,7 +710,7 @@ formData.forEach((value, key) => {
                                 <div className="flex items-center">
                                     <Image
                                         src={`${Assets_Url}${product.product_img}`}
-                                        alt={product.name}
+                                        alt={product.name || "image"}
                                         className="w-40 h-32 border-2 border-[#1E7773] rounded-xl object-cover"
                                         width={500} height={500}
                                     />

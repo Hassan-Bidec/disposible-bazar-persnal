@@ -1,38 +1,70 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import PrivacyPolicy from "../src/Pages/PrivacyPolicy";
-import {
-  fetchPageDetailById,
-  metadataFromPageDetail,
-  serializeLdJson,
-} from "../lib/seo/pageDetail";
+import { resolveCanonical } from "../lib/getCanonicalUrl";
 
 export const revalidate = 86400;
 
+const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
+
+async function getPageDetail() {
+  try {
+    const res = await fetch(`${API_BASE}/page/detail/12`, {
+      next: { revalidate: 86400 },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.data || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function generateMetadata() {
-  const detail = await fetchPageDetailById(12, {
-    next: { revalidate: 86400 },
-  });
-  return metadataFromPageDetail(detail, {
-    title: "Privacy Policy",
-    description: "Privacy policy - Disposable Bazaar",
-    path: "/privacy-policy/",
-  });
+  const detail = await getPageDetail();
+
+  const canonical = resolveCanonical(
+    detail?.canonical_url,
+    "/privacy-policy/"
+  );
+
+  return {
+    title: detail?.meta_title || "Privacy Policy - Disposable Bazaar",
+    description: detail?.meta_description || "Privacy policy - Disposable Bazaar",
+    ...(detail?.focus_keyword ? { keywords: detail.focus_keyword } : {}),
+    alternates: canonical ? { canonical } : undefined,
+    robots: {
+      index: detail?.robots_index !== "noindex",
+      follow: detail?.robots_follow !== "nofollow",
+      googleBot: {
+        index: detail?.robots_index !== "noindex",
+        follow: detail?.robots_follow !== "nofollow",
+      },
+    },
+  };
 }
 
 export default async function Page() {
-  const detail = await fetchPageDetailById(12, {
-    next: { revalidate: 86400 },
-  });
-  const schemaLd = serializeLdJson(detail?.schema);
+  const detail = await getPageDetail();
+
+  // Safe schema injection
+  let schemaLd = null;
+  try {
+    if (detail?.schema?.trim()) {
+      JSON.parse(detail.schema); // validate
+      schemaLd = detail.schema;
+    }
+  } catch {
+    schemaLd = null;
+  }
 
   return (
     <>
-      {schemaLd ? (
+      {schemaLd && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: schemaLd }}
         />
-      ) : null}
+      )}
       <Suspense fallback={<div>Loading...</div>}>
         <PrivacyPolicy />
       </Suspense>

@@ -3,6 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import BundleDetailClient from "./BundleDetailClient";
+import { resolveBundleCanonical } from "../../lib/getCanonicalUrl";
 
 export const revalidate = 300;
 
@@ -34,11 +35,8 @@ async function getBundleData(slug) {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const bundle = await getBundleData(slug || "");
-  const cmsCanonical = bundle?.canonical_url;
-  const canonical =
-    (cmsCanonical && cmsCanonical.trim())
-      ? cmsCanonical
-      : `${process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")}/bundle/${(slug || "").replace(/\/+$/, "")}/`;
+  const slugClean = (slug || "").replace(/^\/+|\/+$/g, "");
+  const canonical = resolveBundleCanonical(bundle?.canonical_url, slugClean);
   return {
     title: bundle?.meta_title || (bundle?.name ? `${bundle.name} - Disposable Bazar` : "Bundle - Disposable Bazar"),
     description: bundle?.description

@@ -1,5 +1,4 @@
-// 🟩 Dynamic Metadata Function for About Us Page
-import { buildCanonical } from "../lib/seo/pageDetail";
+import { resolveCanonical, getCanonicalUrl } from "../lib/getCanonicalUrl";
 
 export async function generateMetadata() {
   try {
@@ -11,17 +10,14 @@ export async function generateMetadata() {
     if (!res.ok) throw new Error(`API error: ${res.status}`);
 
     const data = await res.json();
-    const cmsCanonical = data?.data?.canonical_url;
     const canonical =
-      (cmsCanonical && cmsCanonical.trim())
-        ? cmsCanonical
-        : buildCanonical("/about-us/");
+      resolveCanonical(data?.data?.canonical_url, "/about-us/") ?? undefined;
 
     return {
       title: data?.data?.meta_title || "About Us",
       description: data?.data?.meta_description || "About Us page",
       ...(data?.data?.focus_keyword ? { keywords: data.data.focus_keyword } : {}),
-      ...(canonical ? { alternates: { canonical } } : {}),
+      alternates: canonical ? { canonical } : undefined,
       robots: {
         index: data?.data?.robots_index !== "noindex",
         follow: data?.data?.robots_follow !== "nofollow",
@@ -36,7 +32,7 @@ export async function generateMetadata() {
     return {
       title: "About Us",
       description: "About Us page",
-      alternates: { canonical: buildCanonical("/about-us/") ?? undefined },
+      alternates: { canonical: getCanonicalUrl("/about-us/") ?? undefined },
       robots: { index: true, follow: true },
     };
   }

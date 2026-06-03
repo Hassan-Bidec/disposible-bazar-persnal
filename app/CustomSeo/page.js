@@ -12,6 +12,7 @@ export async function generateMetadata() {
   return metadataFromPageDetail(detail, {
     title: "Disposable Bazaar",
     description: "Quality disposable products",
+    path: "/CustomSeo/",
   });
 }
 

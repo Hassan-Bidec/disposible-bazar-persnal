@@ -51,15 +51,11 @@ async function fetchCategories() {
     return [];
   }
 }
-import { buildCanonical } from "../lib/seo/pageDetail";
+import { resolveCanonical } from "../lib/getCanonicalUrl";
 
 export async function generateMetadata() {
   const pageData = await getPageData();
-  const cmsCanonical = pageData?.canonical_url;
-  const canonical =
-    (cmsCanonical && cmsCanonical.trim())
-      ? cmsCanonical
-      : buildCanonical("/shop/");
+  const canonical = resolveCanonical(pageData?.canonical_url, "/shop/");
   return {
     title: pageData?.meta_title || "Shop - Disposable Bazar",
     description:

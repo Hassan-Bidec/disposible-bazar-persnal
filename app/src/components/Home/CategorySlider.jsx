@@ -55,7 +55,7 @@ function CategorySlider({ products }) {
 
                             {/* Image and title container */}
                             <div className='flex flex-col items-center justifycenter w-full h-full'>
-                                <Link href={`/product/${data.slug}`}>
+                                <Link href={data.is_customizeable ? `/customization/${data.slug}` : `/product/${data.slug}`}>
                                     <div className=" flex justify-center items-center w-[150px] h-[150px] md:w-[250px] md:h-[250px]">
                                         <Image
                                             className="w-full h-full block group-hover:hidden rounded-xl object-cover"
@@ -87,13 +87,12 @@ function CategorySlider({ products }) {
 
                             {/* Button with smooth scaling */}
                             <Link
-                                href={`/product/${data.slug}`}
+                                href={data.is_customizeable ? `/customization/${data.slug}` : `/product/${data.slug}`}
                                 className="absolute bottom-3 flex justify-center  transform scale-0 opacity-0 group-hover:opacity-100 group-hover:scale-100 duration-500 bg-[#1E7773] p-3 w-4/5 rounded-xl text-xs md:text-xl"
                                 style={{ transition: 'opacity 0.5s ease, transform 0.5s ease' }}
                             >
-                                <button
-                                >
-                                    SHOP NOW
+                                <button>
+                                    {"SHOP NOW"}
                                 </button>
                             </Link>
                         </div>

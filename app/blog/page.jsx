@@ -31,22 +31,18 @@ async function getPageData() {
   }
 }
 
-import { buildCanonical } from "../lib/seo/pageDetail";
+import { resolveCanonical } from "../lib/getCanonicalUrl";
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata() {
   const { meta } = await getPageData();
-  const cmsCanonical = meta?.canonical_url;
-  const canonical =
-    (cmsCanonical && cmsCanonical.trim())
-      ? cmsCanonical
-      : buildCanonical("/blog/");
+  const canonical = resolveCanonical(meta?.canonical_url, "/blog/");
 
   return {
     title: meta?.meta_title || "Blog - Disposable Bazar",
     description: meta?.meta_description || "Read our latest blog posts.",
     ...(meta?.focus_keyword ? { keywords: meta.focus_keyword } : {}),
-    ...(canonical ? { alternates: { canonical } } : {}),
+    alternates: canonical ? { canonical } : undefined,
     robots: {
       index: meta?.robots_index !== "noindex",
       follow: meta?.robots_follow !== "nofollow",
