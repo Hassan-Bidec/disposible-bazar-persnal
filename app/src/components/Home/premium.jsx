@@ -41,7 +41,8 @@ function Premium({ initialProducts = [] }) {
 export default Premium
 
 
-// Slider Component — hydrates from SSR `initialPopularProducts` (home/page.js); client fetch only as fallback.
+// Slider Component — fetches ALL products from /product-category/plastic/
+// SSR `initialProducts` se seed hota hai; client-side fallback bhi hai.
 
 function Slider({ initialProducts = [] }) {
     const seeded = Array.isArray(initialProducts) ? initialProducts : [];
@@ -60,7 +61,26 @@ function Slider({ initialProducts = [] }) {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.public.get('home/category/28/product');
+                // Fetch category to get ID
+                const catRes = await axios.public.get('product/category');
+                const categories = catRes?.data?.data || [];
+                const normalize = (s) => (s || '').toLowerCase().replace(/\/+$/, '');
+                const findCat = (cats, slug) => {
+                    for (const c of cats) {
+                        if (normalize(c.slug) === normalize(slug)) return c;
+                        if (c.subCategories?.length) {
+                            const found = findCat(c.subCategories, slug);
+                            if (found) return found;
+                        }
+                    }
+                    return null;
+                };
+                const cat = findCat(categories, 'plastic');
+                if (!cat) { setIsLoading(false); return; }
+
+                const response = await axios.public.get('search/product', {
+                    params: { category_id: cat.id, sort_by: 1 },
+                });
                 const data = response?.data?.data;
                 if (!cancelled && Array.isArray(data)) {
                     setProducts(data);
@@ -72,9 +92,7 @@ function Slider({ initialProducts = [] }) {
             }
         };
         fetchData();
-        return () => {
-            cancelled = true;
-        };
+        return () => { cancelled = true; };
     }, [initialProducts]);
 
     if (isLoading) return <Loader />
