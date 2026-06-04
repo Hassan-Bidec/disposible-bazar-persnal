@@ -1,6 +1,14 @@
-# robots.txt for https://pob-delta.vercel.app/
+# robots.txt for https://dispasible-bazar-persnal.vercel.app/
 
 User-agent: *
-Disallow:
+Allow: /
 
-# Sitemap: https://pob-delta.vercel.app/sitemap.xml
+# Block private/user pages from indexing
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /profile/
+Disallow: /login/
+Disallow: /register/
+Disallow: /api/
+
+Sitemap: https://dispasible-bazar-persnal.vercel.app/sitemap.xml
