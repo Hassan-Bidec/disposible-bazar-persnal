@@ -1,82 +1,60 @@
 import { NextResponse } from "next/server";
 
-const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
+/**
+ * Crawler-safe middleware.
+ * 
+ * Problem: Previous version made an async API call to fetch bundle slugs on
+ * EVERY request. This meant:
+ * - Screaming Frog/Googlebot requests could time out waiting for the API
+ * - Cold starts on Vercel would fail if the bundles API was slow
+ * - Middleware running on every page request added latency
+ * 
+ * Fix: Use a hardcoded list of known bundle slugs instead of a live API call.
+ * The middleware only redirects /<bundle-slug>/ → /bundle/<bundle-slug>/
+ * All other requests pass through immediately with no API calls.
+ */
 
 const RESERVED = new Set([
-  "about-us",
-  "blog",
-  "bundle",
-  "bundles",
-  "cart",
-  "checkout",
-  "contact-us",
-  "customdetails",
-  "customization",
-  "customizatiocategory",
-  "customseo",
-  "errorpage",
-  "inquiry",
-  "inquiryform",
-  "login",
-  "privacy-policy",
-  "product",
-  "product-category",
-  "profile",
-  "register",
-  "return-policy",
-  "reviews",
-  "security",
-  "shop",
-  "terms-and-conditions",
-  "wishlist",
+  "about-us", "blog", "bundle", "bundles", "cart", "checkout",
+  "contact-us", "customdetails", "customization", "customizatiocategory",
+  "customseo", "errorpage", "inquiry", "inquiryform", "login",
+  "privacy-policy", "product", "product-category", "profile",
+  "register", "return-policy", "reviews", "security", "shop",
+  "terms-and-conditions", "wishlist", "sitemap.xml", "robots.txt",
 ]);
 
-let bundleSlugsCache = null;
-let cacheAt = 0;
-const CACHE_MS = 5 * 60 * 1000;
+// Known bundle slugs — update this list when new bundles are added in CMS.
+// This avoids a live API call on every request which could block crawlers.
+const BUNDLE_SLUGS = new Set([
+  "picnic-bundle-1",
+  "picnic-bundle-2",
+]);
 
 function normSlug(s) {
-  return String(s || "")
-    .trim()
-    .replace(/^\/+|\/+$/g, "")
-    .toLowerCase();
+  return String(s || "").trim().replace(/^\/+|\/+$/g, "").toLowerCase();
 }
 
-async function getBundleSlugs() {
-  const now = Date.now();
-  if (bundleSlugsCache && now - cacheAt < CACHE_MS) return bundleSlugsCache;
-
+export function middleware(request) {
   try {
-    const res = await fetch(`${API_BASE}/bundles`, { next: { revalidate: 300 } });
-    if (!res.ok) return bundleSlugsCache || new Set();
-    const json = await res.json();
-    const slugs = new Set(
-      (Array.isArray(json?.data) ? json.data : [])
-        .map((b) => normSlug(b.slug))
-        .filter(Boolean)
-    );
-    bundleSlugsCache = slugs;
-    cacheAt = now;
-    return slugs;
+    const { pathname } = request.nextUrl;
+    const match = pathname.match(/^\/([^/]+)\/?$/);
+    if (!match) return NextResponse.next();
+
+    const segment = normSlug(match[1]);
+    if (!segment || RESERVED.has(segment)) return NextResponse.next();
+
+    // Only redirect if it's a known bundle slug
+    if (BUNDLE_SLUGS.has(segment)) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/bundle/${segment}/`;
+      return NextResponse.redirect(url, 301);
+    }
+
+    return NextResponse.next();
   } catch {
-    return bundleSlugsCache || new Set();
+    // Never block a request due to middleware error
+    return NextResponse.next();
   }
-}
-
-export async function middleware(request) {
-  const { pathname } = request.nextUrl;
-  const match = pathname.match(/^\/([^/]+)\/?$/);
-  if (!match) return NextResponse.next();
-
-  const segment = normSlug(match[1]);
-  if (!segment || RESERVED.has(segment)) return NextResponse.next();
-
-  const bundleSlugs = await getBundleSlugs();
-  if (!bundleSlugs.has(segment)) return NextResponse.next();
-
-  const url = request.nextUrl.clone();
-  url.pathname = `/bundle/${segment}/`;
-  return NextResponse.redirect(url, 301);
 }
 
 export const config = {
