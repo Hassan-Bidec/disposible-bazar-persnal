@@ -17,6 +17,8 @@ import axios from '../../Utils/axios';
 import { Loader } from '../Loader';
 import Link from 'next/link';
 
+const IMG_BASE = "https://ecommerce-inventory.thegallerygen.com/public/Frontend/Assets/";
+
 
 // Premium Section
 function Premium({ initialProducts = [] }) {
@@ -27,8 +29,8 @@ function Premium({ initialProducts = [] }) {
                 <p data-aos='fade-right' className='md:w-1/2 w-11/12 md:text-start text-center font-bazaar md:text-6xl text-4xl text-white'>Plastic Containers</p>
                 <p data-aos='fade-left' className='md:w-1/3 w-11/12 md:text-start text-center md:text-lg text-sm'>Discover our versatile range of high-quality plastic containers. Perfect for all your storage needs, combining style and functionality.</p>
             </div>
-            <Image data-aos='fade-left' src={`${Image_Url}HomeAssets/PremiumAssets/shoper.svg`} className='absolute hidden md:block top-0 right-0 w-32' alt="" width={500} height={500} />
-            <Image data-aos='fade-left' src={`${Image_Url}HomeAssets/PremiumAssets/shoper2.svg`} className='absolute md:hidden block top-0 right-0 w-24' alt="" width={500} height={500} />
+            <Image data-aos='fade-left' src={`${IMG_BASE}HomeAssets/PremiumAssets/shoper.svg`} className='absolute hidden md:block top-0 right-0 w-32' alt="" width={500} height={500} />
+            <Image data-aos='fade-left' src={`${IMG_BASE}HomeAssets/PremiumAssets/shoper2.svg`} className='absolute md:hidden block top-0 right-0 w-24' alt="" width={500} height={500} />
 
             <Slider initialProducts={initialProducts} />
 
