@@ -5,14 +5,18 @@
  */
 
 export function getSiteBaseUrl() {
+  // Try env variable first
   const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (!raw) return null;
-  try {
-    const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
-    return new URL(href).origin;
-  } catch {
-    return null;
+  if (raw) {
+    try {
+      const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+      return new URL(href).origin;
+    } catch {
+      // fall through to default
+    }
   }
+  // Fallback — production domain
+  return "https://dispasible-bazar-persnal.vercel.app";
 }
 
 /**

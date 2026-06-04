@@ -141,30 +141,35 @@ async function getProductReviews(productId) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page({ params }) {
-  const { slug } = await params;
-  const resolvedSlug = slug || "";
-  const data = await getProductData(resolvedSlug);
-  const clientData = sanitizeProductForClient(data);
-  const initialReviews = await getProductReviews(data?.product?.id);
-
-  // Inject schema as ld+json in initial HTML if available
-  const schemaRaw = data?.seoMetadata?.schema || null;
-  let schema = null;
   try {
-    schema = schemaRaw ? JSON.stringify(JSON.parse(schemaRaw)) : null;
-  } catch {
-    schema = null;
-  }
+    const { slug } = await params;
+    const resolvedSlug = slug || "";
+    const data = await getProductData(resolvedSlug);
+    const clientData = sanitizeProductForClient(data);
+    const initialReviews = await getProductReviews(data?.product?.id);
 
-  return (
-    <>
-      {schema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: escapeJsonForScript(schema) }}
-        />
-      )}
-      <ShopDetails initialData={clientData} initialReviews={initialReviews} />
-    </>
-  );
+    // Inject schema as ld+json in initial HTML if available
+    const schemaRaw = data?.seoMetadata?.schema || null;
+    let schema = null;
+    try {
+      schema = schemaRaw ? JSON.stringify(JSON.parse(schemaRaw)) : null;
+    } catch {
+      schema = null;
+    }
+
+    return (
+      <>
+        {schema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: escapeJsonForScript(schema) }}
+          />
+        )}
+        <ShopDetails initialData={clientData} initialReviews={initialReviews} />
+      </>
+    );
+  } catch {
+    // Return a basic page instead of 500
+    return <ShopDetails initialData={null} initialReviews={null} />;
+  }
 }

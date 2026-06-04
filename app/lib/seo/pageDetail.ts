@@ -49,9 +49,17 @@ export async function fetchPageDetailBySlug(
   }
 }
 
-const SITE_ORIGIN =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+const SITE_ORIGIN = (() => {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (raw) {
+    try {
+      const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+      return new URL(href).origin;
+    } catch { /* fall through */ }
+  }
+  // Fallback — production domain
+  return "https://dispasible-bazar-persnal.vercel.app";
+})();
 
 /**
  * Validate a canonical URL from CMS:
