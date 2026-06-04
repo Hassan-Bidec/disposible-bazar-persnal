@@ -125,12 +125,27 @@ export async function generateMetadata({ params }) {
   }
 }
 
+async function getProductReviews(productId) {
+  if (!productId) return null;
+  try {
+    const res = await fetch(`${API_BASE}/product_reviews/${productId}/`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.status === "success" ? json : null;
+  } catch {
+    return null;
+  }
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page({ params }) {
   const { slug } = await params;
   const resolvedSlug = slug || "";
   const data = await getProductData(resolvedSlug);
   const clientData = sanitizeProductForClient(data);
+  const initialReviews = await getProductReviews(data?.product?.id);
 
   // Inject schema as ld+json in initial HTML if available
   const schemaRaw = data?.seoMetadata?.schema || null;
@@ -149,7 +164,7 @@ export default async function Page({ params }) {
           dangerouslySetInnerHTML={{ __html: escapeJsonForScript(schema) }}
         />
       )}
-      <ShopDetails initialData={clientData} />
+      <ShopDetails initialData={clientData} initialReviews={initialReviews} />
     </>
   );
 }

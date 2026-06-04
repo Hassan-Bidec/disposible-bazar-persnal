@@ -52,21 +52,23 @@ function getProductImage(product, index = 0) {
 }
 // SSR `initialProducts` se seed hota hai; client-side fallback bhi hai.
 
+const PLASTIC_CATEGORY_ID = 28;
+
 function Slider({ initialProducts = [] }) {
-    const [products, setProducts] = useState(Array.isArray(initialProducts) ? initialProducts : []);
-    const [isLoading, setIsLoading] = useState(true);
+    const seeded = Array.isArray(initialProducts) ? initialProducts : [];
+    const [products, setProducts] = useState(seeded);
+    const [isLoading, setIsLoading] = useState(seeded.length === 0);
 
     useEffect(() => {
         let cancelled = false;
         const fetchData = async () => {
-            setIsLoading(true);
+            if (seeded.length === 0) setIsLoading(true);
             try {
-                // Always fetch fresh — plastic category ID = 28
                 const response = await axios.public.get('search/product', {
-                    params: { category_id: 28, sort_by: 1 },
+                    params: { category_id: PLASTIC_CATEGORY_ID, sort_by: 1 },
                 });
                 const data = response?.data?.data;
-                if (!cancelled && Array.isArray(data) && data.length > 0) {
+                if (!cancelled && Array.isArray(data)) {
                     setProducts(data);
                 }
             } catch (error) {
@@ -98,14 +100,15 @@ function Slider({ initialProducts = [] }) {
                 }}
                 spaceBetween={30}
                 navigation={{
-                    nextEl: '.custom-next',
-                    prevEl: '.custom-prev',
+                    nextEl: '.plastic-slider-next',
+                    prevEl: '.plastic-slider-prev',
                 }}
+                pagination={{ clickable: true }}
                 modules={[Pagination, Navigation]}
-                className="mySwiper min-h-[280px] md:min-h-[500px] min-w-full"
+                className="plastic-containers-swiper mySwiper min-h-[280px] md:min-h-[500px] min-w-full pb-12"
             >
-                {products.map((product, index) => (
-                    <SwiperSlide key={index}>
+                {products.map((product) => (
+                    <SwiperSlide key={product.id ?? product.slug}>
                         <div className="mobileVeiw group hover:border-2 hover:border-[#1E7773] bg-[#32303e] p-3 flex flex-col justify-center gap-3 items-center w-full md:w-[250px] lg:w-[350px] h-[200px] hover:h-[260px] md:h-[407px] hover:md:h-[450px] text-white rounded-xl"
                             style={{ transition: 'height 0.5s ease, opacity 0.5s ease 0.3s' }}>
                             {/* <div className="relative flex justify-center items-center w-[150px] h-[150px] md:w-[250px] md:h-[250px]">
@@ -162,21 +165,20 @@ function Slider({ initialProducts = [] }) {
                 ))}
             </Swiper >
 
-            {/* Custom navigation buttons */}
+            {/* Unique selectors — avoids clash with Categories slider on the same page */}
             <div className="absolute z-10 top-[30rem] w-full left-0 hidden lg:block">
                 <div
-                    className="custom-prev swiper-button-prev px-4"
+                    className="plastic-slider-prev swiper-button-prev px-4"
                     style={{
-                        backgroundColor: '#1E7773',  // Green background
-                        color: '#FFFFFF',  // White text color
+                        backgroundColor: '#1E7773',
+                        color: '#FFFFFF',
                         borderRadius: '100%',
                         left: '25px',
                         width: '2.5rem',
                     }}
-                >
-                </div>
+                />
                 <div
-                    className="custom-next swiper-button-next px-4"
+                    className="plastic-slider-next swiper-button-next px-4"
                     style={{
                         backgroundColor: '#1E7773',
                         color: '#FFFFFF',
@@ -184,8 +186,7 @@ function Slider({ initialProducts = [] }) {
                         right: '25px',
                         width: '2.5rem',
                     }}
-                >
-                </div>
+                />
             </div>
 
         </>

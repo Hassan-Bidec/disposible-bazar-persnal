@@ -74,10 +74,25 @@ export async function generateMetadata(props) {
   };
 }
 
+async function getProductReviews(productId) {
+  if (!productId) return null;
+  try {
+    const res = await fetch(`${API_BASE}/product_reviews/${productId}/`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.status === "success" ? json : null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function Page(props) {
   const params = await props.params;
   const slug = slugFromParams(params);
   const initialData = await fetchCustomizeProduct(slug);
+  const initialReviews = await getProductReviews(initialData?.product?.id);
   const schemaLd = serializeLdJson(initialData?.seoMetadata?.schema);
 
   return (
@@ -88,7 +103,11 @@ export default async function Page(props) {
           dangerouslySetInnerHTML={{ __html: schemaLd }}
         />
       ) : null}
-      <CustomizationSlugClient slug={slug} initialData={initialData} />
+      <CustomizationSlugClient
+        slug={slug}
+        initialData={initialData}
+        initialReviews={initialReviews}
+      />
     </>
   );
 }

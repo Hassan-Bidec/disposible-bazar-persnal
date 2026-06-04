@@ -18,17 +18,23 @@ const ReviewSlider = ({ initialReviews = [] }) => {
   const [reviews, setReviews] = useState(initialReviews);
 
   useEffect(() => {
+    if (Array.isArray(initialReviews) && initialReviews.length > 0) {
+      setReviews(initialReviews);
+    }
+  }, [initialReviews]);
+
+  useEffect(() => {
     if (initialReviews.length > 0) return;
     const fetchData = async () => {
       try {
         const response = await axios.public.get('all_reviews');
-        setReviews(response.data.data);
+        setReviews(response.data.data || []);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
-  }, []);
+  }, [initialReviews.length]);
 
   return (
     <div className="py-8 px-4 text-white">
@@ -86,7 +92,7 @@ const ReviewSlider = ({ initialReviews = [] }) => {
                         <PiStarFill
                           key={i}
                           size="0.75rem"
-                          className={i < review.rating ? 'text-yellow-400' : 'text-gray-600'}
+                          className={i < Math.round(parseFloat(review.rating) || 0) ? 'text-yellow-400' : 'text-gray-600'}
                         />
                       ))}
                     </div>

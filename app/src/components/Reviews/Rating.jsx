@@ -36,7 +36,7 @@ export const Rating = ({ productReview }) => {
                     <div className="flex">
                         {/* Render stars based on rating */}
                         {Array(5).fill(0).map((_, index) => (
-                            index < getRating ? (
+                            index < Math.round(parseFloat(getRating) || 0) ? (
                                 <PiStarFill key={index} className="text-4xl text-yellow-500" />
                             ) : (
                                 <PiStarThin key={index} className="text-4xl" />

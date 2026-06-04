@@ -27,6 +27,7 @@ import Image from 'next/image';
 export default function CustomizationSlugClient({
     slug: slugProp = '',
     initialData = null,
+    initialReviews = null,
 }) {
     const [productDetail, setProductDetail] = useState(() => initialData ?? null);
     const [recomendedProducts, setRecomendedProducts] = useState([]);
@@ -787,7 +788,7 @@ export default function CustomizationSlugClient({
                 <div className="relative z-10">
                     {/* <Deals /> */}
                 </div>
-                <Review />
+                <Review productId={productDetail?.product?.id} productReview={initialReviews} />
             </main>
             {/* Background Image */}
             <Image

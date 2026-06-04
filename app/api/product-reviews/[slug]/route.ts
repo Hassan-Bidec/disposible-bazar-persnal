@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
-function normalizeReviewsSlug(segment: string) {
+function normalizeSegment(segment: string) {
   try {
     return decodeURIComponent(segment).replace(/^\/+|\/+$/g, "");
   } catch {
@@ -15,12 +15,20 @@ export async function GET(
   context: { params: Promise<{ slug: string }> }
 ) {
   const { slug: rawSlug } = await context.params;
-  const slug = normalizeReviewsSlug(rawSlug || "");
-  if (!slug) {
-    return NextResponse.json({ error: "invalid_slug" }, { status: 400 });
+  const segment = normalizeSegment(rawSlug || "");
+  if (!segment) {
+    return NextResponse.json({ error: "invalid_product_id" }, { status: 400 });
   }
 
-  const pathSlug = `${slug}/`;
+  // Upstream only accepts numeric product IDs, not URL slugs
+  if (!/^\d+$/.test(segment)) {
+    return NextResponse.json(
+      { status: "error", message: "Product not found", data: [] },
+      { status: 404 }
+    );
+  }
+
+  const pathSlug = `${segment}/`;
 
   try {
     const upstream = await fetch(`${API_BASE}/product_reviews/${pathSlug}`, {

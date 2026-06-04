@@ -29,8 +29,8 @@ function Deals() {
                     <p className='hidden md:block md:text-sm text-xs text-white'>Exciting offers are on the way at Disposable Bazaar! Get ready to explore our upcoming collection of premium paper cups at amazing prices. Stay tuned — something great is coming soon!</p>
                     <p className='md:hidden block md:text-lg text-xs'>Enjoy incredible savings on our top-quality plastic containers!
                     </p> */}
-                    <Link href='/shop/'>
-                        <button className=' font-bazaar bg-[#1E7773] text-white md:w-44 md:text-[16px] text-xs p-3 cursor-pointer rounded-lg px5 mt5'>EXPLORE OFFERS   </button>
+                    <Link href='/product-category/kraft-paper/'>
+                        <button className=' font-bazaar bg-[#1E7773] text-white md:w-44 md:text-[16px] text-xs p-3 cursor-pointer rounded-lg px5 mt5'>VIEW MORE   </button>
                     </Link>
 
                 </div>

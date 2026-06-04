@@ -37,7 +37,7 @@ function productSlugForApi(raw) {
 // When initialData is provided, skips the client-side fetch entirely.
 // ─────────────────────────────────────────────────────────────────────────────
 
-function ShopDetails({ initialData = null }) {
+function ShopDetails({ initialData = null, initialReviews = null }) {
     const router = useRouter();
 
     const [productDetail, setProductDetail] = useState(initialData ?? null);
@@ -48,7 +48,7 @@ function ShopDetails({ initialData = null }) {
     const [brands, setBrands] = useState([]);
     const [selectedBrands, setSelectedBrands] = useState();
     const [selectedBrandId, setSelectedBrandId] = useState();
-    const [productReview, setProductReview] = useState([]);
+    const [productReview, setProductReview] = useState(initialReviews);
     const [productImages, setProductImages] = useState([]);
     const [productId, setProductId] = useState(0);
     const [selectedImage, setSelectedImage] = useState('');
@@ -162,31 +162,34 @@ function ShopDetails({ initialData = null }) {
         }
     };
 
-    const fetchReviewById = async (slugForApi) => {
-        const slug = slugForApi.replace(/^\/+|\/+$/g, '');
-        if (!slug) return;
+    const fetchReviewsByProductId = async (pid) => {
+        if (!pid) return;
         try {
             const res = await fetch(
-                `/api/product-reviews/${encodeURIComponent(slug)}/`,
+                `/api/product-reviews/${pid}/`,
                 { credentials: 'same-origin', headers: { Accept: 'application/json' } }
             );
             if (!res.ok) return;
-            setProductReview(await res.json());
+            const json = await res.json();
+            if (json?.status === 'success') {
+                setProductReview(json);
+            }
         } catch (error) {
             console.log('Error fetching product review:', error);
         }
     };
 
-    // Only run client-side fetch if no SSR initialData was provided
     useEffect(() => {
         if (!initialData && id) {
             fetchDataById(id);
-            fetchReviewById(id);
-        } else if (id) {
-            // Still fetch reviews client-side (user-generated, not needed for SEO)
-            fetchReviewById(id);
         }
     }, [id, initialData]);
+
+    useEffect(() => {
+        if (productId) {
+            fetchReviewsByProductId(productId);
+        }
+    }, [productId]);
 
     // Check if current variant is in wishlist
     useEffect(() => {
