@@ -53,28 +53,20 @@ function getProductImage(product, index = 0) {
 // SSR `initialProducts` se seed hota hai; client-side fallback bhi hai.
 
 function Slider({ initialProducts = [] }) {
-    const seeded = Array.isArray(initialProducts) ? initialProducts : [];
-    const [products, setProducts] = useState(seeded);
-    const [isLoading, setIsLoading] = useState(seeded.length === 0);
+    const [products, setProducts] = useState(Array.isArray(initialProducts) ? initialProducts : []);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fromServer = Array.isArray(initialProducts) ? initialProducts : [];
-        if (fromServer.length > 0) {
-            setProducts(fromServer);
-            setIsLoading(false);
-            return;
-        }
-
         let cancelled = false;
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                // plastic category ID = 28
+                // Always fetch fresh — plastic category ID = 28
                 const response = await axios.public.get('search/product', {
                     params: { category_id: 28, sort_by: 1 },
                 });
                 const data = response?.data?.data;
-                if (!cancelled && Array.isArray(data)) {
+                if (!cancelled && Array.isArray(data) && data.length > 0) {
                     setProducts(data);
                 }
             } catch (error) {
@@ -85,7 +77,7 @@ function Slider({ initialProducts = [] }) {
         };
         fetchData();
         return () => { cancelled = true; };
-    }, [initialProducts]);
+    }, []);
 
     if (isLoading) return <Loader />
 
