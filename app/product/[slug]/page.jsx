@@ -133,12 +133,8 @@ export default async function Page({ params }) {
     const { slug } = await params;
     const resolvedSlug = normalizeSlug(slug);
 
-    const [data, initialReviews] = await Promise.all([
-      getProductData(resolvedSlug),
-      // Reviews fetched after we know the product ID — safe fallback if null
-      getProductData(resolvedSlug).then(d => getProductReviews(d?.product?.id)).catch(() => null),
-    ]);
-
+    // Single API call only — reviews load client-side via ShopDetails
+    const data = await getProductData(resolvedSlug);
     const clientData = sanitizeForClient(data);
     const schema = safeParseSchema(data?.seoMetadata?.schema);
 
@@ -150,12 +146,11 @@ export default async function Page({ params }) {
             dangerouslySetInnerHTML={{ __html: schema }}
           />
         )}
-        <ShopDetails initialData={clientData} initialReviews={initialReviews} />
+        <ShopDetails initialData={clientData} initialReviews={null} />
       </>
     );
   } catch (err) {
     console.error("[product/page] render error:", err?.message);
-    // Return empty ShopDetails — client will fetch data itself
     return <ShopDetails initialData={null} initialReviews={null} />;
   }
 }
