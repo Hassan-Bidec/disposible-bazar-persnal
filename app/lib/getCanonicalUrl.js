@@ -29,8 +29,7 @@ export function normalizePath(path) {
   if (/^https?:\/\//i.test(p)) {
     try {
       const u = new URL(p);
-      const origin = getSiteBaseUrl();
-      if (origin && u.origin !== origin) return null;
+      // Extract path regardless of origin — just use the pathname
       p = u.pathname;
     } catch {
       return "/";
@@ -75,8 +74,7 @@ export function validateCanonical(raw) {
   try {
     const url = new URL(t);
     if (url.protocol !== "https:" && url.protocol !== "http:") return null;
-    const origin = getSiteBaseUrl();
-    if (origin && url.origin !== origin) return null;
+    // Always extract the path and build with our own origin
     return getCanonicalUrl(url.pathname);
   } catch {
     return null;
