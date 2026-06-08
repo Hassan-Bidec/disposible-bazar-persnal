@@ -1,118 +1,115 @@
 // ─── SERVER COMPONENT ─────────────────────────────────────────────────────────
-// Product detail page — full SSR.
-// 1. generateMetadata  → title, description, canonical, keywords (server-side)
-// 2. <script ld+json>  → schema injected in initial HTML (Google reads immediately)
-// 3. SSR data fetch    → product data passed to ShopDetails as initialData
-//                        (no loading flash, product name/images in initial HTML)
+// Product detail page — fully crawler-safe SSR.
+// Every fetch is wrapped in try/catch with timeouts.
+// generateMetadata never throws — always returns valid fallback metadata.
+// Page component never returns 500 — catches all errors gracefully.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import ShopDetails from "./ShopDetails";
 import { resolveProductCanonical } from "../../lib/getCanonicalUrl";
+import { fetchJson } from "../../lib/fetchWithTimeout";
 
 export const revalidate = 600;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
+const SITE = "https://dispasible-bazar-persnal.vercel.app";
 
-function escapeJsonForScript(html) {
-  return html.replace(/</g, "\\u003c");
-}
-
-/**
- * CMS `product/s/details` matches on slug as stored (usually with trailing slash).
- * App route `[slug]` omits the slash; pathname-based client fetches include it.
- */
-function normalizeProductSlugForApi(raw) {
-  if (raw == null || raw === "") return "";
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function normalizeSlug(raw) {
+  if (!raw) return "";
   let s = String(raw).trim();
-  try {
-    s = decodeURIComponent(s);
-  } catch {
-    /* ignore malformed encoding */
-  }
-  s = s.replace(/^\/+|\/+$/g, "");
-  if (!s) return "";
-  return `${s}/`;
+  try { s = decodeURIComponent(s); } catch { /* ignore */ }
+  return s.replace(/^\/+|\/+$/g, "");
 }
 
-function stripHtmlToText(html) {
+function stripHtml(html) {
   if (!html || typeof html !== "string") return "";
-  return html
-    .replace(/<[^>]*>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 320);
+  return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 320);
 }
 
-/** JSON-stable payload so RSC can serialize props (no cycles / BigInt / etc.). */
-function sanitizeProductForClient(raw) {
+function sanitizeForClient(raw) {
   if (raw == null) return null;
   try {
-    return JSON.parse(
-      JSON.stringify(raw, (_, v) => {
-        if (typeof v === "bigint") return Number(v);
-        if (v instanceof Date) return v.toISOString();
-        return v;
-      })
-    );
-  } catch {
-    return null;
-  }
+    return JSON.parse(JSON.stringify(raw, (_, v) => {
+      if (typeof v === "bigint") return Number(v);
+      if (v instanceof Date) return v.toISOString();
+      return v;
+    }));
+  } catch { return null; }
 }
 
-// ─── Server-side data fetch ───────────────────────────────────────────────────
-async function getProductData(slug) {
-  const key = normalizeProductSlugForApi(slug);
-  if (!key) return null;
+function safeParseSchema(raw) {
+  if (!raw) return null;
   try {
-    const res = await fetch(`${API_BASE}/product/s/details`, {
+    return JSON.stringify(JSON.parse(raw)).replace(/</g, "\\u003c");
+  } catch { return null; }
+}
+
+// ─── Data fetches ─────────────────────────────────────────────────────────────
+async function getProductData(slug) {
+  const key = slug ? `${slug}/` : "";
+  if (!key) return null;
+
+  const { data } = await fetchJson(
+    `${API_BASE}/product/s/details`,
+    {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: key }),
+      body: JSON.stringify({ slug: key }),
       next: { revalidate: 600 },
-    });
-    if (!res.ok) return null;
-    const json = await res.json();
-    if (json?.status === "error" || !json?.data) return null;
-    return json.data;
-  } catch {
-    return null;
-  }
+    }
+  );
+
+  if (!data || data?.status === "error" || !data?.data) return null;
+  return data.data;
 }
 
-// ─── Metadata ─────────────────────────────────────────────────────────────────
+async function getProductReviews(productId) {
+  if (!productId) return null;
+  const { data } = await fetchJson(
+    `${API_BASE}/product_reviews/${productId}/`,
+    { next: { revalidate: 60 } }
+  );
+  return data?.status === "success" ? data : null;
+}
+
+// ─── Metadata — never throws ──────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
   try {
     const { slug } = await params;
-    const resolvedSlug = slug || "";
+    const resolvedSlug = normalizeSlug(slug);
     const data = await getProductData(resolvedSlug);
     const seo = data?.seoMetadata;
     const product = data?.product;
 
-    const metaDescription =
+    const title = seo?.meta_title || product?.name || "Product - Disposable Bazaar";
+    const description =
       (seo?.meta_description && String(seo.meta_description).trim()) ||
-      stripHtmlToText(product?.description) ||
-      (product?.name ? `Shop ${product.name} at Disposable Bazaar.` : "");
+      stripHtml(product?.description) ||
+      `Shop ${product?.name || "quality disposable products"} at Disposable Bazaar.`;
 
-    const canonicalHref =
-      resolveProductCanonical(seo?.canonical_url, resolvedSlug) ||
-      resolveProductCanonical(null, resolvedSlug);
+    const canonical = resolveProductCanonical(seo?.canonical_url, resolvedSlug);
+    const imageUrl = product?.product_image?.[0]?.image
+      ? `https://ecommerce-inventory.thegallerygen.com/${String(product.product_image[0].image).replace(/^\/+/, "")}`
+      : `${SITE}/og-default.jpg`;
 
     return {
-      title: seo?.meta_title || product?.name || "Product - Disposable Bazar",
-      description: metaDescription,
-      ...(seo?.focus_keyword
-        ? { keywords: String(seo.focus_keyword).trim() }
-        : {}),
-      alternates: canonicalHref ? { canonical: canonicalHref } : undefined,
+      title,
+      description,
+      ...(seo?.focus_keyword ? { keywords: String(seo.focus_keyword).trim() } : {}),
+      alternates: canonical ? { canonical } : undefined,
       openGraph: {
-        title: product?.name || seo?.meta_title || "Product - Disposable Bazar",
-        description:
-          metaDescription ||
-          stripHtmlToText(product?.description) ||
-          undefined,
-        images: product?.product_image?.[0]?.image
-          ? [`https://ecommerce-inventory.thegallerygen.com/${product.product_image[0].image.replace(/^\/+/, "")}`]
-          : [],
+        title,
+        description,
+        images: [imageUrl],
+        type: "website",
+        siteName: "Disposable Bazaar",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [imageUrl],
       },
       robots: {
         index: true,
@@ -120,36 +117,45 @@ export async function generateMetadata({ params }) {
         googleBot: { index: true, follow: true },
       },
     };
-  } catch {
-    return { title: "Product - Disposable Bazar" };
+  } catch (err) {
+    console.error("[product/page] generateMetadata error:", err?.message);
+    return {
+      title: "Product - Disposable Bazaar",
+      description: "Shop quality disposable products at Disposable Bazaar.",
+      robots: { index: true, follow: true },
+    };
   }
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// ─── Page — never returns 500 ─────────────────────────────────────────────────
 export default async function Page({ params }) {
-  const { slug } = await params;
-  const resolvedSlug = slug || "";
-  const data = await getProductData(resolvedSlug);
-  const clientData = sanitizeProductForClient(data);
-
-  // Inject schema as ld+json in initial HTML if available
-  const schemaRaw = data?.seoMetadata?.schema || null;
-  let schema = null;
   try {
-    schema = schemaRaw ? JSON.stringify(JSON.parse(schemaRaw)) : null;
-  } catch {
-    schema = null;
-  }
+    const { slug } = await params;
+    const resolvedSlug = normalizeSlug(slug);
 
-  return (
-    <>
-      {schema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: escapeJsonForScript(schema) }}
-        />
-      )}
-      <ShopDetails initialData={clientData} />
-    </>
-  );
+    const [data, initialReviews] = await Promise.all([
+      getProductData(resolvedSlug),
+      // Reviews fetched after we know the product ID — safe fallback if null
+      getProductData(resolvedSlug).then(d => getProductReviews(d?.product?.id)).catch(() => null),
+    ]);
+
+    const clientData = sanitizeForClient(data);
+    const schema = safeParseSchema(data?.seoMetadata?.schema);
+
+    return (
+      <>
+        {schema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: schema }}
+          />
+        )}
+        <ShopDetails initialData={clientData} initialReviews={initialReviews} />
+      </>
+    );
+  } catch (err) {
+    console.error("[product/page] render error:", err?.message);
+    // Return empty ShopDetails — client will fetch data itself
+    return <ShopDetails initialData={null} initialReviews={null} />;
+  }
 }

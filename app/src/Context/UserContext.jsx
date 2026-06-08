@@ -18,7 +18,11 @@ export const UserProvider = ({ children }) => {
         const userData = getUserData();
 
         if (token && userData) {
-            setUser(userData);
+            setUser({
+                ...userData,
+                id: userData.id ?? userData.user_id,
+                user_id: userData.user_id ?? userData.id,
+            });
         }
     }, []);
 

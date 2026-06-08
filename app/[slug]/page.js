@@ -1,112 +1,138 @@
 // ─── SERVER COMPONENT ─────────────────────────────────────────────────────────
-// Blog detail page — full SSR (same pattern as app/page.js)
-// 1. generateMetadata  → title, description, canonical (server-side)
-// 2. <script ld+json>  → schema injected in initial HTML
-// 3. SSR data fetch    → blog passed to BlogDetail as initialBlog
+// Blog detail — crawler-safe SSR. Never throws 500.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { Suspense } from "react";
 import BlogDetailPage from "./BlogDetailPage";
-import { Loader } from "../src/components/Loader";
 import { resolveCanonical } from "../lib/getCanonicalUrl";
+import { fetchJson } from "../lib/fetchWithTimeout";
 
 export const revalidate = 600;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
+const SITE = "https://dispasible-bazar-persnal.vercel.app";
 
-// ─── Server-side data fetch ───────────────────────────────────────────────────
 async function getBlogData(slug) {
   try {
-    const res = await fetch(`${API_BASE}/blogs/s/details`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug: `${slug}/` }),
-      next: { revalidate: 600 },
-    });
-    if (!res.ok) return null;
-    const json = await res.json();
-    if (json.status !== "success") return null;
+    const { data } = await fetchJson(
+      `${API_BASE}/blogs/s/details`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: `${slug}/` }),
+        next: { revalidate: 600 },
+      }
+    );
 
-    const data = json.data || null;
+    if (!data || data.status !== "success") return null;
+    const blogData = data.data || null;
 
-    // blogs/s/details doesn't return image — fetch it from listing API
-    if (data?.blog && !data.blog.main_image) {
+    // Fetch main_image from listing if missing
+    if (blogData?.blog && !blogData.blog.main_image) {
       try {
-        const listRes = await fetch(
+        const { data: listData } = await fetchJson(
           `${API_BASE}/blogs/index`,
           { next: { revalidate: 600 } }
         );
-        if (listRes.ok) {
-          const listJson = await listRes.json();
-          const match = listJson?.data?.find?.(
-            (b) => b.slug === `${slug}/` || b.slug === slug
-          );
-          if (match?.main_image) data.blog.main_image = match.main_image.replace(/\/+$/, '');
+        const match = listData?.data?.find?.(
+          (b) => b.slug === `${slug}/` || b.slug === slug
+        );
+        if (match?.main_image) {
+          blogData.blog.main_image = match.main_image.replace(/\/+$/, "");
         }
       } catch { /* ignore */ }
     }
 
-    return data;
+    return blogData;
   } catch {
     return null;
   }
 }
 
-// ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
-  const { slug } = await params;
-  const data = await getBlogData(slug || "");
-  const seo = data?.blog?.blogSeoMetadata;
+  try {
+    const { slug } = await params;
+    const data = await getBlogData(slug || "");
+    const seo = data?.blog?.blogSeoMetadata;
+    const blog = data?.blog;
 
-  const fallbackPath = slug ? `/${slug.replace(/^\/+|\/+$/g, "")}/` : "/";
-  const canonical = resolveCanonical(seo?.canonical_url, fallbackPath);
+    const title = seo?.meta_title || blog?.title || "Blog - Disposable Bazaar";
+    const description = seo?.meta_description || blog?.excerpt || "Read the latest articles from Disposable Bazaar.";
+    const fallbackPath = slug ? `/${String(slug).replace(/^\/+|\/+$/g, "")}/` : "/blog/";
+    const canonical = resolveCanonical(seo?.canonical_url, fallbackPath);
 
-  return {
-    title: seo?.meta_title || data?.blog?.title || "Blog - Disposable Bazar",
-    description: seo?.meta_description || "",
-    keywords: seo?.focus_keyword || "",
-    ...(canonical ? { alternates: { canonical } } : {}),
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
-    },
-  };
+    const imageUrl = blog?.main_image
+      ? `https://ecommerce-inventory.thegallerygen.com/${String(blog.main_image).replace(/^\/+/, "")}`
+      : `${SITE}/og-default.jpg`;
+
+    return {
+      title,
+      description,
+      ...(seo?.focus_keyword ? { keywords: seo.focus_keyword } : {}),
+      alternates: canonical ? { canonical } : undefined,
+      openGraph: {
+        title,
+        description,
+        images: [imageUrl],
+        type: "article",
+        siteName: "Disposable Bazaar",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [imageUrl],
+      },
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: { index: true, follow: true },
+      },
+    };
+  } catch (err) {
+    console.error("[slug/page] generateMetadata error:", err?.message);
+    return {
+      title: "Blog - Disposable Bazaar",
+      description: "Read the latest articles from Disposable Bazaar.",
+      robots: { index: true, follow: true },
+    };
+  }
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page({ params }) {
-  const { slug } = await params;
-  const data = await getBlogData(slug || "");
-
-  const blog = data?.blog || null;
-  const recommendedBlogs = data?.recommended_blogs || [];
-
-  // Safe schema parsing
-  let schema = null;
   try {
-    const raw = blog?.blogSeoMetadata?.schema;
-    if (raw) {
-      JSON.parse(raw); // validate — throws if malformed
-      schema = raw;
-    }
-  } catch {
-    schema = null;
-  }
+    const { slug } = await params;
+    const data = await getBlogData(slug || "");
+    const blog = data?.blog || null;
+    const recommendedBlogs = data?.recommended_blogs || [];
 
-  return (
-    <>
-      {/* Inject JSON-LD schema into <head> — Google reads this immediately */}
-      {schema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: schema }}
-        />
-      )}
+    let schema = null;
+    try {
+      const raw = blog?.blogSeoMetadata?.schema;
+      if (raw) {
+        schema = JSON.stringify(JSON.parse(raw)).replace(/</g, "\\u003c");
+      }
+    } catch { schema = null; }
 
-      <Suspense fallback={<Loader />}>
-        <BlogDetailPage initialBlog={blog} initialRecommended={recommendedBlogs} />
+    return (
+      <>
+        {schema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: schema }}
+          />
+        )}
+        <Suspense fallback={null}>
+          <BlogDetailPage initialBlog={blog} initialRecommended={recommendedBlogs} />
+        </Suspense>
+      </>
+    );
+  } catch (err) {
+    console.error("[slug/page] render error:", err?.message);
+    return (
+      <Suspense fallback={null}>
+        <BlogDetailPage initialBlog={null} initialRecommended={[]} />
       </Suspense>
-    </>
-  );
+    );
+  }
 }

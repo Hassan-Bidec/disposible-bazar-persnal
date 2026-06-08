@@ -42,8 +42,8 @@ function CategorySlider({ products }) {
                 }}
                 spaceBetween={30}
                 navigation={{
-                    nextEl: '.custom-next',
-                    prevEl: '.custom-prev',
+                    nextEl: '.category-slider-next',
+                    prevEl: '.category-slider-prev',
                 }}
                 modules={[Pagination, Navigation]}
                 className="mySwiper min-w-full min-h-[300px] md:min-h-[490px]"
@@ -103,7 +103,7 @@ function CategorySlider({ products }) {
             {/* Custom navigation buttons */}
             <div className="absolute z-10 w-full hidden lg:block -mt-20">
                 <div
-                    className="custom-prev swiper-button-prev px-4 "
+                    className="category-slider-prev swiper-button-prev px-4 "
                     style={{
                         backgroundColor: '#1E7773',  // Green background
                         color: '#FFFFFF',  // White text color
@@ -114,7 +114,7 @@ function CategorySlider({ products }) {
                 >
                 </div>
                 <div
-                    className="custom-next swiper-button-next px-4"
+                    className="category-slider-next swiper-button-next px-4"
                     style={{
                         backgroundColor: '#1E7773',
                         color: '#FFFFFF',

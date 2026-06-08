@@ -11,7 +11,7 @@ import { AiFillDislike, AiFillLike } from 'react-icons/ai';
 import { useUser } from '../../Context/UserContext';
 import { useRouter } from 'next/navigation';
 
-function Review({ productId, setProductReview, productReview }) {
+function Review({ productId, setProductReview: setProductReviewProp, productReview: productReviewProp }) {
   const { user } = useUser();
   const [user_type] = useState(2);
   const [name, setName] = useState('');
@@ -24,11 +24,41 @@ function Review({ productId, setProductReview, productReview }) {
   const [isReview, setIsReview] = useState([]);
   const [review, setReview] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [localProductReview, setLocalProductReview] = useState(null);
   const router = useRouter();
 
+  const productReview = localProductReview ?? productReviewProp;
+
+  const syncProductReview = (updater) => {
+    setLocalProductReview((prev) => {
+      const base = prev ?? productReviewProp;
+      const next = typeof updater === 'function' ? updater(base) : updater;
+      if (next?.data) setIsReview(next.data);
+      return next;
+    });
+    if (typeof setProductReviewProp === 'function') {
+      setProductReviewProp(updater);
+    }
+  };
+
+  const refreshReviews = async (pid) => {
+    if (!pid) return;
+    const listRes = await axios.public.get(`product_reviews/${pid}/`);
+    if (listRes.data?.status === 'success') {
+      syncProductReview(listRes.data);
+    }
+  };
+
   useEffect(() => {
-    if (productReview?.data) setIsReview(productReview.data);
-  }, [productReview]);
+    if (productReviewProp?.data) setIsReview(productReviewProp.data);
+  }, [productReviewProp]);
+
+  useEffect(() => {
+    if (!productId) return;
+    if (productReviewProp?.data?.length) return;
+    if (localProductReview?.data?.length) return;
+    refreshReviews(productId).catch((err) => console.warn('Failed to load reviews:', err));
+  }, [productId]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files?.[0] || null);
@@ -42,31 +72,51 @@ function Review({ productId, setProductReview, productReview }) {
       return;
     }
 
+    const userId = user.id ?? user.user_id;
+    if (!userId) {
+      alert('Session expired. Please log in again.');
+      router.push('/login');
+      return;
+    }
+
     if (!title.trim() || !experience.trim()) {
       alert('Please enter review title and review text.');
       return;
     }
 
+    if (!productId) {
+      alert('Product is still loading. Please wait and try again.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('user_type', user_type);
-    formData.append('user_id', user?.id || '');
+    formData.append('user_id', String(userId));
     formData.append('name', name);
     formData.append('email', email);
     formData.append('rating', ratingStars);
     formData.append('title_of_review', title);
     formData.append('description', experience);
     formData.append('do_your_recomended_this_product', recommendation);
-    formData.append('product_id', productId);
+    formData.append('product_id', String(productId));
 
     if (file) formData.append('image', file);
 
     try {
       setLoading(true);
-      const response = await axios.protected.post('review_add', formData, {
+      const response = await axios.public.post('review_add', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      const newReview = response?.data?.data || response?.data || null;
+      const body = response?.data;
+      const newReview = body?.data && typeof body.data === 'object' && body.data.id ? body.data : null;
+      const created =
+        response.status === 200 &&
+        (body?.status === 200 || body?.status === 'success' || body?.message?.includes?.('Created'));
+
+      if (!created) {
+        throw new Error(body?.message || 'Review could not be saved');
+      }
 
       // Clear form
       setName('');
@@ -78,24 +128,17 @@ function Review({ productId, setProductReview, productReview }) {
       const thumb = document.getElementById('thumnail');
       if (thumb) thumb.value = '';
 
-      // Update parent state & local list
       if (newReview) {
-        setProductReview((prev) => {
-          if (!prev) return { data: [newReview] };
+        syncProductReview((prev) => {
+          if (!prev) return { data: [newReview], total_reviews: 1 };
           return { ...prev, data: [newReview, ...(prev.data || [])] };
         });
         setIsReview((prev) => [newReview, ...(prev || [])]);
       } else {
-        // fallback: refresh reviews list
-        try {
-          const listRes = await axios.public.get(`reviews/product/${productId}`);
-          setProductReview(listRes.data);
-          setIsReview(listRes.data?.data || []);
-        } catch (err) {
-          console.warn('Failed to refresh reviews after submit:', err);
-        }
+        await refreshReviews(productId);
       }
 
+      setReview(2);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -112,10 +155,11 @@ function Review({ productId, setProductReview, productReview }) {
     try {
       const response = await axios.protected.post(`reviews/${reviewId}/like`, { is_like: 1 });
       if (response.status === 200) {
-        setProductReview(prev => ({
+        const patch = (prev) => ({
           ...prev,
           data: (prev?.data || []).map(r => r.id === reviewId ? { ...r, likes_count: response.data.likes_count, dislikes_count: response.data.dislikes_count } : r),
-        }));
+        });
+        syncProductReview(patch);
         setIsReview(prev => (prev || []).map(r => r.id === reviewId ? { ...r, likes_count: response.data.likes_count, dislikes_count: response.data.dislikes_count } : r));
       }
     } catch (err) {
@@ -131,10 +175,11 @@ function Review({ productId, setProductReview, productReview }) {
     try {
       const response = await axios.protected.post(`reviews/${reviewId}/like`, { is_like: 0 });
       if (response.status === 200) {
-        setProductReview(prev => ({
+        const patch = (prev) => ({
           ...prev,
           data: (prev?.data || []).map(r => r.id === reviewId ? { ...r, likes_count: response.data.likes_count, dislikes_count: response.data.dislikes_count } : r),
-        }));
+        });
+        syncProductReview(patch);
         setIsReview(prev => (prev || []).map(r => r.id === reviewId ? { ...r, likes_count: response.data.likes_count, dislikes_count: response.data.dislikes_count } : r));
       }
     } catch (err) {
@@ -145,7 +190,7 @@ function Review({ productId, setProductReview, productReview }) {
   return (
     <div>
       {Array.isArray(isReview) && isReview.length ? (
-        <Rating setProductReview={setProductReview} productReview={productReview} readOnly={true} />
+        <Rating productReview={productReview} readOnly={true} />
       ) : (
         <h3 className='text-center text-4xl py-10 font-bazaar'>No Reviews Found</h3>
       )}
@@ -250,7 +295,7 @@ function Review({ productId, setProductReview, productReview }) {
                 </div>
 
                 <div className="flex gap-1 pt-2">
-                  {[...Array(r.rating || 0)].map((_, i) => <PiStarFill key={i} className="text-yellow-500" size={'1.3rem'} />)}
+                  {[...Array(Math.round(parseFloat(r.rating) || 0))].map((_, i) => <PiStarFill key={i} className="text-yellow-500" size={'1.3rem'} />)}
                 </div>
 
                 <p className="text-xl text-white my-6">{r.description}</p>

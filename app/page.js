@@ -57,11 +57,11 @@ async function getPageData() {
   }
 }
 
-// Fetch plastic containers products on the server — SSR
+// Fetch ALL products from plastic category (ID: 28) for the Premium slider — SSR
 async function getPlasticContainersProducts() {
   try {
     const res = await fetch(
-      `${API_BASE}/home/category/28/product`,
+      `${API_BASE}/search/product?category_id=28&sort_by=1`,
       { next: { revalidate: 300 } }
     );
     if (!res.ok) return [];

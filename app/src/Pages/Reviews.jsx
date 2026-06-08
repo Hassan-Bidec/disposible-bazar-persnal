@@ -163,7 +163,7 @@ function ReviewStatement({ filteredReviews, setFilteredReviews }) {
                         </div>
                     </div>
                     <div className="flex gap-1 pt-2">
-                        {[...Array(review.rating)].map((_, i) => (
+                        {[...Array(Math.round(parseFloat(review.rating) || 0))].map((_, i) => (
                             <PiStarFill key={i} className="text-yellow-500" size={'1.3rem'} />
                         ))}
                     </div>

@@ -1,19 +1,18 @@
 // ─── SERVER COMPONENT ─────────────────────────────────────────────────────────
-// Sub-category page: /product-category/[slug]/[category-slug]
-// Same SSR pattern as the parent [slug]/page.js
+// Sub-category page — crawler-safe SSR. Never throws 500.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { Suspense } from "react";
 import CategoryPageClient from "../CategoryPageClient";
 import { resolveCanonical } from "../../../lib/getCanonicalUrl";
+import { fetchJson } from "../../../lib/fetchWithTimeout";
 
 export const revalidate = 600;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 const normalize = (s) =>
-  decodeURIComponent(s || "").toLowerCase().replace(/\/+$/, "");
+  decodeURIComponent(String(s || "")).toLowerCase().replace(/\/+$/, "");
 
 function findCatBySlug(cats, targetSlug) {
   for (const c of cats) {
@@ -26,96 +25,94 @@ function findCatBySlug(cats, targetSlug) {
   return null;
 }
 
-// ─── Server data fetch ────────────────────────────────────────────────────────
 async function getPageData(categorySlug) {
   try {
-    const catRes = await fetch(`${API_BASE}/product/category`, {
+    const { data: catData } = await fetchJson(`${API_BASE}/product/category`, {
       next: { revalidate: 600 },
     });
-    if (!catRes.ok) return null;
-    const catJson = await catRes.json();
-    const cat = findCatBySlug(catJson?.data || [], categorySlug);
-    if (!cat) return null;
+    if (!catData?.data) return { cat: null, products: [], category: null, apiDown: true };
 
-    const prodRes = await fetch(
+    const cat = findCatBySlug(catData.data, categorySlug);
+    if (!cat) return { cat: null, products: [], category: null, apiDown: false };
+
+    const { data: prodData } = await fetchJson(
       `${API_BASE}/search/product?category_id=${cat.id}&sort_by=1`,
       { next: { revalidate: 600 } }
     );
-    if (!prodRes.ok) return { cat, products: [], category: cat };
-    const prodJson = await prodRes.json();
 
     return {
       cat,
-      products: prodJson?.data || [],
-      category: prodJson?.category || cat,
+      products: prodData?.data || [],
+      category: prodData?.category || cat,
+      apiDown: false,
     };
-  } catch (e) {
-    console.error("SubCategoryPage SSR fetch failed:", e);
-    return null;
+  } catch (err) {
+    console.error("[sub-category/page] getPageData error:", err?.message);
+    return { cat: null, products: [], category: null, apiDown: true };
   }
 }
 
-// ─── Metadata ─────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
-  const resolvedParams = await params;
-  const parentSlug = (resolvedParams?.slug || "").replace(/^\/+|\/+$/g, "");
-  const categorySlug = (resolvedParams?.["category-slug"] || "").replace(
-    /^\/+|\/+$/g,
-    ""
-  );
-  const data = await getPageData(categorySlug);
-  const seo = data?.cat?.categorySeoMetadata;
-  const fallbackPath =
-    parentSlug && categorySlug
-      ? `/product-category/${parentSlug}/${categorySlug}/`
-      : categorySlug
-        ? `/product-category/${categorySlug}/`
-        : "/product-category/";
-  const canonical = resolveCanonical(seo?.canonical_url, fallbackPath);
+  try {
+    const resolvedParams = await params;
+    const parentSlug = String(resolvedParams?.slug || "").replace(/^\/+|\/+$/g, "");
+    const categorySlug = String(resolvedParams?.["category-slug"] || "").replace(/^\/+|\/+$/g, "");
 
-  return {
-    title:
-      seo?.meta_title ||
-      data?.cat?.name ||
-      "Product Category - Disposable Bazar",
-    description: seo?.meta_description || "",
-    alternates: canonical ? { canonical } : undefined,
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
-    },
-  };
+    const { cat } = await getPageData(categorySlug);
+    const seo = cat?.categorySeoMetadata;
+    const fallbackPath = parentSlug && categorySlug
+      ? `/product-category/${parentSlug}/${categorySlug}/`
+      : categorySlug ? `/product-category/${categorySlug}/` : "/product-category/";
+    const canonical = resolveCanonical(seo?.canonical_url, fallbackPath);
+    const title = seo?.meta_title || cat?.name || "Product Category - Disposable Bazaar";
+    const description = seo?.meta_description || `Browse ${cat?.name || "products"} at Disposable Bazaar.`;
+
+    return {
+      title,
+      description,
+      alternates: canonical ? { canonical } : undefined,
+      openGraph: { title, description, siteName: "Disposable Bazaar" },
+      twitter: { card: "summary", title, description },
+      robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
+    };
+  } catch (err) {
+    console.error("[sub-category/page] generateMetadata error:", err?.message);
+    return {
+      title: "Product Category - Disposable Bazaar",
+      description: "Browse our product categories at Disposable Bazaar.",
+      robots: { index: true, follow: true },
+    };
+  }
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function Page({ params }) {
-  const resolvedParams = await params;
-  const categorySlug = resolvedParams?.["category-slug"] || "";
-  const data = await getPageData(categorySlug);
-
-  // Safe schema: validate JSON before injecting
-  let schema = null;
   try {
-    const raw = data?.cat?.categorySeoMetadata?.schema;
-    if (raw) { JSON.parse(raw); schema = raw; }
-  } catch { schema = null; }
+    const resolvedParams = await params;
+    const categorySlug = String(resolvedParams?.["category-slug"] || "");
+    const { cat, products, category } = await getPageData(categorySlug);
 
-  const initialData = data
-    ? { products: data.products, category: data.category }
-    : null;
+    let schema = null;
+    try {
+      const raw = cat?.categorySeoMetadata?.schema;
+      if (raw) { JSON.parse(raw); schema = raw; }
+    } catch { schema = null; }
 
-  return (
-    <>
-      {schema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: schema }}
-        />
-      )}
+    return (
+      <>
+        {schema && (
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: schema }} />
+        )}
+        <Suspense fallback={null}>
+          <CategoryPageClient initialData={cat ? { products, category } : null} />
+        </Suspense>
+      </>
+    );
+  } catch (err) {
+    console.error("[sub-category/page] render error:", err?.message);
+    return (
       <Suspense fallback={null}>
-        <CategoryPageClient initialData={initialData} />
+        <CategoryPageClient initialData={null} />
       </Suspense>
-    </>
-  );
+    );
+  }
 }

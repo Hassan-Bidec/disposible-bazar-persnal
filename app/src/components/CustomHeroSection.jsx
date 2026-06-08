@@ -42,8 +42,8 @@ function CustomHeroSection({
                 ...(custom === "shop" || custom === "customization" ? { aspectRatio: "3 / 1" } : {}),
             }}
         >
-            {/* Dark overlay for text readability */}
-            <div className="absolute inset-0 bg-black/50" />
+            {/* Dark overlay for text readability — only when content is visible */}
+            {!hideContent && <div className="absolute inset-0 bg-black/50" />}
 
             {/* Left text content */}
             {hideContent ? null : (

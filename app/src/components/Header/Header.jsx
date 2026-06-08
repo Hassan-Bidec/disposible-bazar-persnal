@@ -10,6 +10,9 @@ import { MdEmail, MdOutlineFileDownload, MdPhone } from "react-icons/md";
 import { CiHeart, CiSearch, CiUser } from "react-icons/ci";
 import { CgMenuRight } from "react-icons/cg";
 import { PiCaretDownThin } from "react-icons/pi";
+
+const IMG_BASE = "https://ecommerce-inventory.thegallerygen.com/public/Frontend/Assets/";
+const PROFILE_BASE = "https://ecommerce-inventory.thegallerygen.com/storage/app/public";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -267,7 +270,7 @@ function Header() {
                         <Link href="/">
                             <Image
                                 className="cursor-pointer w-32 md:w-40"
-                                src={`${Image_Url}DB-Logo-01.jpg`}
+                                src={`${IMG_BASE}DB-Logo-01.jpg`}
                                 alt="Logo"
                                 width={160}
                                 height={40}
@@ -279,7 +282,7 @@ function Header() {
                         >
                             <img
                                 className="cursor-pointer w-4"
-                                src={`${Image_Url}HeaderAssets/category-icon.svg`}
+                                src={`${IMG_BASE}HeaderAssets/category-icon.svg`}
                                 alt=""
                             />{" "}
                             ALL CATEGORIES
@@ -606,7 +609,7 @@ function Header() {
                             <Link href="/profile">
                                 <Image
                                     // src={user ? `${Profile_Assets_Url}${user.photo}` : dummyProfilePic}
-                                    src={user?.photo ? `${Profile_Assets_Url}/${user.photo}` : dummyProfilePic}
+                                    src={user?.photo ? `${PROFILE_BASE}/${user.photo}` : dummyProfilePic}
                                     alt="Profile"
                                     className="w-10 h-10 rounded-full object-cover"
                                     width={500}

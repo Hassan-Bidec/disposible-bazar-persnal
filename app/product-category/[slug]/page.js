@@ -1,23 +1,25 @@
+// ─── SERVER COMPONENT ─────────────────────────────────────────────────────────
+// Product category page — crawler-safe SSR. Never throws 500.
+// notFound() only for genuinely missing categories, not API failures.
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import CategoryPageClient from "./CategoryPageClient";
 import { resolveCanonical } from "../../lib/getCanonicalUrl";
+import { fetchJson } from "../../lib/fetchWithTimeout";
 
 export const revalidate = 600;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
+const BLOCKED_SLUGS = new Set(["kraft-paper-rectangular-bowl"]);
 
-// ─── Helpers ───────────────────────────────
 const normalize = (s) =>
-  decodeURIComponent(s || "")
-    .toLowerCase()
-    .replace(/\/+$/, "");
+  decodeURIComponent(String(s || "")).toLowerCase().replace(/\/+$/, "");
 
-// ─── SAME CATEGORY FIND (UNCHANGED) ────────
 function findCatBySlug(cats, targetSlug) {
   for (const c of cats) {
     if (normalize(c.slug) === normalize(targetSlug)) return c;
-
     if (c.subCategories?.length) {
       const found = findCatBySlug(c.subCategories, targetSlug);
       if (found) return found;
@@ -26,121 +28,102 @@ function findCatBySlug(cats, targetSlug) {
   return null;
 }
 
-// ─── MAIN FETCH (UNCHANGED LOGIC) ──────────
 async function getPageData(slug) {
   try {
-    const catRes = await fetch(`${API_BASE}/product/category`, {
+    const { data: catData } = await fetchJson(`${API_BASE}/product/category`, {
       next: { revalidate: 600 },
     });
 
-    if (!catRes.ok) return null;
+    if (!catData?.data) return { cat: null, products: [], category: null, apiDown: true };
 
-    const catJson = await catRes.json();
-    const cat = findCatBySlug(catJson?.data || [], slug);
+    const cat = findCatBySlug(catData.data, slug);
+    if (!cat) return { cat: null, products: [], category: null, apiDown: false };
 
-    if (!cat) return null;
-
-    const prodRes = await fetch(
+    const { data: prodData } = await fetchJson(
       `${API_BASE}/search/product?category_id=${cat.id}&sort_by=1`,
       { next: { revalidate: 600 } }
     );
 
-    const prodJson = prodRes.ok ? await prodRes.json() : null;
-
     return {
       cat,
-      products: prodJson?.data || [],
-      category: prodJson?.category || cat,
+      products: prodData?.data || [],
+      category: prodData?.category || cat,
+      apiDown: false,
     };
-  } catch (e) {
-    console.error(e);
-    return null;
+  } catch (err) {
+    console.error("[category/page] getPageData error:", err?.message);
+    return { cat: null, products: [], category: null, apiDown: true };
   }
 }
 
-// ─── BLOCKED SLUGS ─────────────────────────
-const BLOCKED_SLUGS = ["kraft-paper-rectangular-bowl"];
-
-// ─── 🔥 ONLY SEO IMPROVED (IMPORTANT PART) ───
 export async function generateMetadata({ params }) {
-  const resolvedParams = await params;
-  const slug = resolvedParams?.slug || "";
+  try {
+    const { slug } = await params;
+    if (BLOCKED_SLUGS.has(String(slug || "").replace(/\/+$/, ""))) {
+      return { robots: { index: false, follow: false } };
+    }
 
-  if (BLOCKED_SLUGS.includes(slug.replace(/\/+$/, ""))) {
-    return { robots: { index: false, follow: false } };
+    const { cat, apiDown } = await getPageData(slug || "");
+    const seo = cat?.categorySeoMetadata;
+    const slugClean = String(slug || "").replace(/^\/+|\/+$/g, "");
+    const canonical = resolveCanonical(seo?.canonical_url, `/product-category/${slugClean}/`);
+    const title = seo?.meta_title || cat?.name || (apiDown ? "Product Category - Disposable Bazaar" : "Product Category");
+    const description = seo?.meta_description || `Browse ${cat?.name || "products"} at Disposable Bazaar.`;
+
+    return {
+      title,
+      description,
+      alternates: canonical ? { canonical } : undefined,
+      openGraph: { title, description, siteName: "Disposable Bazaar" },
+      twitter: { card: "summary", title, description },
+      robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
+    };
+  } catch (err) {
+    console.error("[category/page] generateMetadata error:", err?.message);
+    return {
+      title: "Product Category - Disposable Bazaar",
+      description: "Browse our product categories at Disposable Bazaar.",
+      robots: { index: true, follow: true },
+    };
   }
-
-  const data = await getPageData(slug);
-  const seo = data?.cat?.categorySeoMetadata;
-  const slugClean = slug.replace(/^\/+|\/+$/g, "");
-  const canonical = resolveCanonical(
-    seo?.canonical_url,
-    `/product-category/${slugClean}/`
-  );
-
-  return {
-    title:
-      seo?.meta_title ||
-      data?.cat?.name ||
-      "Product Category",
-
-    description: seo?.meta_description || "",
-
-    alternates: canonical ? { canonical } : undefined,
-
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-      },
-    },
-  };
 }
 
-// ─── PAGE (UNCHANGED) ───────────────────────
 export default async function Page({ params }) {
-  const resolvedParams = await params;
-  const slug = resolvedParams?.slug || "";
-
-  // Block specific slugs — redirect to 404
-  if (BLOCKED_SLUGS.includes(slug.replace(/\/+$/, ""))) {
-    notFound();
-  }
-
-  const data = await getPageData(slug);
-
-  // If category not found in API, show 404 instead of blank page
-  if (!data) notFound();
-
-  // Safe schema: validate JSON before injecting
-  let schema = null;
   try {
-    const raw = data?.cat?.categorySeoMetadata?.schema;
-    if (raw) { JSON.parse(raw); schema = raw; }
-  } catch { schema = null; }
+    const { slug } = await params;
+    const slugStr = String(slug || "");
 
-  const initialData = data
-    ? {
-      products: data.products,
-      category: data.category,
+    if (BLOCKED_SLUGS.has(slugStr.replace(/\/+$/, ""))) {
+      notFound();
     }
-    : null;
 
-  return (
-    <>
-      {/* JSON-LD (UNCHANGED) */}
-      {schema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: schema }}
-        />
-      )}
+    const { cat, products, category, apiDown } = await getPageData(slugStr);
 
+    // Only 404 if category genuinely doesn't exist (API was up but returned nothing)
+    if (!cat && !apiDown) notFound();
+
+    let schema = null;
+    try {
+      const raw = cat?.categorySeoMetadata?.schema;
+      if (raw) { JSON.parse(raw); schema = raw; }
+    } catch { schema = null; }
+
+    return (
+      <>
+        {schema && (
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: schema }} />
+        )}
+        <Suspense fallback={null}>
+          <CategoryPageClient initialData={cat ? { products, category } : null} />
+        </Suspense>
+      </>
+    );
+  } catch (err) {
+    console.error("[category/page] render error:", err?.message);
+    return (
       <Suspense fallback={null}>
-        <CategoryPageClient initialData={initialData} />
+        <CategoryPageClient initialData={null} />
       </Suspense>
-    </>
-  );
+    );
+  }
 }

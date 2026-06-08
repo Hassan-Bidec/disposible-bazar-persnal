@@ -606,7 +606,7 @@ export default function CustomDetails() {
                 <div className="relative z-10">
                     {/* <Deals /> */}
                 </div>
-                <Review />
+                <Review productId={productDetail?.product?.id} />
             </main>
             {/* Background Image */}
             <Image

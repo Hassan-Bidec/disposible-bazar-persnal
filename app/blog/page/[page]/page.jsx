@@ -1,12 +1,11 @@
 // ─── SERVER COMPONENT ─────────────────────────────────────────────────────────
-// Blog paginated route: /blog/2, /blog/3, etc.
-// Reuses the same data fetch and metadata as /blog but with page number.
+// Blog paginated route: /blog/page/2, /blog/page/3, etc.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import BlogClient from "../../src/Pages/Blog";
-import { getCanonicalUrl } from "../../lib/getCanonicalUrl";
+import BlogClient from "../../../src/Pages/Blog";
+import { buildCanonical } from "../../../lib/seo/pageDetail";
 
 export const revalidate = 300;
 
@@ -39,7 +38,7 @@ export async function generateMetadata({ params }) {
   if (pageNum < 2) notFound();
 
   const { meta } = await getPageData(pageNum);
-  const canonical = getCanonicalUrl(`/blog/${pageNum}/`);
+  const canonical = buildCanonical(`/blog/page/${pageNum}/`);
 
   return {
     title: meta?.meta_title
@@ -48,7 +47,6 @@ export async function generateMetadata({ params }) {
     description: meta?.meta_description || "Read our latest blog posts.",
     ...(meta?.focus_keyword ? { keywords: meta.focus_keyword } : {}),
     alternates: canonical ? { canonical } : undefined,
-    // Paginated pages: index only page 2+ if they have content
     robots: {
       index: true,
       follow: true,
@@ -61,7 +59,7 @@ export default async function Page({ params }) {
   const { page } = await params;
   const pageNum = parseInt(page) || 1;
 
-  // /blog/1 should redirect to /blog — avoid duplicate content
+  // /blog/page/1 should 404 — use /blog instead
   if (pageNum < 2) notFound();
 
   const { blogs, totalPages } = await getPageData(pageNum);

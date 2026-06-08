@@ -13,11 +13,11 @@ import '../Custom.css'
 
 
 import { Pagination, Navigation } from 'swiper/modules';
-import { Assets_Url, Image_Not_Found, Image_Url } from '../../const';
 import axios from '../../Utils/axios';
 import { Loader } from '../Loader';
-// import { Link } from 'react-router-dom';
 import Link from 'next/link';
+
+const IMG_BASE = "https://ecommerce-inventory.thegallerygen.com/public/Frontend/Assets/";
 
 
 // Premium Section
@@ -29,8 +29,8 @@ function Premium({ initialProducts = [] }) {
                 <p data-aos='fade-right' className='md:w-1/2 w-11/12 md:text-start text-center font-bazaar md:text-6xl text-4xl text-white'>Plastic Containers</p>
                 <p data-aos='fade-left' className='md:w-1/3 w-11/12 md:text-start text-center md:text-lg text-sm'>Discover our versatile range of high-quality plastic containers. Perfect for all your storage needs, combining style and functionality.</p>
             </div>
-            <Image data-aos='fade-left' src={`${Image_Url}HomeAssets/PremiumAssets/shoper.svg`} className='absolute hidden md:block top-0 right-0 w-32' alt="" width={500} height={500} />
-            <Image data-aos='fade-left' src={`${Image_Url}HomeAssets/PremiumAssets/shoper2.svg`} className='absolute md:hidden block top-0 right-0 w-24' alt="" width={500} height={500} />
+            <Image data-aos='fade-left' src={`${IMG_BASE}HomeAssets/PremiumAssets/shoper.svg`} className='absolute hidden md:block top-0 right-0 w-32' alt="" width={500} height={500} />
+            <Image data-aos='fade-left' src={`${IMG_BASE}HomeAssets/PremiumAssets/shoper2.svg`} className='absolute md:hidden block top-0 right-0 w-24' alt="" width={500} height={500} />
 
             <Slider initialProducts={initialProducts} />
 
@@ -41,7 +41,18 @@ function Premium({ initialProducts = [] }) {
 export default Premium
 
 
-// Slider Component — hydrates from SSR `initialPopularProducts` (home/page.js); client fetch only as fallback.
+const FALLBACK_IMG = "https://ecommerce-inventory.thegallerygen.com/public/Frontend/Assets/defaultImage.svg";
+const BASE_URL = "https://ecommerce-inventory.thegallerygen.com";
+
+function getProductImage(product, index = 0) {
+    const img = product?.product_image?.[index]?.image;
+    if (!img) return FALLBACK_IMG;
+    if (img.startsWith("http")) return img;
+    return `${BASE_URL}${img.startsWith("/") ? "" : "/"}${img}`;
+}
+// SSR `initialProducts` se seed hota hai; client-side fallback bhi hai.
+
+const PLASTIC_CATEGORY_ID = 28;
 
 function Slider({ initialProducts = [] }) {
     const seeded = Array.isArray(initialProducts) ? initialProducts : [];
@@ -49,18 +60,13 @@ function Slider({ initialProducts = [] }) {
     const [isLoading, setIsLoading] = useState(seeded.length === 0);
 
     useEffect(() => {
-        const fromServer = Array.isArray(initialProducts) ? initialProducts : [];
-        if (fromServer.length > 0) {
-            setProducts(fromServer);
-            setIsLoading(false);
-            return;
-        }
-
         let cancelled = false;
         const fetchData = async () => {
-            setIsLoading(true);
+            if (seeded.length === 0) setIsLoading(true);
             try {
-                const response = await axios.public.get('home/category/28/product');
+                const response = await axios.public.get('search/product', {
+                    params: { category_id: PLASTIC_CATEGORY_ID, sort_by: 1 },
+                });
                 const data = response?.data?.data;
                 if (!cancelled && Array.isArray(data)) {
                     setProducts(data);
@@ -72,10 +78,8 @@ function Slider({ initialProducts = [] }) {
             }
         };
         fetchData();
-        return () => {
-            cancelled = true;
-        };
-    }, [initialProducts]);
+        return () => { cancelled = true; };
+    }, []);
 
     if (isLoading) return <Loader />
 
@@ -96,14 +100,15 @@ function Slider({ initialProducts = [] }) {
                 }}
                 spaceBetween={30}
                 navigation={{
-                    nextEl: '.custom-next',
-                    prevEl: '.custom-prev',
+                    nextEl: '.plastic-slider-next',
+                    prevEl: '.plastic-slider-prev',
                 }}
+                pagination={{ clickable: true }}
                 modules={[Pagination, Navigation]}
-                className="mySwiper min-h-[280px] md:min-h-[500px] min-w-full"
+                className="plastic-containers-swiper mySwiper min-h-[280px] md:min-h-[500px] min-w-full pb-12"
             >
-                {products.map((product, index) => (
-                    <SwiperSlide key={index}>
+                {products.map((product) => (
+                    <SwiperSlide key={product.id ?? product.slug}>
                         <div className="mobileVeiw group hover:border-2 hover:border-[#1E7773] bg-[#32303e] p-3 flex flex-col justify-center gap-3 items-center w-full md:w-[250px] lg:w-[350px] h-[200px] hover:h-[260px] md:h-[407px] hover:md:h-[450px] text-white rounded-xl"
                             style={{ transition: 'height 0.5s ease, opacity 0.5s ease 0.3s' }}>
                             {/* <div className="relative flex justify-center items-center w-[150px] h-[150px] md:w-[250px] md:h-[250px]">
@@ -127,24 +132,18 @@ function Slider({ initialProducts = [] }) {
                                 <div className="relative p-5 flex justify-center items-center w-[150px] h-[150px] md:w-[250px] md:h-[250px]">
                                     <Image
                                         className=" w-full h-full block group-hover:hidden rounded-xl object-cover"
-                                        src={`${Assets_Url}${product.product_image[0]?.image}`}
-                                        alt={product.name}
+                                        src={getProductImage(product, 0)}
+                                        alt={product.name || "Product"}
                                         style={{ transition: 'opacity 0.5s ease 0.3s' }}
                                         loading='lazy'
-                                        onError={(e) => {
-                                            e.currentTarget.src = Image_Not_Found; // Path to your dummy image
-                                          }}
                                         width={500} height={500}
                                     />
                                     <Image
                                         className=" w-full h-full hidden group-hover:block rounded-xl object-cover"
-                                        src={`${Assets_Url}${product.product_image[1]?.image}`}  // Replace with hover image if available
-                                        alt={product.name}
+                                        src={getProductImage(product, 1) || getProductImage(product, 0)}
+                                        alt={product.name || "Product"}
                                         style={{ transition: 'opacity 0.5s ease 0.3s' }}
                                         loading='lazy'
-                                        onError={(e) => {
-                                            e.currentTarget.src = Image_Not_Found; // Path to your dummy image
-                                          }}
                                         width={500} height={500}
                                     />
                                 </div>
@@ -166,21 +165,20 @@ function Slider({ initialProducts = [] }) {
                 ))}
             </Swiper >
 
-            {/* Custom navigation buttons */}
+            {/* Unique selectors — avoids clash with Categories slider on the same page */}
             <div className="absolute z-10 top-[30rem] w-full left-0 hidden lg:block">
                 <div
-                    className="custom-prev swiper-button-prev px-4"
+                    className="plastic-slider-prev swiper-button-prev px-4"
                     style={{
-                        backgroundColor: '#1E7773',  // Green background
-                        color: '#FFFFFF',  // White text color
+                        backgroundColor: '#1E7773',
+                        color: '#FFFFFF',
                         borderRadius: '100%',
                         left: '25px',
                         width: '2.5rem',
                     }}
-                >
-                </div>
+                />
                 <div
-                    className="custom-next swiper-button-next px-4"
+                    className="plastic-slider-next swiper-button-next px-4"
                     style={{
                         backgroundColor: '#1E7773',
                         color: '#FFFFFF',
@@ -188,8 +186,7 @@ function Slider({ initialProducts = [] }) {
                         right: '25px',
                         width: '2.5rem',
                     }}
-                >
-                </div>
+                />
             </div>
 
         </>
