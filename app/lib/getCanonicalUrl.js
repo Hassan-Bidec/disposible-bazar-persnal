@@ -16,7 +16,7 @@ export function getSiteBaseUrl() {
     }
   }
   // Fallback — production domain
-  return "https://dispasible-bazar-persnal.vercel.app";
+  return "https://dispasible-bazar-persnal.vercel.app/";
 }
 
 /**

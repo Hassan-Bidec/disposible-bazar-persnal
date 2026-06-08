@@ -27,11 +27,12 @@ async function getPageData() {
   }
 }
 
-import { resolveCanonical } from "../lib/getCanonicalUrl";
+import { getCanonicalUrl } from "../lib/getCanonicalUrl";
 
 export async function generateMetadata() {
   const { meta } = await getPageData();
-  const canonical = resolveCanonical(meta?.canonical_url, "/bundles/");
+  // Always use our own canonical for /bundles/ — API may have wrong domain/path
+  const canonical = getCanonicalUrl("/bundles/");
   return {
     title: meta?.meta_title || "Bundle Shop - Disposable Bazar",
     description: meta?.meta_description || "Special bundles and deals on disposable products.",

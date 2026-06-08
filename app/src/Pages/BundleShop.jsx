@@ -126,7 +126,7 @@ function BundleShop() {
               {/* Breadcrumbs */}
               <p className="text-sm text-gray-400">
                 <Link href="/">Home</Link> / Bundles
-              </p>
+              </p>bundles
             </div>
 
             {loading ? (
