@@ -12,7 +12,7 @@ import { fetchJson } from "../../lib/fetchWithTimeout";
 export const revalidate = 600;
 
 const API_BASE = "https://ecommerce-inventory.thegallerygen.com/api";
-const SITE = "https://dispasible-bazar-persnal.vercel.app";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function normalizeSlug(raw) {
